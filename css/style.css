@@ -11,5 +11,32 @@
 
 /* Mobile styles */
 @media only screen and (max-width: 481px) {
-  
+  .profile {
+    display: none;
+  }
+  .main {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .main-content h1{
+    text-align: center;
+    font-weight: 700;
+    font-size: 25px;
+  }
+
+  .social {
+    align-self: center;
+  }
+
+  .social img {
+    margin-top: 70px;
+    margin-left: 6px;
+    margin-right: 6px;
+
+    width: 40px;
+    height: auto;
+  }
 }
