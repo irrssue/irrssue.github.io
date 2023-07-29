@@ -1,15 +1,15 @@
-@import url('https://fonts.googleapis.com/css2?family=Borel&family=Quicksand:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
 
 * {
   padding: 0;
   margin: 0;
   box-sizing: border-box;
 
-  font-family: 'Quicksand', sans-serif;
-  font-weight: 500;
+  font-family: 'Inter', sans-serif;
 }
 
-body {
-  height: 100vh;
-}
 
+/* Mobile styles */
+@media only screen and (max-width: 481px) {
+  
+}
