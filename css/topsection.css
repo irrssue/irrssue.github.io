@@ -82,7 +82,7 @@
   transform: scale(1.2);
 }
 
-@media screen and (max-width: 418px) {
+@media screen and (max-width: 550px) {
   .section-div img {
     height: 200px;
   }  
