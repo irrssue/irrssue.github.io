@@ -17,17 +17,18 @@
 .section-div img {
   margin: auto;
   border-radius: 13%;
-  height: 40%;
+  height: 400px;
 }
 
 .section-div h1 {
   font-family: var(--main-font-family);
   font-size: var(--main-font-size);
   font-weight: 500;
+
+  margin-top: 20px;
 }
 
 .section-div h1 {
-  margin-top: 40px;
   text-align: center;
   width: 60%;
 
@@ -79,4 +80,24 @@
   outline: none;
 
   transform: scale(1.2);
+}
+
+@media screen and (max-width: 418px) {
+  .section-div img {
+    height: 200px;
+  }  
+
+  .section-div h1 {
+    font-size: 20px;
+  }
+
+  .section-div .section-button {
+
+    padding: 15px 30px 15px 30px;
+    font-size: 15px;
+
+    margin-top: 70px;
+
+  }
+
 }
