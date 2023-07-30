@@ -1,0 +1,13 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
+
+:root {
+  --main-background: #28282B;
+  
+  --main-text-color: white;
+  --main-font-family: 'Inter', sans-serif;
+  --main-font-size: 30px;
+
+  --student-color: rgb(20, 73, 38);
+
+}

@@ -1,0 +1,81 @@
+#TopSection {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  height: 100vh;
+}
+
+.section-div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.section-div img {
+  margin: auto;
+  border-radius: 13%;
+}
+
+.section-div h1 {
+  font-family: var(--main-font-family);
+  font-size: var(--main-font-size);
+  font-weight: 500;
+}
+
+.section-div h1 {
+  margin-top: 40px;
+  text-align: center;
+  width: 60%;
+
+  font-style: italic;
+}
+
+
+.student {
+  color: var(--student-color);
+}
+
+.sometimes {
+  text-decoration: 3px underline dashed red;
+}
+
+.sometimes:hover {
+  text-decoration: line-through red;
+}
+
+
+.web-dev a{
+  text-decoration: none;
+  color: black;
+}
+.web-dev a:hover {
+  color: rgb(107, 1, 1);
+}
+
+
+.section-button {
+  margin-top: 150px;
+  padding: 25px 50px 25px 50px;
+
+  border-radius: 20px;
+  background: black;
+
+  color: white;
+  text-decoration: none;
+  font-size: 22px;
+
+  font-family: var(--main-font-family);
+  transition: transform 0.2s ease-in-out;
+
+}
+
+.section-button:hover {
+  background: rgba(128, 128, 128, 0.449);
+  color: black;
+  outline: none;
+
+  transform: scale(1.2);
+}
