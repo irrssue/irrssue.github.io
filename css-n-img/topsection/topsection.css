@@ -26,13 +26,13 @@
   justify-content: center;
 }
 
-.section-div img {
+.topsection-img {
   margin: auto;
   border-radius: 13%;
   height: 400px;
 }
 
-.section-div h1 {
+.topsection-header {
   font-family: var(--main-font-family);
   font-size: var(--main-font-size);
   font-weight: 500;
@@ -40,7 +40,7 @@
   margin-top: 20px;
 }
 
-.section-div h1 {
+.topsection-header {
   text-align: center;
   width: 60%;
 
