@@ -1,0 +1,44 @@
+@import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,500;0,6..96,700;1,6..96,600&display=swap');
+
+
+
+
+.hero {
+  border: 1px dotted gray;
+
+  display: flex;
+  flex-direction: column;
+
+  width: 90%;
+  margin: 0 auto;
+}
+
+.hero__top {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.hero__profile {
+  max-width: 130px;
+  border-radius: 50px;
+
+  margin: 20px;
+}
+
+.hero__heading {
+  display: flex;
+  align-items: center;
+  font-family: 'Bodoni Moda';
+  font-size: 2rem;
+  margin-left: 20px;
+}
+
+.hero__bottom {
+  width: 50%;
+  margin: auto;
+  font-family: 'Times New Roman', Times;
+  margin-top: 20px;
+
+  margin-bottom: 60px;
+}
