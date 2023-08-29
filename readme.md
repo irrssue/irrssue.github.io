@@ -9,4 +9,4 @@ Let's dive in together! 🚀
 
 ### Change History
 
-- **Aug 30** Project hard restart
+- **Aug 30, 2023** Project hard restart
