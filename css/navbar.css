@@ -40,7 +40,7 @@
 .navbar__item-link:hover {
   text-decoration: underline;
   text-underline-offset: 5px;
-  color: rgba(47, 47, 47, 0.647);
+  color: rgba(47, 47, 47, 0.579);
 
   transition: all 0.1s ease-in-out;
 }
