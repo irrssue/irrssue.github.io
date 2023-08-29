@@ -19,6 +19,9 @@ h1, h2, h3, p {
   font-family: 'Rubik', sans-serif;
 }
 
+li {
+  list-style-type: none;
+}
 
 body {
   width: 100%;
