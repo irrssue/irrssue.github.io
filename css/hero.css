@@ -10,7 +10,7 @@
   display: flex;
   flex-direction: column;
 
-  max-width: 70%;
+  min-width: 70%;
   margin: 0 auto;
 }
 
@@ -40,10 +40,24 @@
 }
 
 .hero__bottom {
-  width: 50%;
+  width: 60%;
   margin: auto;
   font-family: 'Times New Roman', Times;
   margin-top: 20px;
 
   margin-bottom: 60px;
+
+  line-height: 30px;
+}
+
+.hero__bottom-text {
+  font-size: 18px;
+  text-align: center;
+
+  color: rgba(0, 0, 0, 0.850);
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
