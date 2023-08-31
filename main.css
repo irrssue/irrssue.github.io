@@ -27,3 +27,25 @@ body {
   width: 100%;
   scroll-behavior: smooth;
 }
+
+.root {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+
+  justify-content: space-between;
+}
+
+.dot {
+  min-width: 60px;
+  border: 2px solid black;
+}
+
+.small-text {
+  font-size: 20px;
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.block {
+  display: block;
+}
