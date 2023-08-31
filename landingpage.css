@@ -1,0 +1,36 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Waiting+for+the+Sunrise&display=swap');
+
+
+
+.landing-text {
+  padding: 0;
+  margin: 0;
+
+  font-size: clamp(17em, 20em, 30em);
+  color: white;
+  opacity: 1;
+  position: absolute;
+  transition: opacity 1.8s ease-in-out;
+  
+  width: 100vw;
+  height: 100vh;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  z-index: 10;
+
+  background: rgba(0, 0, 0, 0.878);
+}
+
+#hiText {
+  font-family: 'Waiting for the Sunrise', cursive;
+  letter-spacing: 20px;
+  
+}
+
+.hide {
+  opacity: 0;
+}

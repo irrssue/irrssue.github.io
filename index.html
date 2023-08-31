@@ -8,9 +8,12 @@
   <link rel="stylesheet" href="css/navbar.css">
   <link rel="stylesheet" href="css/hero.css">
   <link rel="stylesheet" href="css/social.css">
+  <link rel="stylesheet" href="landingpage.css">
 </head>
 <body>
   <div class="root">
+
+    <h1 class="landing-text" id="hiText">hello</h1>
 
     <!-- <h1 class="root__h1">Hi</h1> -->
 
@@ -72,6 +75,15 @@
     </div>
 
 
+
+  
   </div>
+  <script>
+    // Hide the text after a delay
+    setTimeout(() => {
+      const hiText = document.getElementById('hiText');
+      hiText.classList.add('hide');
+    }, 700);
+  </script>
 </body>
 </html>
