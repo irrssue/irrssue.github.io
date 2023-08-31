@@ -1,5 +1,5 @@
 .social {
-  margin: 0 auto;
+  margin: 30px auto;
 
   display: flex;
   justify-content: center;
@@ -7,5 +7,5 @@
 
 .social__li-link img {
   width: 40px;
-  margin: 30px;
+  margin: auto 30px auto 30px;
 }
