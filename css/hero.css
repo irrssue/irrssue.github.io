@@ -4,7 +4,8 @@
 
 
 .hero {
-  border: 1px dotted gray;
+  border: 1px dashed gray;
+  border-radius: 40px;
 
   display: flex;
   flex-direction: column;
@@ -30,6 +31,8 @@
 
 .hero__heading {
   display: flex;
+  flex-direction: column;
+  justify-content: center;
   align-items: center;
   font-family: 'Bodoni Moda';
   font-size: 2rem;
