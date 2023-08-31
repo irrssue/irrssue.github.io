@@ -82,7 +82,10 @@
     // Hide the text after a delay
     setTimeout(() => {
       const hiText = document.getElementById('hiText');
-      hiText.classList.add('hide');
+      hiText.style.opacity = 0; // Start opacity transition
+      setTimeout(() => {
+        hiText.remove(); // Remove element after opacity transition
+      }, 700);
     }, 700);
   </script>
 </body>
