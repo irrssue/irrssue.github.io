@@ -65,6 +65,10 @@
     width: 83%;
   }
 
+  .hero__bottom-text {
+    font-size: 15px;
+  }
+
 
   /* LANDING PAGE */
   .landing-text {
