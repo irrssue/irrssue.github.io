@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="css/navbar.css">
   <link rel="stylesheet" href="css/hero.css">
   <link rel="stylesheet" href="css/social.css">
+  <link rel="stylesheet" href="css/dropdown.css">
   <!-- <link rel="stylesheet" href="landingpage.css"> -->
 
 
@@ -28,14 +29,13 @@
       <div class="dot"></div>
 
       <div class="navbar__item">
-        <li class="navbar__item-li">
-          <a href="mycreations.html" class="navbar__item-link">My Creations</a>
-        </li>
-        <li class="navbar__item-li">
-          <a href="https://irrssue.webflow.io" class="navbar__item-link">Blog</a>
-        </li>
-        <li class="navbar__item-li">
-          <a href="mailto:irrssue@gmail.com" class="navbar__item-link">Contant Me</a>
+        <li class="navbar__item-li dropdown">
+          <a href="#" class="navbar__item-link"><img src="img/icons/menu.png" alt="Menu Icon" class="navbar__item-img"></a>
+          <div class="dropdown-content">
+            <a href="mycreations.html" class="navbar__item-link">My Creations</a>
+            <a href="https://irrssue.webflow.io" class="navbar__item-link">Blogs</a>
+            <a href="mailto:irrssue@gmail.com">Contact Me</a>
+          </div>
         </li>
       </div>
     </div>
@@ -90,6 +90,18 @@
         hiText.remove(); // Remove element after opacity transition
       }, 700);
     }, 700);
+      // Close the dropdown menu when clicking outside of it
+  window.onclick = function(event) {
+    if (!event.target.matches('.navbar__item-link')) {
+      var dropdowns = document.getElementsByClassName("dropdown-content");
+      for (var i = 0; i < dropdowns.length; i++) {
+        var openDropdown = dropdowns[i];
+        if (openDropdown.style.display === "block") {
+          openDropdown.style.display = "none";
+        }
+      }
+    }
+  }
   </script>
 </body>
 </html>

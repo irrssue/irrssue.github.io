@@ -1,14 +1,31 @@
 @media screen and (max-width: 580px) {
   .navbar {
-    width: 100vw;
+    width: 80vw;
+    margin: 30px auto;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
   }
 
   .navbar__logo__h3 {
+    text-align: center;
+    margin-bottom: 20px;
     font-size: clamp(1.5rem, 2rem, 3rem);
   }
 
   .dot {
     display: none;
+  }
+
+  .navbar__item {
+    margin: auto;
+  }
+
+  .navbar__item-img {
+    width: 25px;
+    height: auto;
   }
 
 
