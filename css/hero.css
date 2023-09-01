@@ -16,7 +16,7 @@
 }
 
 .hero__top {
-  margin-top: 60px;
+  margin-top: 50px;
 
   display: flex;
   flex-direction: row;
@@ -25,6 +25,7 @@
 
 .hero__profile {
   max-width: 130px;
+  height: auto;
   border-radius: 30px;
 
   margin: 20px;

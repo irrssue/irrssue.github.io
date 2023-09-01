@@ -1,0 +1,45 @@
+@media screen and (max-width: 580px) {
+  .navbar {
+    width: 100vw;
+  }
+
+  .navbar__logo__h3 {
+    font-size: clamp(1.5rem, 2rem, 3rem);
+  }
+
+  .dot {
+    display: none;
+  }
+
+
+  /* FOR HERO PART */
+
+
+  .hero {
+    border: none;
+    width: 90%;
+
+  }
+  .hero__profile {
+    max-width: 250px;
+    height: auto;
+  }
+  .hero__heading {
+    font-size: 1.7rem;
+  }
+
+  .hero__top {
+    margin-top: 10px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    padding-bottom: 20px;
+  }
+
+  .hero__bottom {
+    width: 83%;
+  }
+}
