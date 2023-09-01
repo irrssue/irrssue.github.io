@@ -80,3 +80,7 @@ body {
   color: black;
   padding: 5px;
 }
+
+.nowarp {
+  white-space: nowrap;
+}
