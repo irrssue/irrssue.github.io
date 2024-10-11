@@ -26,7 +26,7 @@ author:
   pronouns: # example: "she/her"
   bio: "I love Softwares and Robots"
   location: "Earth"
-  employer: ""
+  employer: #
   uri: # URL
   email: "irrssue@duck.com"
 
@@ -70,7 +70,7 @@ author:
   weibo: # Username
   wikipedia: # Username
   xing: # Username
-  youtube: # Username
+  youtube: "@irrssueyt"
   zhihu: # Username
 
 # Publication Category - The following the list of publication categories and their headings
