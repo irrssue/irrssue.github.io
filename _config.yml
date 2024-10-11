@@ -52,7 +52,7 @@ author:
   facebook: #
   flickr: # Username
   foursquare: # Username
-  goodreads: "goodreads.com/irrssue"
+  goodreads: "irrssue"
   google_plus: # Username
   keybase: # Username
   instagram: "instagram.com/irrssue"
@@ -127,7 +127,7 @@ yandex_site_verification:
 
 # Social Sharing
 twitter:
-  username: &twitter
+  username:
 facebook:
   username:
   app_id:
