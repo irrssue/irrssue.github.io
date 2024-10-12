@@ -21,7 +21,7 @@ repository: "irrssue/irrssue.github.io"
 #               Additional customization can be done by editing /_includes/author-profile.html
 author:
   # Biographic information
-  avatar: "profile.png"
+  avatar: "liam-profile.png"
   name: "Liam Rolert"
   pronouns: # example: "she/her"
   bio: "I love Softwares and Robots"
