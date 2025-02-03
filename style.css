@@ -1,173 +1,50 @@
-*,
-*::before,
-*::after {
+/* Reset some default browser styles */
+* {
+    margin: 0;
+    padding: 0;
     box-sizing: border-box;
 }
 
-
-/* custommization */
-
-:root {
-    --ff--primary: 'Source Sans Pro', sans-serif;
-    --ff--secondary: 'Source Code Pro', monospace;
-    --ff--forunderline: 'Explora'
-
-    --fw-reg: 300;
-    --fw--bold: 900;
-
-    --clr-bg: #000000;
-    --clr-text: #ffffff;
-    --clr--accent: #0094f7;
-
-    --fs-h1: 3rem;
-    --fs-h2: 2.25rem;
-    --fs-h3: 1.25rem;
-    --fs-body: 1rem;
-}
-
-@media (min-width: 800px) {
-    :root {
-        --fs-h1: 4.5rem;
-        --fs-h2: 3.75rem;
-        --fs-h3: 1.5rem;
-        --fs-body: 1.125rem;
-
-    }
-}
-
-section {
-    padding: 5em 2em;
-}
-
-
-
-/* general style */
+/* Set default font and background color */
 body {
-    background: var(--clr-bg);
-    color: var(--clr-dark);
-    margin: 0;
-    font-family: var(--ff--primary);
-    font-size: var(--fs-body);
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
     line-height: 1.6;
-
 }
 
-img {
-    display: block;
-    max-width: 100%
-}
-
-/*  Typography */
-
-h1,h2,h3 {
-    line-height: 1.1;
-    margin: 0;
-}
-
-h1 {
-    font-size: var(--fs-h1);
-    color: var(--clr-text);
-}
-
-h2 {
-    font-size: var(--fs-h2);
-    color: var(--clr-text);
-}
-
-h3 {
-    font-size: var(--fs-h3);
-    color: var(--clr-text);
+/* Basic styling for common elements */
+h1, h2, h3, h4, h5, h6 {
+    margin-bottom: 1rem;
+    font-weight: 600;
 }
 
 p {
-    color: var(--clr-text);
+    margin-bottom: 1rem;
 }
 
-.section-title-intro {
-    margin-bottom: .25em;
-
-
-}
-.section-title-intro{
- 
-    font-weight: var(--fw--reg);
-
-}
-.section__subtitle {
-    margin: 0;
-    font-size: var(--fs-h3);
-    
-
-}
-
-.underlinename {
-    background: var(--clr--accent);
-    font-family: var(--ff--secondary);
-    margin-bottom: 1em;
-}
-
-strong {
-    display: block;
-    font-weight: var(--fw--bold);
-    color: #bac8ff;
-}
-
-
-/* header */
-
-nav {
-    display: none;
-
-}
-
-
-
-
-/*  intro section */
-.intro {
-    position: relative;
-
-}
-
-.fa {
-    padding: 20px;
-    font-size: 30px;
-    width: 50px;
-    text-align: center;
+a {
+    color: #3498db;
     text-decoration: none;
-    border-radius: 20%; 
 }
 
-/* Hover effect */
-.fa:hover {
-    opacity: 0.7;
-
+a:hover {
+    text-decoration: underline;
 }
 
-/* setting up specific color */
-.fa-facebook {
-    background: #3B5998;
-    color: white;
+ul {
+    list-style: none;
 }
 
-/* twitter */
-.fa-twitter {
-    background: #55ACEE;
-    color: white;
-  }
-
-@media (main-width: 600px) {
-    .intro {
-        display: grid;
-        grid-template-areas: 
-            "img title"
-            "img subtitle";
-        grid-template-columns: min-content max-content;
-
-    }
-
-    #id {
-        grid-area: img;
-        min-width: 250px;
-    }
+img {
+    max-width: 100%;
+    height: auto;
 }
+
+/* Container class for layout */
+.container {
+    width: 80%;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
