@@ -3,6 +3,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    background-repeat: no-repeat;
 }
 
 /* Set default font and background color */
@@ -24,7 +25,7 @@ p {
 }
 
 a {
-    color: #3498db;
+    color: black;
     text-decoration: none;
 }
 
@@ -47,4 +48,34 @@ img {
     margin: 0 auto;
     padding: 1rem;
 }
+
+/* Grid classes */
+body {
+    min-height: 100vh;
+}
+
+.root {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh;
+}
+
+.nav-container {
+    margin: 30px auto 30px auto;
+}
+
+.nav-bar {
+    display: flex;
+    flex-direction: row;
+    margin: auto;
+    border-top: 1px solid black;
+}
+
+.nav-bar-item {
+    padding: 10px 20px 3px 20px;
+    text-decoration: none;
+    color: black;
+}
+
 
