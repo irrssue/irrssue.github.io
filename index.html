@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Liam's Portfolio - Web Developer & Designer">
+    <meta name="keywords" content="portfolio, web developer, designer, projects">
+    <meta name="author" content="Liam">
+    <title>Liam's Portfolio</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
+    
+    <!-- Tailwind CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+    
+    <!-- HEADER -->
+    <header class="py-4 px-6 flex justify-between items-center">
+        <h1 class="text-2xl font-bold">Liam's Portfolio</h1>
+        <nav>
+            <ul class="flex space-x-4">
+                <li><a href="#about" class="hover:underline">About</a></li>
+                <li><a href="#projects" class="hover:underline">Projects</a></li>
+                <li><a href="#contact" class="hover:underline">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="container mx-auto px-6">
+        
+        <!-- HERO SECTION -->
+        <section class="text-center py-20">
+            <img src="assets/avatar.png" alt="Liam's Avatar" class="mx-auto w-40 rounded-full">
+            <h2 class="text-4xl font-bold mt-4">Hey, I'm Liam!</h2>
+            <p class="text-lg mt-2">Full-Stack Developer | AI & Robotics Enthusiast</p>
+        </section>
+
+        <!-- ABOUT SECTION -->
+        <section id="about" class="py-16">
+            <h2 class="text-3xl font-bold text-center">About Me</h2>
+            <p class="text-lg text-center mt-4 max-w-2xl mx-auto">
+                I’m a passionate full-stack developer with a strong interest in AI and robotics.
+                Currently studying Business Administration at BMCC and freelancing as a web developer.
+            </p>
+        </section>
+
+        <!-- PROJECTS SECTION -->
+        <section id="projects" class="py-16">
+            <h2 class="text-3xl font-bold text-center">Projects</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+                <!-- Project cards will be dynamically added here -->
+            </div>
+        </section>
+
+        <!-- CONTACT SECTION -->
+        <section id="contact" class="py-16 text-center">
+            <h2 class="text-3xl font-bold">Contact Me</h2>
+            <p class="text-lg mt-4">Let's connect! Reach out to me via:</p>
+            <div class="mt-4">
+                <a href="mailto:liam@example.com" class="text-blue-500 hover:underline">Email</a> | 
+                <a href="https://github.com/liam" class="text-blue-500 hover:underline">GitHub</a> |
+                <a href="https://linkedin.com/in/liam" class="text-blue-500 hover:underline">LinkedIn</a>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="py-6 text-center">
+        <p>&copy; 2025 Liam. All rights reserved.</p>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="js/main.js"></script>
+</body>
+</html>
