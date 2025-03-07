@@ -5,43 +5,116 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Liam's Portfolio</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    
-    <header>
+    <div class="container">
         <nav>
+            <div class="nav-logo">liam.</div>
             <ul class="nav-links">
                 <li><a href="#home">Home</a></li>
                 <li><a href="#projects">Projects</a></li>
+                <li><a href="#about">About</a></li>
                 <li><a href="#contact">Contact</a></li>
             </ul>
         </nav>
-        <h1>Hey, I'm Liam</h1>
-        <p>Software Developer | Tech Enthusiast | Content Creator</p>
-    </header>
-
-    <div class="buttons">
-        <button onclick="showAlert('View My Work')" class="btn">View My Work</button>
-        <button onclick="showAlert('Contact Me')" class="btn btn-primary">Contact Me</button>
     </div>
     
+    <section id="home" class="hero">
+        <div class="container animated">
+            <h1>Designer, Frontend Developer & Problem Solver</h1>
+            <p class="hero-subtitle">I design and code beautifully simple things, and I love what I do.</p>
+            <div class="buttons">
+                <a href="#projects" class="btn btn-primary">View My Work</a>
+                <a href="#contact" class="btn">Get In Touch</a>
+            </div>
+        </div>
+    </section>
+    
     <section id="projects">
-        <h2>My Projects</h2>
-        <div class="project-container">
-            <div class="project-card">Project 1</div>
-            <div class="project-card">Project 2</div>
-            <div class="project-card">Project 3</div>
+        <div class="container animated">
+            <h2 class="section-title">My Recent Work</h2>
+            <div class="project-container">
+                <div class="project-card">
+                    <img src="/api/placeholder/600/400" alt="Project 1" class="project-img">
+                    <div class="project-content">
+                        <h3 class="project-title">E-commerce Website</h3>
+                        <p class="project-description">A modern e-commerce platform with user authentication and payment integration.</p>
+                        <div class="project-tags">
+                            <span class="project-tag">React</span>
+                            <span class="project-tag">Node.js</span>
+                            <span class="project-tag">MongoDB</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="project-card">
+                    <img src="/api/placeholder/600/400" alt="Project 2" class="project-img">
+                    <div class="project-content">
+                        <h3 class="project-title">Task Management App</h3>
+                        <p class="project-description">A sleek task manager that helps users organize their daily activities.</p>
+                        <div class="project-tags">
+                            <span class="project-tag">JavaScript</span>
+                            <span class="project-tag">CSS</span>
+                            <span class="project-tag">Firebase</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="project-card">
+                    <img src="/api/placeholder/600/400" alt="Project 3" class="project-img">
+                    <div class="project-content">
+                        <h3 class="project-title">Portfolio Website</h3>
+                        <p class="project-description">A minimalist portfolio website with smooth animations and responsive design.</p>
+                        <div class="project-tags">
+                            <span class="project-tag">HTML</span>
+                            <span class="project-tag">CSS</span>
+                            <span class="project-tag">JavaScript</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="about">
+        <div class="container animated">
+            <h2 class="section-title">About Me</h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <p>Hello! I'm Liam, a passionate web developer and designer currently pursuing a CS degree. I enjoy creating elegant, functional websites and applications that solve real problems.</p>
+                    <p>My journey in tech began with a curiosity about how websites work, which led me to learn HTML, CSS, and JavaScript. Since then, I've expanded my skillset to include modern frameworks and backend technologies.</p>
+                    <p>When I'm not coding, you can find me exploring new technologies, contributing to open-source projects, or sharing content about my learning journey.</p>
+                </div>
+                <div class="about-image">
+                    <img src="/api/placeholder/400/400" alt="Liam's Profile">
+                </div>
+            </div>
         </div>
     </section>
 
     <section id="contact">
-        <h2>Contact Me</h2>
-        <div class="social-links">
-            <a href="https://github.com" target="_blank">GitHub</a>
-            <a href="https://linkedin.com" target="_blank">LinkedIn</a>
-            <a href="mailto:example@gmail.com">Email</a>
+        <div class="container animated">
+            <h2 class="section-title">Get In Touch</h2>
+            <div class="contact-text">
+                <p>I'm currently looking for part-time opportunities and internships in web development. Whether you have a question or just want to say hi, I'll try my best to get back to you!</p>
+            </div>
+            <div class="buttons">
+                <a href="mailto:example@gmail.com" class="btn btn-primary">Send Me an Email</a>
+            </div>
+            <div class="social-links">
+                <a href="https://github.com" target="_blank">GitHub</a>
+                <a href="https://linkedin.com" target="_blank">LinkedIn</a>
+                <a href="https://twitter.com" target="_blank">Twitter</a>
+            </div>
         </div>
     </section>
+
+    <footer>
+        <div class="container">
+            <p>© 2025 Liam. All rights reserved.</p>
+        </div>
+    </footer>
 
     <script src="script.js"></script>
 </body>
