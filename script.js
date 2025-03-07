@@ -31,7 +31,30 @@ animatedElements.forEach(el => {
     observer.observe(el);
 });
 
-// Navbar scroll effect
+// Navbar stays visible
 const navbar = document.querySelector('nav');
+const navLinks = document.querySelector('.nav-links');
+
+// We're no longer changing the navbar's background color or visibility
+// Instead, we'll just make sure it stays at the top of the page
+
+// Add active class to nav links based on scroll position
+const sections = document.querySelectorAll('section');
 window.addEventListener('scroll', () => {
-    if (
+    let current = '';
+    
+    sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        const sectionHeight = section.clientHeight;
+        if (pageYOffset >= (sectionTop - sectionHeight / 3)) {
+            current = section.getAttribute('id');
+        }
+    });
+
+    document.querySelectorAll('.nav-links a').forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === `#${current}`) {
+            link.classList.add('active');
+        }
+    });
+});
