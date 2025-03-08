@@ -31,12 +31,16 @@ animatedElements.forEach(el => {
     observer.observe(el);
 });
 
-// Navbar stays visible
+// Handle navigation bar appearance on scroll
 const navbar = document.querySelector('nav');
-const navLinks = document.querySelector('.nav-links');
 
-// We're no longer changing the navbar's background color or visibility
-// Instead, we'll just make sure it stays at the top of the page
+window.addEventListener('scroll', () => {
+    if (window.scrollY > 100) {
+        navbar.classList.add('nav-scrolled');
+    } else {
+        navbar.classList.remove('nav-scrolled');
+    }
+});
 
 // Add active class to nav links based on scroll position
 const sections = document.querySelectorAll('section');
