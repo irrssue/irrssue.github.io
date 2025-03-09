@@ -6,9 +6,11 @@
     <title>Liam's Portfolio</title>
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/project.css">
+    <link rel="stylesheet" href="css/grain-styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Righteous&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/fonts.css">
     
     <!-- Add these scripts to ensure proper scroll position -->
     <script>
@@ -31,25 +33,27 @@
     </script>
 </head>
 <body id="top" style="margin-top: 0; padding-top: 0;">
-    <div class="container" style="margin-top: 0; padding-top: 0;">
-        <nav>
-            <ul class="nav-links">
-                <li><a href="#top" id="home-link" class="active">Home</a></li>
-                <li><a href="#projects">Work</a></li>
-                <li><a href="about.html">About</a></li>
-                <li><a href="#play">Play</a></li>
-                <li><a href="#notes">Notes</a></li>
-                <li><a href="#contact">Contact</a></li>
-            </ul>
-        </nav>
-    </div>
+    <!-- Grain effect overlay -->
+    <div class="grain"></div>
+
+    <nav>
+        <ul class="nav-links">
+            <li><a href="#top" id="home-link" class="active">Home</a></li>
+            <li><a href="#projects">Work</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="#notes">Notes</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+    </nav>
     
+    <!-- Rest of the content remains the same -->
     <section id="home" class="hero">
         <div class="container animated">
             <div class="star-decoration star-1"></div>
             <div class="star-decoration star-2"></div>
             <div class="intro-heading">
-                <h1>Hi. I'm Liam.<br>Full Stack Dev.</h1>
+                <h1>Hi. I'm Liam.<br>
+                <span class="subtitle-text">Full Stack Dev.</span></h1>
             </div>
             <p class="hero-subtitle">I'm passionate about crafting experiences that are engaging, accessible, and user-centric.</p>
             <div class="buttons">
@@ -59,8 +63,6 @@
         </div>
     </section>
 
-    <!-- Rest of the HTML content... -->
-    
     <!-- Projects Section with Dynamic Loading -->
     <section id="projects">
         <div class="container animated">
@@ -104,5 +106,6 @@
 
     <script src="js/main.js"></script>
     <script src="js/projects.js"></script>
+    <script src="js/grain.js"></script>
 </body>
 </html>
