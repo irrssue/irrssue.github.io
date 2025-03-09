@@ -2,7 +2,7 @@
   "featuredProjects": [
     {
       "id": "ecommerce",
-      "category": "E-COMMERCE",
+      "category": "HEllo",
       "title": "E-commerce Website",
       "description": "A modern e-commerce platform with user authentication and payment integration.",
       "tags": ["React", "Node.js", "MongoDB"],
