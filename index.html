@@ -4,18 +4,39 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Liam's Portfolio</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="project.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/project.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Righteous&display=swap" rel="stylesheet">
+    
+    <!-- Add these scripts to ensure proper scroll position -->
+    <script>
+        // Immediately set scroll to top
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+        
+        // Prevent any scroll before page is fully loaded
+        window.addEventListener('scroll', function(e) {
+            if (!window.pageFullyLoaded) {
+                window.scrollTo(0, 0);
+            }
+        });
+        
+        // Mark when page is fully loaded
+        window.addEventListener('load', function() {
+            window.pageFullyLoaded = true;
+            window.scrollTo(0, 0);
+        });
+    </script>
 </head>
-<body>
-    <div class="container">
+<body id="top" style="margin-top: 0; padding-top: 0;">
+    <div class="container" style="margin-top: 0; padding-top: 0;">
         <nav>
             <ul class="nav-links">
+                <li><a href="#top" id="home-link" class="active">Home</a></li>
                 <li><a href="#projects">Work</a></li>
-                <li><a href="#about">About</a></li>
+                <li><a href="about.html">About</a></li>
                 <li><a href="#play">Play</a></li>
                 <li><a href="#notes">Notes</a></li>
                 <li><a href="#contact">Contact</a></li>
@@ -38,91 +59,22 @@
         </div>
     </section>
 
-    <!-- Projects Section with new layout -->
+    <!-- Rest of the HTML content... -->
+    
+    <!-- Projects Section with Dynamic Loading -->
     <section id="projects">
         <div class="container animated">
             <h2 class="section-title">My Recent Work</h2>
             
-            <!-- Main featured projects (2 cards side by side) -->
+            <!-- Main featured projects (2 cards side by side) - Will be populated dynamically -->
             <div class="project-container">
-                <!-- E-commerce Website (Peach background) -->
-                <div class="project-card">
-                    <div class="project-category">E-COMMERCE</div>
-                    <h3 class="project-title">E-commerce Website</h3>
-                    <p class="project-description">A modern e-commerce platform with user authentication and payment integration.</p>
-                    <div class="project-tags">
-                        <span class="project-tag">React</span>
-                        <span class="project-tag">Node.js</span>
-                        <span class="project-tag">MongoDB</span>
-                    </div>
-                    <div class="project-img-container">
-                        <img src="/api/placeholder/600/400" alt="E-commerce Website" class="project-img">
-                    </div>
-                </div>
-                
-                <!-- Task Management App (Light blue background) -->
-                <div class="project-card">
-                    <div class="project-category">PRODUCTIVITY</div>
-                    <h3 class="project-title">Task Management App</h3>
-                    <p class="project-description">A sleek task manager that helps users organize their daily activities.</p>
-                    <div class="project-tags">
-                        <span class="project-tag">JavaScript</span>
-                        <span class="project-tag">CSS</span>
-                        <span class="project-tag">Firebase</span>
-                    </div>
-                    <div class="project-img-container">
-                        <img src="/api/placeholder/600/400" alt="Task Management App" class="project-img">
-                    </div>
-                </div>
+                <!-- Projects will be loaded here from projects.json -->
+                <div class="loading-spinner">Loading projects...</div>
             </div>
             
-            <!-- Additional smaller projects (3 cards in a row) -->
+            <!-- Additional smaller projects (3 cards in a row) - Will be populated dynamically -->
             <div class="small-project-container">
-                <div class="small-project-card">
-                    <h3 class="small-project-title">Portfolio Website</h3>
-                    <p class="small-project-description">A minimalist portfolio website with smooth animations and responsive design.</p>
-                    <div class="project-tags">
-                        <span class="project-tag">HTML</span>
-                        <span class="project-tag">CSS</span>
-                        <span class="project-tag">JavaScript</span>
-                    </div>
-                </div>
-                
-                <div class="small-project-card">
-                    <h3 class="small-project-title">Weather App</h3>
-                    <p class="small-project-description">A real-time weather application using API integration.</p>
-                    <div class="project-tags">
-                        <span class="project-tag">JavaScript</span>
-                        <span class="project-tag">API</span>
-                        <span class="project-tag">CSS</span>
-                    </div>
-                </div>
-                
-                <div class="small-project-card">
-                    <h3 class="small-project-title">Blog Platform</h3>
-                    <p class="small-project-description">A content management system for bloggers with markdown support.</p>
-                    <div class="project-tags">
-                        <span class="project-tag">React</span>
-                        <span class="project-tag">Express</span>
-                        <span class="project-tag">MongoDB</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="about">
-        <div class="container animated">
-            <h2 class="section-title">About Me</h2>
-            <div class="about-content">
-                <div class="about-text">
-                    <p>Hello! I'm Liam, a passionate web developer and designer currently pursuing a CS degree. I enjoy creating elegant, functional websites and applications that solve real problems.</p>
-                    <p>My journey in tech began with a curiosity about how websites work, which led me to learn HTML, CSS, and JavaScript. Since then, I've expanded my skillset to include modern frameworks and backend technologies.</p>
-                    <p>When I'm not coding, you can find me exploring new technologies, contributing to open-source projects, or sharing content about my learning journey.</p>
-                </div>
-                <div class="about-image">
-                    <img src="/api/placeholder/400/400" alt="Liam's Profile">
-                </div>
+                <!-- Projects will be loaded here from projects.json -->
             </div>
         </div>
     </section>
@@ -137,7 +89,7 @@
                 <a href="mailto:example@gmail.com" class="btn btn-primary">Send Me an Email</a>
             </div>
             <div class="social-links">
-                <a href="https://github.com" target="_blank">GitHub</a>
+                <a href="https://github.com/irrssue" target="_blank">GitHub</a>
                 <a href="https://linkedin.com" target="_blank">LinkedIn</a>
                 <a href="https://twitter.com" target="_blank">Twitter</a>
             </div>
@@ -150,6 +102,7 @@
         </div>
     </footer>
 
-    <script src="script.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/projects.js"></script>
 </body>
 </html>
