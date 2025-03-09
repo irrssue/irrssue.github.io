@@ -1,0 +1,70 @@
+/* Self-contained grain and gradient background styles */
+
+/* Main background with blue gradient */
+body {
+    /* Create a blue gradient background without an image */
+    background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 25%, #d1e9ff 50%, #c9def3 75%, #e0f7fa 100%);
+    background-size: cover;
+    background-attachment: fixed;
+    
+    /* Keep other existing body styling */
+    color: #333;
+    font-family: 'Inter', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+    min-height: 100vh;
+    
+    /* Remove the animation */
+    animation: none;
+    
+    /* Add relative positioning for the grain overlay */
+    position: relative;
+}
+
+/* Create grain using a CSS-only approach with noise animations */
+body::before {
+    content: "";
+    position: fixed;
+    top: -50%;
+    left: -50%;
+    right: -50%;
+    bottom: -50%;
+    width: 200%;
+    height: 200%;
+    background: transparent url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    pointer-events: none;
+    opacity: 0.09;
+    animation: noiseAnimation 1s steps(2) infinite;
+    z-index: 0;
+}
+
+@keyframes noiseAnimation {
+    0% { transform: translate(0,0); }
+    10% { transform: translate(-2px,-2px); }
+    20% { transform: translate(2px,2px); }
+    30% { transform: translate(-2px,2px); }
+    40% { transform: translate(2px,-2px); }
+    50% { transform: translate(-2px,2px); }
+    60% { transform: translate(2px,2px); }
+    70% { transform: translate(-2px,-2px); }
+    80% { transform: translate(2px,-2px); }
+    90% { transform: translate(-2px,2px); }
+    100% { transform: translate(0,0); }
+}
+
+/* Make sure the content sits on top of the grain */
+.container {
+    position: relative;
+    z-index: 1;
+}
+
+/* Ensure elements are visible on top of the grain */
+
+
+/* Adjust card backgrounds for better visibility */
+.project-card, .small-project-card {
+    background-color: rgba(255, 255, 255, 0.92);
+    position: relative;
+    z-index: 2;
+}
