@@ -35,16 +35,6 @@
     position: relative;
 }
 
-/* For the first project card with peach background */
-#projects .project-card:first-child {
-    background-color: rgba(233, 214, 196, 0.85); /* Peach color */
-}
-
-/* For the second project card with light blue background */
-#projects .project-card:nth-child(2) {
-    background-color: rgba(199, 228, 230, 0.85); /* Light blue color */
-}
-
 /* Category label that doesn't exist in the original styles */
 .project-category {
     text-transform: uppercase;
@@ -128,8 +118,6 @@
     }
 }
 
-/* Add this to your project.css file */
-
 /* Loading spinner */
 .loading-spinner {
     text-align: center;
@@ -165,4 +153,23 @@
     border-radius: 8px;
     text-align: center;
     margin: 2rem 0;
+}
+
+/* Project links styling */
+.project-links, .small-project-links {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.project-link, .small-project-link {
+    color: #2c5545;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.project-link:hover, .small-project-link:hover {
+    color: #1e3b2f;
+    text-decoration: underline;
 }
