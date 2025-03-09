@@ -1,0 +1,50 @@
+{
+  "featuredProjects": [
+    {
+      "id": "ecommerce",
+      "category": "E-COMMERCE",
+      "title": "E-commerce Website",
+      "description": "A modern e-commerce platform with user authentication and payment integration.",
+      "tags": ["React", "Node.js", "MongoDB"],
+      "image": "assets/images/projects/ecommerce.jpg",
+      "repoUrl": "https://github.com/irrssue/ecommerce-project",
+      "liveUrl": "https://example.com/ecommerce"
+    },
+    {
+      "id": "taskmanager",
+      "category": "PRODUCTIVITY",
+      "title": "Task Management App",
+      "description": "A sleek task manager that helps users organize their daily activities.",
+      "tags": ["JavaScript", "CSS", "Firebase"],
+      "image": "assets/images/projects/taskmanager.jpg",
+      "repoUrl": "https://github.com/irrssue/task-manager",
+      "liveUrl": "https://example.com/taskmanager"
+    }
+  ],
+  "otherProjects": [
+    {
+      "id": "portfolio",
+      "title": "Portfolio Website",
+      "description": "A minimalist portfolio website with smooth animations and responsive design.",
+      "tags": ["HTML", "CSS", "JavaScript"],
+      "repoUrl": "https://github.com/irrssue/irrssue.github.io",
+      "liveUrl": "https://irrssue.github.io"
+    },
+    {
+      "id": "weather",
+      "title": "Weather App",
+      "description": "A real-time weather application using API integration.",
+      "tags": ["JavaScript", "API", "CSS"],
+      "repoUrl": "https://github.com/irrssue/weather-app",
+      "liveUrl": "https://example.com/weather"
+    },
+    {
+      "id": "blog",
+      "title": "Blog Platform",
+      "description": "A content management system for bloggers with markdown support.",
+      "tags": ["React", "Express", "MongoDB"],
+      "repoUrl": "https://github.com/irrssue/blog-platform",
+      "liveUrl": "https://example.com/blog"
+    }
+  ]
+}
