@@ -1,9 +1,0 @@
-@font-face {
-    font-family: 'CSBogart';
-    src: url('../fonts/CSBogart-Regular.woff2') format('woff2'),
-         url('../fonts/CSBogart-Regular.woff') format('woff'),
-         url('../fonts/CSBogart-Regularotf') format('opentype');
-    font-weight: normal;
-    font-style: normal;
-    font-display: swap;
-  }
