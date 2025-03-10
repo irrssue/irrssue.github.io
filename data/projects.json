@@ -16,6 +16,7 @@
       "title": "Task Management App",
       "description": "A sleek task manager that helps users organize their daily activities.",
       "tags": ["JavaScript", "CSS", "Firebase"],
+      
       "image": "assets/images/projects/taskmanager.jpg",
       "repoUrl": "https://github.com/irrssue/task-manager",
       "liveUrl": "https://example.com/taskmanager"
