@@ -1,0 +1,175 @@
+/* 
+ * Project Section Styles
+ * This file overrides the project section styles from styles.css
+ */
+
+/* Override section styles */
+#projects {
+    padding: 6rem 0;
+    background-color: transparent;
+}
+
+/* Override section title styles if needed */
+#projects .section-title {
+    margin-bottom: 3rem;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+}
+
+/* New modern project layout - overrides the grid layout in styles.css */
+#projects .project-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+}
+
+/* Project card styles specific to the new layout */
+#projects .project-card {
+    background-color: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    border: 1px solid rgba(234, 234, 234, 0.5);
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    height: 450px;
+    position: relative;
+}
+
+/* Category label that doesn't exist in the original styles */
+.project-category {
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    color: #666;
+    margin-bottom: 0.5rem;
+}
+
+/* Override title styles for the new layout */
+#projects .project-card .project-title {
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+/* Adjust image container for the new layout */
+#projects .project-card .project-img-container {
+    margin-top: auto;
+    height: auto;
+    background-color: transparent;
+}
+
+/* Additional styles for smaller project cards */
+.small-project-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.small-project-card {
+    background-color: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(10px);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid #eaeaea;
+    padding: 1.5rem;
+}
+
+.small-project-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+}
+
+.small-project-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    color: #333;
+}
+
+.small-project-description {
+    color: #666;
+    margin-bottom: 1.25rem;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+/* Ensure project tags are styled correctly */
+#projects .project-card .project-tags {
+    margin-top: 1rem;
+}
+
+#projects .project-card .project-tag,
+.small-project-card .project-tag {
+    background-color: rgba(240, 240, 240, 0.7);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    #projects .project-container, 
+    .small-project-container {
+        grid-template-columns: 1fr;
+    }
+    
+    #projects .project-card {
+        height: auto;
+        min-height: 350px;
+    }
+}
+
+/* Loading spinner */
+.loading-spinner {
+    text-align: center;
+    padding: 2rem;
+    grid-column: span 2;
+    color: #666;
+    font-style: italic;
+}
+
+.loading-spinner::after {
+    content: '';
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    margin-left: 10px;
+    border: 3px solid rgba(44, 85, 69, 0.3);
+    border-radius: 50%;
+    border-top-color: #2c5545;
+    animation: spin 1s ease-in-out infinite;
+    vertical-align: middle;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Error message */
+.error-message {
+    padding: 1rem;
+    background-color: rgba(255, 200, 200, 0.3);
+    border: 1px solid rgba(255, 100, 100, 0.5);
+    color: #a00;
+    border-radius: 8px;
+    text-align: center;
+    margin: 2rem 0;
+}
+
+/* Project links styling */
+.project-links, .small-project-links {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.project-link, .small-project-link {
+    color: #2c5545;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.project-link:hover, .small-project-link:hover {
+    color: #1e3b2f;
+    text-decoration: underline;
+}
