@@ -1,0 +1,61 @@
+/* Updated background styles */
+body {
+    /* Replace gradient with plain white */
+    background: #ffffff;
+    background-size: initial;
+    background-attachment: initial;
+    
+    /* Keep other existing body styling */
+    color: #333;
+    font-family: 'Inter', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+    min-height: 100vh;
+    
+    /* Remove animations */
+    animation: none;
+    
+    /* Add relative positioning for content */
+    position: relative;
+  }
+  
+  /* Remove the grain effect entirely */
+  body::before {
+    display: none;
+  }
+  
+  /* Ensure content has proper contrast against white */
+  h1, .subtitle-text, .about-name {
+    text-shadow: none;
+  }
+  
+  /* Update nav styles for better visibility on white */
+  .nav-links {
+    background-color: rgba(245, 245, 245, 0.9);
+    backdrop-filter: blur(10px);
+    border: 1px solid #eaeaea;
+  }
+  
+  .nav-scrolled .nav-links {
+    background-color: rgba(245, 245, 245, 0.95);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  }
+  
+  /* Update project cards for white background */
+  .project-card, .small-project-card {
+    background-color: #ffffff;
+    border: 1px solid #eaeaea;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  }
+  
+  /* Adjust section title styles */
+  .section-title {
+    text-shadow: none;
+  }
+  
+  /* Update footer for white background */
+  footer {
+    background-color: #f9f9f9;
+    border-top: 1px solid #eaeaea;
+  }
