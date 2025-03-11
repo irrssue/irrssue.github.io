@@ -1,0 +1,50 @@
+/* 
+ * responsive.css
+ * Media queries for responsive design
+ * 
+ * Note: Most responsive styles are included within their respective 
+ * component files. This file contains additional responsive adjustments 
+ * that apply across multiple components.
+ */
+
+/* For larger tablets and small desktops */
+@media (max-width: 1200px) {
+    .container {
+        max-width: 90%;
+    }
+}
+
+/* For tablets */
+@media (max-width: 992px) {
+    section {
+        padding: 5rem 0;
+    }
+}
+
+/* For phones and small tablets */
+@media (max-width: 768px) {
+    section {
+        padding: 4rem 0;
+    }
+    
+    .hero {
+        padding: 7rem 0 4rem;
+    }
+    
+    .buttons .btn {
+        display: block;
+        width: 100%;
+        margin: 0.5rem 0;
+    }
+}
+
+/* For small phones */
+@media (max-width: 480px) {
+    section {
+        padding: 3rem 0;
+    }
+    
+    .container {
+        padding: 0 1rem;
+    }
+}
