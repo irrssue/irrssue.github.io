@@ -1,0 +1,93 @@
+/* 
+ * typography.css
+ * Text styles, headings, and font definitions
+ */
+
+/* Font definitions */
+@font-face {
+    font-family: 'CSBogart';
+    src: url('../fonts/CSBogart-Regular.woff2') format('woff2'),
+         url('../fonts/CSBogart-Regular.woff') format('woff'),
+         url('../fonts/CSBogart-Regularotf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* Main headings */
+h1 {
+    font-family: 'Righteous', cursive;
+    font-size: 7rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    letter-spacing: -1.5px;
+    line-height: 1;
+    color: #2c5545;
+}
+
+/* Subtitle text */
+h1 + br + span, 
+.subtitle-text {
+    font-family: 'Righteous', cursive;
+    font-size: 6.5rem;
+    font-weight: 700;
+    color: #0e271e;
+    line-height: 1;
+    display: block;
+    margin-bottom: 3rem;
+}
+
+/* Hero subtitle */
+.hero-subtitle {
+    margin-top: 2.5rem;
+    font-size: 1.7rem;
+}
+
+/* Section titles */
+.section-title {
+    text-align: center;
+    font-family: 'Righteous', cursive;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 3rem;
+    letter-spacing: -0.5px;
+    color: #1d3e34;
+}
+
+/* Responsive typography */
+@media (max-width: 992px) {
+    h1 {
+        font-size: 5.5rem;
+    }
+    
+    h1 + br + span,
+    .subtitle-text {
+        font-size: 5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    h1 {
+        font-size: 4rem;
+    }
+    
+    h1 + br + span,
+    .subtitle-text {
+        font-size: 3.5rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.4rem;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 3rem;
+    }
+    
+    h1 + br + span,
+    .subtitle-text {
+        font-size: 2.5rem;
+    }
+}
