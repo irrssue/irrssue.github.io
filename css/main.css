@@ -1,0 +1,72 @@
+/* 
+ * main.css
+ * Main CSS file that imports all modules
+ * This is the only file you need to include in your HTML
+ */
+
+/* Base styles */
+@import 'reset.css';
+@import 'typography.css';
+@import 'layout.css';
+
+/* Components */
+@import 'navigation.css';
+@import 'buttons.css';
+@import 'components/hero.css';
+@import 'components/projects.css';
+@import 'components/about.css';
+@import 'components/contact.css';
+
+/* Utilities */
+@import 'utilities.css';
+@import 'responsive.css';
+
+/*
+ * Portfolio Website - Liam
+ * Version: 1.0.0
+ * 
+ * This file serves as the entry point for all CSS styles.
+ * The styles are organized in a modular way for better maintainability.
+ * 
+ * Usage:
+ * 1. Include this file in your HTML:
+ *    <link rel="stylesheet" href="css/main.css">
+ * 
+ * 2. Remove individual CSS imports:
+ *    - styles.css
+ *    - project.css
+ *    - grain-styles.css
+ *    - about-styles.css
+ *    - etc.
+ * 
+ * The white background implementation is included in the reset.css file.
+ */
+
+/* Custom CSS variables */
+:root {
+  /* Colors */
+  --primary-color: #2c5545;
+  --primary-dark: #1e3b2f;
+  --primary-light: #3a7059;
+  --text-dark: #333;
+  --text-medium: #555;
+  --text-light: #666;
+  --bg-white: #ffffff;
+  --bg-light: #f5f5f5;
+  --bg-lighter: #f9f9f9;
+  --border-color: #eaeaea;
+  
+  /* Shadows */
+  --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.03);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.05);
+  
+  /* Transitions */
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.3s ease;
+  
+  /* Border radius */
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-pill: 50px;
+}
