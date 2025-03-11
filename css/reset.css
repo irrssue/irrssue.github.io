@@ -26,11 +26,33 @@ body {
     line-height: 1.6;
     
     /* White background */
-    background: #ffffff;
+    background: #F7F4F3;
     background-size: initial;
     background-attachment: initial;
     animation: none;
 }
+
+
+.project-card, .small-project-card {
+    background-color: #ffffff;
+    /* other properties remain the same */
+}
+
+.popup-content {
+    background-color: rgba(255, 255, 255, 0.97);
+    /* other properties remain the same */
+}
+
+/* If you have a nav-links background, you might want to adjust that too */
+.nav-links {
+    background-color: rgba(247, 244, 243, 0.9); /* Slightly transparent white smoke */
+    /* other properties remain the same */
+}
+
+.nav-scrolled .nav-links {
+    background-color: rgba(255, 255, 255, 0.97); /* More solid white when scrolled */
+}
+
 
 /* Prevent any anchor-based auto-scrolling behavior */
 [id] {
