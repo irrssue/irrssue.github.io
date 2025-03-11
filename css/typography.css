@@ -22,7 +22,7 @@ h1 {
     margin-bottom: 1.5rem;
     letter-spacing: -1.5px;
     line-height: 1;
-    color: #2c5545;
+    color: #5B2333;
 }
 
 /* Subtitle text */
@@ -31,7 +31,7 @@ h1 + br + span,
     font-family: 'Righteous', cursive;
     font-size: 6.5rem;
     font-weight: 700;
-    color: #0e271e;
+    color: #5B2333;
     line-height: 1;
     display: block;
     margin-bottom: 3rem;
@@ -51,7 +51,7 @@ h1 + br + span,
     font-weight: 700;
     margin-bottom: 3rem;
     letter-spacing: -0.5px;
-    color: #1d3e34;
+    color: #5B2333;
 }
 
 /* Responsive typography */
