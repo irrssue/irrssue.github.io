@@ -28,8 +28,8 @@
     max-width: 400px;
     border-radius: 12px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-    border: 1px solid #eaeaea;
-}
+    border: 1px solid #9BAF93; /* Sage green border */
+  }
 
 /* About page specific styles */
 .about-page {
