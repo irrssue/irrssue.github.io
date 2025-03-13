@@ -40,3 +40,14 @@
 .btn-primary:hover {
     background-color: #1e3b2f;
 }
+
+.btn-secondary {
+    background-color: #9BAF93; /* Sage green */
+    color: white;
+    border-color: #9BAF93;
+  }
+  
+.btn-secondary:hover {
+    background-color: #7D9274; /* Darker sage */
+    border-color: #7D9274;
+}
