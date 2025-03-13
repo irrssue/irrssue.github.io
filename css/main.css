@@ -20,41 +20,29 @@
 /* Utilities */
 @import 'utilities.css';
 @import 'responsive.css';
+@import "components/star.css";
 
-/*
- * Portfolio Website - Liam
- * Version: 1.0.0
- * 
- * This file serves as the entry point for all CSS styles.
- * The styles are organized in a modular way for better maintainability.
- * 
- * Usage:
- * 1. Include this file in your HTML:
- *    <link rel="stylesheet" href="css/main.css">
- * 
- * 2. Remove individual CSS imports:
- *    - styles.css
- *    - project.css
- *    - grain-styles.css
- *    - about-styles.css
- *    - etc.
- * 
- * The white background implementation is included in the reset.css file.
- */
 
 /* Custom CSS variables */
 :root {
   /* Colors */
-  --primary-color: #2c5545;
-  --primary-dark: #1e3b2f;
-  --primary-light: #3a7059;
-  --text-dark: #333;
-  --text-medium: #555;
-  --text-light: #666;
+  --primary-color: #5B2333; /* Wine - primary brand color */
+  --primary-dark: #4A1C29; /* Darker wine for hover states */
+  --primary-light: #7D3447; /* Lighter wine for subtle elements */
+  --accent-color: #9BAF93; /* Sage green - complementary accent */
+  --accent-dark: #7D9274; /* Darker sage for hover states */
+  --accent-light: #B8C7B2; /* Lighter sage for subtle elements */
+  --bg-main: #F7F4F3; /* White smoke - main background */
+  --text-dark: #333333;
+  --text-medium: #555555;
+  --text-light: #666666;
   --bg-white: #ffffff;
-  --bg-light: #f5f5f5;
-  --bg-lighter: #f9f9f9;
-  --border-color: #eaeaea;
+  --border-color: #E5E0DE; 
+
+  /* fonts */
+  --heading-font: 'Elsie', monospace;
+  --body-font: 'Open Sans', sans-serif;
+
   
   /* Shadows */
   --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.03);
