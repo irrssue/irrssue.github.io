@@ -3,7 +3,104 @@
  * Project section and card styles
  */
 
-/* Main project container */
+/* Featured showcase section */
+.featured-showcase {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+    margin-top: 0;
+    margin-bottom: 5rem;
+}
+
+.main-project {
+    background-color: #f3e6f9; /* Light purple for AI */
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    height: 550px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid #eee;
+}
+
+.secondary-project {
+    background-color: #e1f5f5; /* Light teal for Articles */
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    height: 550px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid #eee;
+}
+
+.main-project .project-content,
+.secondary-project .project-content {
+    padding: 2rem;
+    background-color: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(5px);
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    transform: translateY(65%);
+    transition: transform 0.3s ease;
+}
+
+.main-project:hover .project-content,
+.secondary-project:hover .project-content {
+    transform: translateY(0);
+}
+
+.main-project:hover,
+.secondary-project:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+}
+
+.main-project .project-img-container,
+.secondary-project .project-img-container {
+    height: 100%;
+    width: 100%;
+    margin-top: 0;
+}
+
+.help-scout-label {
+    position: absolute;
+    top: 1.5rem;
+    left: 1.5rem;
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    color: #333;
+    z-index: 1;
+    text-transform: uppercase;
+}
+
+/* Adjust hero section bottom spacing */
+.hero {
+    padding-bottom: 2rem;
+}
+
+/* Make projects immediately visible */
+#featured-work {
+    padding-top: 0;
+}
+
+/* Update project category styles */
+.main-project .project-category,
+.secondary-project .project-category {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+    color: #333;
+    text-transform: none;
+}
+
+/* Main project container (existing) */
 .project-container {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -86,8 +183,8 @@
 }
 
 .project-tag {
-    background-color: #f0f0f0;
-    color: #555;
+    background-color: #9BAF93; /* Sage green background */
+    color: white; /* White text for contrast */
     padding: 0.3rem 0.8rem;
     border-radius: 50px;
     font-size: 0.75rem;
@@ -186,6 +283,15 @@
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
+    .featured-showcase {
+        grid-template-columns: 1fr;
+    }
+    
+    .main-project,
+    .secondary-project {
+        height: 400px;
+    }
+    
     .project-container, 
     .small-project-container {
         grid-template-columns: 1fr;
