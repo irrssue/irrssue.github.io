@@ -102,6 +102,7 @@ function addProjectLinkStyles() {
         .project-link:hover, .small-project-link:hover {
             color: #1e3b2f;
             text-decoration: underline;
+            backgo
         }
     `;
     document.head.appendChild(style);
