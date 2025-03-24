@@ -10,8 +10,23 @@ section {
     padding: var(--spacing-xl) 0;
 }
 
+/* Golden ratio proportions for containers */
+.golden-container {
+    width: 61.8%;
+}
+
+@media (max-width: 992px) {
+    .golden-container {
+        width: 80%;
+    }
+}
+
 @media (max-width: 768px) {
     section {
         padding: var(--spacing-lg) 0;
+    }
+    
+    .golden-container {
+        width: 90%;
     }
 }
