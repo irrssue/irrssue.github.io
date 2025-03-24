@@ -1,43 +1,33 @@
-/* css/sections/intro.css */
 .intro-section {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
     position: relative;
-    overflow: hidden;
-    padding-top: var(--spacing-lg);
-}
-
-.navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: var(--spacing-sm) 0;
-    position: absolute;
-    top: 0;
-    left: 0;
     width: 100%;
-    z-index: 100;
+    height: 100vh;
+    overflow: hidden;
 }
 
-.logo {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--primary-color);
+.intro-background {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
 }
 
-.nav-links {
-    display: flex;
-    gap: var(--spacing-md);
+
+.intro-background img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
 }
 
-.nav-links a {
-    font-weight: 500;
-    transition: color 0.3s ease;
-}
-
-.nav-links a:hover {
-    color: var(--primary-color);
+.content-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border: 1px solid white;
+    margin: 20px;
+    width: calc(100% - 40px);
+    height: calc(100% - 40px);
 }
 
 .hamburger {
@@ -50,39 +40,72 @@
 .hamburger span {
     width: 30px;
     height: 3px;
-    background-color: var(--dark-color);
+    background-color: var(--primary-color);
     transition: all 0.3s ease;
 }
 
 .hero {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--spacing-lg);
+    position: absolute;
+    bottom: 100px;
+    left: 40px;
 }
 
 .hero-content {
-    flex: 1;
+    color: white;
 }
 
 .hero h1 {
-    margin-bottom: var(--spacing-xs);
+    font-family: 'Playfair Display', serif;
+    font-size: 48px;
+    margin-bottom: 5px;
 }
 
 .hero h2 {
-    margin-bottom: var(--spacing-md);
-    color: var(--secondary-color);
+    font-size: 24px;
+    font-weight: 400;
+    margin-bottom: 20px;
 }
 
-.hero-image {
-    flex: 1;
+.social-icons {
     display: flex;
-    justify-content: center;
-    align-items: center;
+    gap: 20px;
 }
 
+.social-icon {
+    color: white;
+    font-size: 20px;
+}
 
-/* Add this to the bottom of css/sections/intro.css */
+.social-icon:hover {
+    color: var(--accent-color);
+    transform: translateY(-3px);
+}
+
+@media (max-width: 768px) {
+    .content-wrapper {
+        width: calc(100% - 2rem);
+        height: calc(100% - 2rem);
+        margin: 1rem;
+    }
+    
+    .nav-links {
+        display: none;
+    }
+    
+    .hamburger {
+        display: flex;
+    }
+    
+    .hero h1 {
+        font-size: 2.5rem;
+    }
+    
+    .hero h2 {
+        font-size: 1.5rem;
+    }
+}
+
+/* Mobile menu styles */
 .nav-links.active {
     display: flex;
     flex-direction: column;
@@ -90,9 +113,8 @@
     top: 100%;
     left: 0;
     width: 100%;
-    background-color: var(--background-color);
+    background-color: rgba(0, 0, 0, 0.8);
     padding: var(--spacing-md);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
     z-index: 99;
 }
 
@@ -106,35 +128,4 @@
 
 .hamburger.active span:nth-child(3) {
     transform: translateY(-8px) rotate(-45deg);
-}
-
-@media (max-width: 992px) {
-    .hero {
-        flex-direction: column;
-        text-align: center;
-        padding: var(--spacing-xl) 0;
-    }
-    
-    .hero-content {
-        order: 2;
-    }
-    
-    .hero-image {
-        order: 1;
-        margin-bottom: var(--spacing-lg);
-    }
-    
-    .cta-buttons {
-        justify-content: center;
-    }
-}
-
-@media (max-width: 768px) {
-    .nav-links {
-        display: none;
-    }
-    
-    .hamburger {
-        display: flex;
-    }
 }
