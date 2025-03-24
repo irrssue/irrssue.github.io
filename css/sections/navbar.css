@@ -5,15 +5,10 @@
     padding: 30px 40px;
 }
 
-.logo {
-    font-size: 20px;
-    font-weight: 700;
-    color: white;
-}
-
 .nav-menu {
     display: flex;
-    gap: 30px;
+    gap: 10px;
+    align-items: center;
 }
 
 .nav-menu a {
@@ -21,6 +16,19 @@
     text-decoration: none;
     font-size: 16px;
 }
+
+.nav-dot {
+    color: white;
+    font-size: 16px;
+    margin-top: -3px; /* This helps align the dot vertically */
+}
+
+.logo {
+    font-size: 20px;
+    font-weight: 700;
+    color: white;
+}
+
 
 .nav-links a:hover {
     color: var(--accent-color);
