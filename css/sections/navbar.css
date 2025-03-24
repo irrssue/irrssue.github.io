@@ -57,4 +57,51 @@
 
 .nav-menu a:last-child {
     margin-right: 0;
-}
+}.nav-menu {
+    padding: 30px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    position: absolute;
+    right: 40px;
+    font-family: monospace, 'Courier New', Courier;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  
+  .nav-menu a, .nav-menu .nav-dot {
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 400;
+    transition: opacity 0.3s ease;
+    padding: 5px 0;
+    margin: 0 15px;
+  }
+  
+  .nav-menu a:first-child {
+    margin-left: 0;
+  }
+  
+  .nav-menu a:last-child {
+    margin-right: 0;
+  }
+  
+  /* Create the hover effect for the entire navigation menu */
+  .nav-menu:hover a, .nav-menu:hover .nav-dot {
+    opacity: 0.5;
+  }
+  
+  /* But keep the hovered item at full opacity */
+  .nav-menu a:hover, .nav-menu a:hover + .nav-dot {
+    opacity: 1;
+  }
+  
+  /* Fix the issue where dots might get full opacity when not intended */
+  .nav-menu .nav-dot:hover {
+    opacity: 0.5;
+  }
+  
+  .nav-dot {
+    display: none;
+  }
