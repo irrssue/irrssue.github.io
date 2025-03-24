@@ -1,4 +1,4 @@
-/* css/variables.css */
+
 :root {
     /* Colors */
     --primary-color: #ffffff;
@@ -9,7 +9,7 @@
     --background-color: #ffffff;
     
     /* Typography */
-    --heading-font: 'Playfair Display', sans-serif;
+    --heading-font: 'Abril Fatface', cursive;
     --body-font: 'Inter', sans-serif;
     
     /* Spacing */
