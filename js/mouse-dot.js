@@ -1,5 +1,7 @@
 // Artistic cursor with trail effect
 document.addEventListener('DOMContentLoaded', function() {
+    // Hide default cursor immediately
+    document.body.style.cursor = 'none';
     // Create container for all cursor elements
     const cursorContainer = document.createElement('div');
     cursorContainer.className = 'cursor-container';
@@ -55,6 +57,19 @@ document.addEventListener('DOMContentLoaded', function() {
       trails.forEach(trail => {
         trail.element.style.opacity = '0';
       });
+    });
+    
+    // Fix for cursor reappearing after switching tabs/windows
+    window.addEventListener('blur', () => {
+      cursorDot.style.opacity = '0';
+      trails.forEach(trail => {
+        trail.element.style.opacity = '0';
+      });
+      document.body.style.cursor = 'none';
+    });
+    
+    window.addEventListener('focus', () => {
+      document.body.style.cursor = 'none';
     });
     
     // Add hover effects for interactive elements
