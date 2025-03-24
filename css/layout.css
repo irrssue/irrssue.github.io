@@ -1,0 +1,17 @@
+/* css/layout.css */
+.container {
+    max-width: 1200px;
+    width: 90%;
+    margin: 0 auto;
+    padding: 0 var(--spacing-sm);
+}
+
+section {
+    padding: var(--spacing-xl) 0;
+}
+
+@media (max-width: 768px) {
+    section {
+        padding: var(--spacing-lg) 0;
+    }
+}
