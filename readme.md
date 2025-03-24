@@ -31,6 +31,8 @@ portfolio/
 └── README.md               # Project documentation
 ```
 
+testing
+
 ## How to Add New Projects
 
 To add a new project to your portfolio, simply edit the `data/projects.json` file:
