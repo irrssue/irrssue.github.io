@@ -3,132 +3,148 @@
     width: 100%;
     height: 100vh;
     overflow: hidden;
-}
-
-.intro-background {
+  }
+  
+  .intro-background {
     position: absolute;
     width: 100%;
     height: 100%;
     z-index: -1;
-}
-
-
-.intro-background img {
+  }
+  
+  .intro-background img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     object-position: center;
-}
-
-.content-wrapper {
-    position: relative;
+  }
+  
+  .intro-background::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
-    border: 1px solid white;
-    margin: 20px;
+    background-color: rgba(0, 0, 0, 0.3);
+    z-index: 1;
+  }
+  
+  .content-wrapper {
+    position: relative;
     width: calc(100% - 40px);
     height: calc(100% - 40px);
-}
-
-.hamburger {
+    border: 1px solid white;
+    margin: 20px;
+    z-index: 2;
+  }
+  
+  .navbar {
+    z-index: 3;
+  }
+  
+  .hamburger {
     display: none;
     flex-direction: column;
     gap: 5px;
     cursor: pointer;
-}
-
-.hamburger span {
+  }
+  
+  .hamburger span {
     width: 30px;
     height: 3px;
     background-color: var(--primary-color);
     transition: all 0.3s ease;
-}
-
-.hero {
+  }
+  
+  .hamburger.active span:nth-child(1) {
+    transform: translateY(8px) rotate(45deg);
+  }
+  
+  .hamburger.active span:nth-child(2) {
+    opacity: 0;
+  }
+  
+  .hamburger.active span:nth-child(3) {
+    transform: translateY(-8px) rotate(-45deg);
+  }
+  
+  .hero {
     position: absolute;
     bottom: 100px;
     left: 40px;
-    width: calc(100% - 80px); /* Full width minus margins */
-}
-
-.hero-content {
+    width: calc(100% - 80px);
+    z-index: 3;
+  }
+  
+  .hero-content {
     color: white;
     width: 100%;
-}
-
-.hero h1 {
-    font-family: 'Playfair Display', serif;
+  }
+  
+  .hero h1 {
+    font-family: 'Abril Fatface', cursive;
     font-weight: bold;
     text-align: left;
     line-height: 1;
     margin-bottom: 5px;
-    
-    /* Fluid typography using clamp */
-    /* Syntax: clamp(minimum size, preferred size, maximum size) */
+    letter-spacing: 0.3rem;
     font-size: clamp(3rem, 10vw, 9rem);
-    
-    /* Ensure proper animation inheritance */
     animation: fadeIn 1s ease-out 0.3s forwards;
     opacity: 0;
-}
-
-
-.subtitle-container {
+  }
+  
+  .hero h2 {
+    font-size: clamp(2rem, 2vw, 1.5rem);
+    font-weight: 400;
+    margin-bottom: 0;
+  }
+  
+  .subtitle-container {
     display: flex;
     align-items: center;
-    gap: 60px; /* Space between subtitle and social icons */
+    gap: 60px;
     margin-bottom: 20px;
-}
-
-.subtitle-container .social-icon {
-    font-size: clamp(1rem, 1.8vw, 1.4rem); /* Scale with the subtitle */
-}
-
-
-/* Style for the subtitle */
-.hero h2 {
-    font-size: clamp(1rem, 2vw, 1.5rem);
-    font-weight: 400;
-    margin-bottom: 0; /* Remove bottom margin since container handles spacing */
-}
-
-/* Larger icons with circular backgrounds */
-.social-icon {
+  }
+  
+  .subtitle-container .social-icon {
+    font-size: clamp(1rem, 1.8vw, 1.4rem);
+  }
+  
+  .social-icons {
+    display: flex;
+    margin-top: 5px;
+  }
+  
+  .social-icon {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 44px;
-    height: 44px;
+    width: 55px;
+    height: 55px;
+    font-weight: bolder;
     border-radius: 50%;
     background-color: rgba(255, 255, 255, 0.1);
     margin-right: 15px;
     transition: all 0.3s ease;
   }
   
-  /* Significantly larger icon size */
   .social-icon i.fab {
     font-size: 22px;
     color: white;
     transition: all 0.3s ease;
   }
   
-  /* Attractive hover effect */
   .social-icon:hover {
     background-color: white;
     transform: translateY(-5px);
   }
   
   .social-icon:hover i.fab {
-    color: #3b2b2b; /* Dark color that matches your background */
+    color: #3b2b2b;
   }
   
-  /* Adjust spacing in container */
-  .social-icons {
-    display: flex;
-    margin-top: 5px;
-  }
-  
-  /* GitHub specific styling (optional) */
+  /* Social icon specific styling */
   .social-icon:nth-child(1):hover {
     background-color: #333;
   }
@@ -136,7 +152,6 @@
     color: white;
   }
   
-  /* LinkedIn specific styling (optional) */
   .social-icon:nth-child(2):hover {
     background-color: #0077b5;
   }
@@ -144,7 +159,6 @@
     color: white;
   }
   
-  /* Instagram specific styling (optional) */
   .social-icon:nth-child(3):hover {
     background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
   }
@@ -152,73 +166,8 @@
     color: white;
   }
   
-
-.intro-background::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.3); /* Black overlay with 40% opacity */
-    z-index: 1;
-}
-
-/* Update the z-index of other elements to be above the overlay */
-.content-wrapper {
-    position: relative;
-    z-index: 2; /* Make sure this is above the overlay */
-}
-
-/* Update navbar z-index */
-.navbar {
-    z-index: 3;
-}
-
-/* Update hero section z-index */
-.hero {
-    z-index: 3;
-}
-
-/* For extremely large screens, cap the sizing */
-@media (min-width: 1600px) {
-    .hero h1 {
-        font-size: 9rem; /* Maximum size cap */
-    }
-    
-    .hero h2 {
-        font-size: 1.5rem;
-    }
-}
-
-@media (max-width: 768px) {
-    .subtitle-container {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-    }
-    
-    .social-icons {
-        margin-top: 5px;
-    }
-}
-
-
-/* For very small mobile screens */
-@media (max-width: 380px) {
-    .hero h1 {
-        font-size: 2.5rem; /* Ensure it's never too small */
-    }
-    
-    .hero h2 {
-        font-size: 1rem;
-    }
-}
-
-
-
-/* Mobile menu styles */
-.nav-links.active {
+  /* Mobile menu styles */
+  .nav-links.active {
     display: flex;
     flex-direction: column;
     position: absolute;
@@ -228,16 +177,37 @@
     background-color: rgba(0, 0, 0, 0.8);
     padding: var(--spacing-md);
     z-index: 99;
-}
-
-.hamburger.active span:nth-child(1) {
-    transform: translateY(8px) rotate(45deg);
-}
-
-.hamburger.active span:nth-child(2) {
-    opacity: 0;
-}
-
-.hamburger.active span:nth-child(3) {
-    transform: translateY(-8px) rotate(-45deg);
-}
+  }
+  
+  /* Media Queries */
+  @media (min-width: 1600px) {
+    .hero h1 {
+      font-size: 9rem;
+    }
+    
+    .hero h2 {
+      font-size: 1.5rem;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .subtitle-container {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    
+    .social-icons {
+      margin-top: 5px;
+    }
+  }
+  
+  @media (max-width: 380px) {
+    .hero h1 {
+      font-size: 2.5rem;
+    }
+    
+    .hero h2 {
+      font-size: 1rem;
+    }
+  }
