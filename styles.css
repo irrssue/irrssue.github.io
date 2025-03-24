@@ -1,0 +1,36 @@
+/* styles.css (main CSS file) */
+/* Import all modules */
+@import 'css/variables.css';
+@import 'css/reset.css';
+@import 'css/typography.css';
+@import 'css/layout.css';
+@import 'css/components.css';
+@import 'css/sections/intro.css';
+/* You'll add more section imports as you build them */
+
+
+/* css/variables.css */
+:root {
+    /* Colors */
+    --primary-color: #4a6cf7;
+    --secondary-color: #6c757d;
+    --accent-color: #f72585;
+    --dark-color: #0a1128;
+    --light-color: #f8f9fa;
+    --background-color: #ffffff;
+    
+    /* Typography */
+    --heading-font: 'Poppins', sans-serif;
+    --body-font: 'Inter', sans-serif;
+    
+    /* Spacing */
+    --spacing-xs: 0.5rem;
+    --spacing-sm: 1rem;
+    --spacing-md: 2rem;
+    --spacing-lg: 3rem;
+    --spacing-xl: 5rem;
+    
+    /* Borders and shadows */
+    --border-radius: 8px;
+    --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
