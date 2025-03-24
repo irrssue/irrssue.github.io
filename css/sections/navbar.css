@@ -7,21 +7,24 @@
 
 .nav-menu {
     display: flex;
-    gap: 10px;
     align-items: center;
+    gap: 5px; /* Reduce gap between items */
 }
 
 .nav-menu a {
     color: white;
     text-decoration: none;
-    font-size: 16px;
+    font-size: 18px; /* Slightly larger font */
+    font-weight: 400;
+    transition: color 0.3s ease;
 }
 
 .nav-dot {
     color: white;
-    font-size: 16px;
-    margin-top: -3px; /* This helps align the dot vertically */
+    font-size: 18px;
+    margin: 0 2px; /* Adjust spacing around dots */
 }
+
 
 .logo {
     font-size: 20px;
