@@ -92,58 +92,66 @@
     margin-bottom: 0; /* Remove bottom margin since container handles spacing */
 }
 
+/* Larger icons with circular backgrounds */
 .social-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.1);
+    margin-right: 15px;
+    transition: all 0.3s ease;
+  }
+  
+  /* Significantly larger icon size */
+  .social-icon i.fab {
+    font-size: 22px;
     color: white;
-    font-size: 50px;
-    margin-right: 10px;
-    transition: transform 0.3s ease, color 0.3s ease;
-}
-
-.social-icon:hover {
-    color: var(--accent-color, #d4a373);
-    transform: translateY(-3px);
-}
-
-/* Remove the original social icons section */
-.social-icons-original {
-    display: none; /* Hide the original social icons section if it exists */
-}
-
-/* Remove the "social icons" label since it's now inline */
-.social-icons::before,
-.social-icons::after {
-    display: none;
-}
-
-.social-icon:hover {
-    color: var(--accent-color);
-    transform: translateY(-3px);
-}
-
-.subtitle-container::before {
-    content: "";
-    display: none; /* Hidden by default, enable if you want it */
-    width: 1px;
-    height: 20px;
-    background-color: rgba(255, 255, 255, 0.5);
-    margin: 0 15px;
-}
-
-.subtitle-container h2,
-.subtitle-container .social-icon {
-    transition: color 0.3s ease, transform 0.3s ease;
-}
-
-.subtitle-container:hover h2 {
-    color: var(--primary-color);
-}
-
-/* If you want a subtle animation on page load */
-.subtitle-container .social-icons {
-    animation: fadeIn 1s ease-out 0.7s forwards;
-    opacity: 0;
-}
-
+    transition: all 0.3s ease;
+  }
+  
+  /* Attractive hover effect */
+  .social-icon:hover {
+    background-color: white;
+    transform: translateY(-5px);
+  }
+  
+  .social-icon:hover i.fab {
+    color: #3b2b2b; /* Dark color that matches your background */
+  }
+  
+  /* Adjust spacing in container */
+  .social-icons {
+    display: flex;
+    margin-top: 5px;
+  }
+  
+  /* GitHub specific styling (optional) */
+  .social-icon:nth-child(1):hover {
+    background-color: #333;
+  }
+  .social-icon:nth-child(1):hover i.fab {
+    color: white;
+  }
+  
+  /* LinkedIn specific styling (optional) */
+  .social-icon:nth-child(2):hover {
+    background-color: #0077b5;
+  }
+  .social-icon:nth-child(2):hover i.fab {
+    color: white;
+  }
+  
+  /* Instagram specific styling (optional) */
+  .social-icon:nth-child(3):hover {
+    background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
+  }
+  .social-icon:nth-child(3):hover i.fab {
+    color: white;
+  }
+  
 
 .intro-background::after {
     content: "";
