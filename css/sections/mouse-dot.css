@@ -1,44 +1,29 @@
-/* Add these CSS rules to fix the cursor issue */
-
-/* Make all interactive elements use the custom cursor */
-a, button, .nav-menu a, .nav-menu, .social-icon, .social-icons a {
-    cursor: none !important;
+/* Hide default cursor */
+body {
+    cursor: none;
   }
   
-  /* Make sure the entire nav menu uses the custom cursor */
-  nav, .navbar, .nav-menu {
-    cursor: none !important;
-  }
-  
-  /* For any other specific elements that might be showing the default cursor */
+  /* Make all interactive elements use the custom cursor */
+  a, button, .nav-menu a, .nav-menu, .social-icon, .social-icons a,
+  nav, .navbar, .nav-menu,
   .work, .life, .contact, 
-  #work, #life, #contact {
-    cursor: none !important;
-  }
-  
-  /* Sometimes hover states can override cursor styles, so make sure hover states also use the custom cursor */
-  a:hover, button:hover, .nav-menu a:hover {
-    cursor: none !important;
-  }
-  
-  /* If there are any other elements that might be causing issues */
+  #work, #life, #contact,
   .content-wrapper, header, footer, .hero, .hero-content {
     cursor: none !important;
   }
   
-  /* Ensure the cursor applies to all elements on the page */
-  * {
-    cursor: none;
+  /* Sometimes hover states can override cursor styles */
+  a:hover, button:hover, .nav-menu a:hover {
+    cursor: none !important;
   }
   
-  /* Make only form elements like inputs keep the default cursor for usability */
+  /* Make only form elements keep the default cursor for usability */
   input, textarea, select {
     cursor: auto !important;
   }
-
-
-/* Artistic cursor styles */
-.cursor-container {
+  
+  /* Artistic cursor styles */
+  .cursor-container {
     position: fixed;
     top: 0;
     left: 0;
@@ -58,7 +43,6 @@ a, button, .nav-menu a, .nav-menu, .social-icon, .social-icons a {
     transition: transform 0.15s ease-out, width 0.15s ease-out, height 0.15s ease-out;
     mix-blend-mode: difference; /* Makes it visible on any background */
   }
-
   
   /* Active state for interactive elements */
   .cursor-dot.active {
@@ -69,11 +53,6 @@ a, button, .nav-menu a, .nav-menu, .social-icon, .social-icons a {
   
   .cursor-trail.active {
     opacity: 0.7 !important;
-  }
-  
-  /* Hide default cursor */
-  body {
-    cursor: none;
   }
   
   /* Show default cursor on mobile */
