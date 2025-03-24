@@ -1,38 +1,60 @@
-.navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 30px 40px;
-}
 
 .nav-menu {
+    padding: 30px;
     display: flex;
     align-items: center;
-    gap: 5px; /* Reduce gap between items */
+    gap: 20px; /* Increase spacing between items to match your reference */
+    position: absolute;
+    right: 40px;
+}
+
+.nav-menu a, .nav-menu .nav-dot {
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 400;
+    transition: opacity 0.3s ease;
+}
+
+/* Create the hover effect for the entire navigation menu */
+.nav-menu:hover a, .nav-menu:hover .nav-dot {
+    opacity: 0.5; /* Dim all items when hovering over the menu */
+}
+
+/* But keep the hovered item at full opacity */
+.nav-menu a:hover, .nav-menu a:hover + .nav-dot {
+    opacity: 1;
+}
+
+/* Fix the issue where dots might get full opacity when not intended */
+.nav-menu .nav-dot:hover {
+    opacity: 0.5; /* Keep dots dimmed even when directly hovered */
+}
+
+/* Additional styling to match the reference design */
+.nav-menu {
+    /* Use monospaced font similar to your reference image */
+    font-family: monospace, 'Courier New', Courier;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 .nav-menu a {
-    color: white;
-    text-decoration: none;
-    font-size: 18px; /* Slightly larger font */
-    font-weight: 400;
-    transition: color 0.3s ease;
+    padding: 5px 0; /* Add some padding for a better hover target */
 }
 
 .nav-dot {
-    color: white;
-    font-size: 18px;
-    margin: 0 2px; /* Adjust spacing around dots */
+    display: none;
 }
 
-
-.logo {
-    font-size: 20px;
-    font-weight: 700;
-    color: white;
+.nav-menu a {
+    margin: 0 15px; /* Even spacing between items */
 }
 
+.nav-menu a:first-child {
+    margin-left: 0;
+}
 
-.nav-links a:hover {
-    color: var(--accent-color);
+.nav-menu a:last-child {
+    margin-right: 0;
 }
