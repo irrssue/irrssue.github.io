@@ -28,8 +28,8 @@
   
   .popup-content h3 {
     margin-top: 0;
-    color: #5B2333;
-    font-family: 'Righteous', cursive;
+    color: #2c5545;
+    font-family: var(--heading-font);
     font-size: 1.8rem;
   }
   

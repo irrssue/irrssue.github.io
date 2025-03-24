@@ -38,3 +38,13 @@
     margin-bottom: 3rem;
     max-width: 1200px;
 }
+
+.intro-heading h1 {
+    font-family: var(--heading-font);
+    font-weight: 900;
+}
+
+.intro-heading .subtitle-text {
+    font-family: var(--heading-font);
+    font-weight: 600;
+}
