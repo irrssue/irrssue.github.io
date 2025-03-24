@@ -48,27 +48,36 @@
     position: absolute;
     bottom: 100px;
     left: 40px;
+    width: calc(100% - 80px); /* Full width minus margins */
 }
 
 .hero-content {
     color: white;
+    width: 100%;
 }
 
 .hero h1 {
     font-family: 'Playfair Display', serif;
-    font-size: 48px;
+    font-size: 150px;
     margin-bottom: 5px;
+    text-align: left; /* Explicitly left-align the name */
+}
+
+.subtitle-container {
+    text-align: left; /* Right align the container for the subtitle */
 }
 
 .hero h2 {
     font-size: 24px;
     font-weight: 400;
     margin-bottom: 20px;
+    display: inline-block; /* Allow the h2 to be treated as inline for alignment purposes */
 }
 
 .social-icons {
     display: flex;
     gap: 20px;
+    justify-content: flex-start; /* Align icons to the right */
 }
 
 .social-icon {
