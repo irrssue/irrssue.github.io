@@ -12,7 +12,6 @@ document.addEventListener('DOMContentLoaded', function() {
     cursorDot.className = 'cursor-dot';
     cursorContainer.appendChild(cursorDot);
     
-    // Create cursor trails
     const numTrails = 5;
     const trails = [];
     
