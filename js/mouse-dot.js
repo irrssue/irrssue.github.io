@@ -29,28 +29,28 @@ document.addEventListener('DOMContentLoaded', function() {
       cursorDot.classList.add('click');
       setTimeout(() => {
         cursorDot.classList.remove('click');
-      }, 500); // Duration of the click effect
-
-    
-    // Fix for cursor reappearing after switching tabs/windows
-    window.addEventListener('blur', () => {
-      cursorDot.style.opacity = '0';
-    });
-    
-    window.addEventListener('focus', () => {
-      cursorDot.style.opacity = '1';
-    });
-    
-    // Add hover effects for interactive elements
-    const interactiveElements = document.querySelectorAll('a, button, .nav-menu a');
-    
-    interactiveElements.forEach(el => {
-      el.addEventListener('mouseenter', () => {
-        cursorDot.classList.add('active');
+        }, 500); // Duration of the click effect
+      });
+  
+      // Fix for cursor reappearing after switching tabs/windows
+      window.addEventListener('blur', () => {
+        cursorDot.style.opacity = '0';
       });
       
-      el.addEventListener('mouseleave', () => {
-        cursorDot.classList.remove('active');
+      window.addEventListener('focus', () => {
+        cursorDot.style.opacity = '1';
       });
-    });
+      
+      // Add hover effects for interactive elements
+      const interactiveElements = document.querySelectorAll('a, button, .nav-menu a');
+      
+      interactiveElements.forEach(el => {
+        el.addEventListener('mouseenter', () => {
+          cursorDot.classList.add('active');
+        });
+        
+        el.addEventListener('mouseleave', () => {
+          cursorDot.classList.remove('active');
+        });
+      });
   });
