@@ -23,6 +23,14 @@ document.addEventListener('DOMContentLoaded', function() {
     document.addEventListener('mouseleave', () => {
       cursorDot.style.opacity = '0';
     });
+
+    document.addEventListener('click', () => {
+      // Add a click effect
+      cursorDot.classList.add('click');
+      setTimeout(() => {
+        cursorDot.classList.remove('click');
+      }, 500); // Duration of the click effect
+
     
     // Fix for cursor reappearing after switching tabs/windows
     window.addEventListener('blur', () => {
