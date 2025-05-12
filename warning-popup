@@ -1,0 +1,65 @@
+// js/construction-popup.js
+
+document.addEventListener('DOMContentLoaded', function() {
+    const popup = document.getElementById('constructionPopup');
+    const closeBtn = document.getElementById('closePopup');
+    
+    // Check if user has already seen the popup (using localStorage)
+    const hasSeenPopup = localStorage.getItem('constructionPopupSeen');
+    
+    // Show popup if user hasn't seen it
+    if (!hasSeenPopup && popup) {
+        setTimeout(() => {
+            popup.classList.add('active');
+        }, 1000); // Show after 1 second
+    }
+    
+    // Close popup function
+    function closePopup() {
+        popup.classList.remove('active');
+        // Remember that user has seen the popup
+        localStorage.setItem('constructionPopupSeen', 'true');
+        
+        // Optional: Set expiration (show again after 7 days)
+        const expirationDate = new Date();
+        expirationDate.setDate(expirationDate.getDate() + 7);
+        localStorage.setItem('constructionPopupExpiration', expirationDate.toISOString());
+    }
+    
+    // Check if popup should be shown again (after expiration)
+    function checkExpiration() {
+        const expiration = localStorage.getItem('constructionPopupExpiration');
+        if (expiration) {
+            const expirationDate = new Date(expiration);
+            const now = new Date();
+            if (now > expirationDate) {
+                localStorage.removeItem('constructionPopupSeen');
+                localStorage.removeItem('constructionPopupExpiration');
+            }
+        }
+    }
+    
+    // Run expiration check
+    checkExpiration();
+    
+    // Close popup on button click
+    if (closeBtn) {
+        closeBtn.addEventListener('click', closePopup);
+    }
+    
+    // Close popup on overlay click
+    if (popup) {
+        popup.addEventListener('click', function(e) {
+            if (e.target === popup) {
+                closePopup();
+            }
+        });
+    }
+    
+    // Close popup on Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && popup.classList.contains('active')) {
+            closePopup();
+        }
+    });
+});
