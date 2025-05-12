@@ -1,0 +1,385 @@
+/* css/sections/work-machado.css */
+
+.work-page {
+    background-color: #fafafa;
+    color: #000;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    line-height: 1.6;
+}
+
+/* Navigation */
+.work-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(250, 250, 250, 0.95);
+    backdrop-filter: blur(10px);
+    z-index: 1000;
+    padding: 20px 0;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+}
+
+.nav-wrapper {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-brand {
+    font-weight: 600;
+    text-decoration: none;
+    color: #000;
+    letter-spacing: 1px;
+}
+
+.nav-links {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.nav-link {
+    text-decoration: none;
+    color: #666;
+    transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+    color: #000;
+}
+
+/* Work Hero */
+.work-hero {
+    padding: 180px 0 120px;
+}
+
+.work-hero-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 40px;
+}
+
+.work-main-title {
+    font-size: clamp(2.5rem, 5vw, 5rem);
+    font-weight: 300;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: #000;
+}
+
+/* Case Studies */
+.case-studies {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 40px 120px;
+}
+
+.case-study {
+    margin-bottom: 160px;
+}
+
+.case-study-wrapper {
+    border-top: 3px solid #000;
+    padding-top: 60px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+}
+
+.case-number {
+    font-size: 0.85rem;
+    color: #000;
+    letter-spacing: 0.5px;
+    display: block;
+    margin-bottom: 40px;
+}
+
+.case-title {
+    font-size: clamp(2.5rem, 4vw, 4rem);
+    font-weight: 300;
+    margin-bottom: 30px;
+    line-height: 1;
+}
+
+.case-description {
+    font-size: 1.25rem;
+    line-height: 1.6;
+    color: #333;
+    margin-bottom: 40px;
+    max-width: 500px;
+}
+
+.case-cta {
+    display: inline-block;
+    padding: 12px 24px;
+    border: 1px solid #000;
+    border-radius: 50px;
+    text-decoration: none;
+    color: #000;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    cursor: none;
+}
+
+.case-cta:hover {
+    background-color: #000;
+    color: #fff;
+}
+
+.case-study-image {
+    width: 100%;
+    height: 500px;
+    overflow: hidden;
+    border-radius: 10px;
+}
+
+.case-study-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s ease;
+}
+
+.case-study:hover .case-study-image img {
+    transform: scale(1.05);
+}
+
+/* About Section */
+.about-section {
+    border-top: 3px solid #000;
+    padding: 80px 0;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding-left: 40px;
+    padding-right: 40px;
+}
+
+.section-label {
+    font-size: 0.85rem;
+    color: #000;
+    letter-spacing: 0.5px;
+    display: block;
+    margin-bottom: 60px;
+}
+
+.about-content {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 80px;
+    align-items: flex-start;
+}
+
+.about-image {
+    width: 100%;
+    max-width: 400px;
+}
+
+.about-image img {
+    width: 100%;
+    height: auto;
+    border-radius: 5px;
+}
+
+.about-text h3 {
+    font-size: 2rem;
+    font-weight: 300;
+    line-height: 1.3;
+    margin-bottom: 40px;
+}
+
+.about-text p {
+    font-size: 1.25rem;
+    line-height: 1.6;
+    color: #333;
+    margin-bottom: 30px;
+}
+
+/* Brands Section */
+.brands-section {
+    border-top: 3px solid #000;
+    padding: 80px 0;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding-left: 40px;
+    padding-right: 40px;
+}
+
+.brands-placeholder {
+    font-size: 1.5rem;
+    color: #666;
+    text-align: center;
+    margin-top: 40px;
+}
+
+/* Contact Section */
+.contact-section {
+    border-top: 3px solid #000;
+    padding: 80px 0;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding-left: 40px;
+    padding-right: 40px;
+}
+
+.contact-content h2 {
+    font-size: clamp(3rem, 6vw, 6rem);
+    font-weight: 300;
+    margin-bottom: 20px;
+    line-height: 1;
+}
+
+.contact-email {
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    color: #999;
+    text-decoration: none;
+    transition: color 0.3s ease;
+    display: block;
+    margin-bottom: 60px;
+}
+
+.contact-email:hover {
+    color: #000;
+}
+
+.social-links {
+    display: flex;
+    gap: 60px;
+}
+
+.social-link {
+    font-size: 2rem;
+    color: #000;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.social-link:hover {
+    color: #666;
+}
+
+/* Footer */
+.work-footer {
+    border-top: 3px solid #000;
+    padding: 40px 0;
+    text-align: center;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .case-study-wrapper {
+        grid-template-columns: 1fr;
+        gap: 60px;
+    }
+    
+    .case-study-content {
+        order: 2;
+    }
+    
+    .case-study-image {
+        order: 1;
+        height: 400px;
+    }
+    
+    .about-content {
+        grid-template-columns: 1fr;
+        gap: 40px;
+    }
+    
+    .about-image {
+        max-width: 300px;
+    }
+}
+
+@media (max-width: 768px) {
+    .nav-wrapper {
+        padding: 0 20px;
+    }
+    
+    .nav-links {
+        display: none;
+    }
+    
+    .work-hero {
+        padding: 140px 0 80px;
+    }
+    
+    .work-hero-content,
+    .case-studies,
+    .about-section,
+    .brands-section,
+    .contact-section {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+    
+    .work-main-title {
+        font-size: 2rem;
+    }
+    
+    .case-study {
+        margin-bottom: 100px;
+    }
+    
+    .case-title {
+        font-size: 2rem;
+    }
+    
+    .case-description {
+        font-size: 1rem;
+    }
+    
+    .case-study-image {
+        height: 300px;
+    }
+    
+    .about-text h3 {
+        font-size: 1.5rem;
+    }
+    
+    .about-text p {
+        font-size: 1rem;
+    }
+    
+    .contact-content h2 {
+        font-size: 2.5rem;
+    }
+    
+    .contact-email {
+        font-size: 1.5rem;
+    }
+    
+    .social-links {
+        gap: 30px;
+    }
+    
+    .social-link {
+        font-size: 1.2rem;
+    }
+}
+
+/* Animations */
+.case-study,
+.about-section,
+.brands-section,
+.contact-section {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.case-study.visible,
+.about-section.visible,
+.brands-section.visible,
+.contact-section.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
