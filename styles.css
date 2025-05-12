@@ -7,5 +7,5 @@
 @import 'css/components.css';
 @import 'css/sections/intro.css';
 @import 'css/sections/navbar.css';
-@import 'css/sections/mouse-dot.css'
-/* You'll add more section imports as you build them */
+@import 'css/sections/mouse-dot.css';
+@import 'css/sections/work-page.css';
