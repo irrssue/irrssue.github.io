@@ -9,3 +9,8 @@
 @import 'css/sections/navbar.css';
 @import 'css/sections/mouse-dot.css';
 @import 'css/sections/work-page.css';
+
+
+/* warning popup for visitors */
+@import 'warning-popup.css';
+@import 'warning-popup.js';
