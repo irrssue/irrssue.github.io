@@ -1,7 +1,4 @@
-// js/work-machado.js
-
 document.addEventListener('DOMContentLoaded', function() {
-    // Smooth scroll for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             e.preventDefault();
@@ -15,7 +12,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Intersection Observer for fade-in animations
     const observerOptions = {
         threshold: 0.1,
         rootMargin: '0px 0px -50px 0px'
@@ -29,13 +25,11 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }, observerOptions);
     
-    // Observe all sections
     const sections = document.querySelectorAll('.case-study, .about-section, .brands-section, .contact-section');
     sections.forEach(section => {
         observer.observe(section);
     });
     
-    // Navbar hide/show on scroll
     let lastScrollTop = 0;
     const navbar = document.querySelector('.work-nav');
     
@@ -43,17 +37,14 @@ document.addEventListener('DOMContentLoaded', function() {
         let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
         
         if (scrollTop > lastScrollTop && scrollTop > 100) {
-            // Scrolling down
             navbar.style.transform = 'translateY(-100%)';
         } else {
-            // Scrolling up
             navbar.style.transform = 'translateY(0)';
         }
         
         lastScrollTop = scrollTop;
     });
     
-    // Add hover effect for case study images
     const caseStudies = document.querySelectorAll('.case-study');
     
     caseStudies.forEach(study => {
@@ -72,7 +63,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Optional: Add loading animation for images
     const images = document.querySelectorAll('.case-study-image img, .about-image img');
     
     images.forEach(img => {
