@@ -1,29 +1,24 @@
-/* Hide default cursor */
 body {
     cursor: none;
-  }
-  
-  /* Make all interactive elements use the custom cursor */
-  a, button, .nav-menu a, .nav-menu, .social-icon, .social-icons a,
-  nav, .navbar, .nav-menu,
-  .work, .life, .contact, 
-  #work, #life, #contact,
-  .content-wrapper, header, footer, .hero, .hero-content {
+}
+
+a, button, .nav-menu a, .nav-menu, .social-icon, .social-icons a,
+nav, .navbar, .nav-menu,
+.work, .life, .contact, 
+#work, #life, #contact,
+.content-wrapper, header, footer, .hero, .hero-content {
     cursor: none !important;
-  }
-  
-  /* Sometimes hover states can override cursor styles */
-  a:hover, button:hover, .nav-menu a:hover {
+}
+
+a:hover, button:hover, .nav-menu a:hover {
     cursor: none !important;
-  }
-  
-  /* Make only form elements keep the default cursor for usability */
-  input, textarea, select {
+}
+
+input, textarea, select {
     cursor: auto !important;
-  }
-  
-  /* Cursor styles */
-  .cursor-dot {
+}
+
+.cursor-dot {
     position: fixed;
     width: 15px;
     height: 15px;
@@ -32,22 +27,20 @@ body {
     pointer-events: none;
     z-index: 9999;
     transform: translate(-50%, -50%);
-    mix-blend-mode: difference; /* Makes it visible on any background */
-  }
-  
-  /* Active state for interactive elements */
-  .cursor-dot.active {
+    mix-blend-mode: difference;
+}
+
+.cursor-dot.active {
     transform: translate(-50%, -50%) scale(1.5);
     transition: transform 0.15s ease-out;
-  }
-  
-  /* Show default cursor on mobile */
-  @media (max-width: 768px) {
+}
+
+@media (max-width: 768px) {
     .cursor-dot {
-      display: none;
+        display: none;
     }
     
     body {
-      cursor: auto;
+        cursor: auto;
     }
-  }
+}
