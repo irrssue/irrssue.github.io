@@ -1,21 +1,15 @@
-// Simple dot cursor with no delay or trailing effect
 document.addEventListener('DOMContentLoaded', function() {
-    // Hide default cursor immediately
     document.body.style.cursor = 'none';
     
-    // Create cursor dot
     const cursorDot = document.createElement('div');
     cursorDot.className = 'cursor-dot';
     document.body.appendChild(cursorDot);
     
-    // Track mouse position and update cursor immediately
     document.addEventListener('mousemove', (e) => {
-      // Direct positioning - no easing or delay
       cursorDot.style.left = `${e.clientX}px`;
       cursorDot.style.top = `${e.clientY}px`;
     });
     
-    // Handle cursor visibility
     document.addEventListener('mouseenter', () => {
       cursorDot.style.opacity = '1';
     });
@@ -25,14 +19,12 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     document.addEventListener('click', () => {
-      // Add a click effect
       cursorDot.classList.add('click');
       setTimeout(() => {
         cursorDot.classList.remove('click');
-        }, 500); // Duration of the click effect
+        }, 500);
       });
   
-      // Fix for cursor reappearing after switching tabs/windows
       window.addEventListener('blur', () => {
         cursorDot.style.opacity = '0';
       });
@@ -41,7 +33,6 @@ document.addEventListener('DOMContentLoaded', function() {
         cursorDot.style.opacity = '1';
       });
       
-      // Add hover effects for interactive elements
       const interactiveElements = document.querySelectorAll('a, button, .nav-menu a');
       
       interactiveElements.forEach(el => {
