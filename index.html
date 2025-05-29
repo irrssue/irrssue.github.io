@@ -3,210 +3,166 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Liam Rolert - Website Redesign in Progress</title>
+    <title>Liam Rolert</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #000;
-            color: #fff;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-        }
-
-        .redesign-popup {
-            background-color: #fff;
-            color: #000;
-            padding: 60px 40px;
-            border-radius: 20px;
-            text-align: center;
-            max-width: 500px;
-            width: 90%;
-            box-shadow: 0 25px 50px rgba(255, 255, 255, 0.1);
-            animation: fadeInUp 0.8s ease-out;
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .popup-icon {
-            font-size: 4rem;
-            margin-bottom: 30px;
-            color: #000;
-        }
-
-        .popup-title {
-            font-size: 2.2rem;
-            font-weight: 600;
-            margin-bottom: 20px;
-            line-height: 1.3;
-        }
-
-        .popup-subtitle {
-            font-size: 1.1rem;
-            font-weight: 400;
-            color: #666;
-            margin-bottom: 30px;
-            line-height: 1.6;
-        }
-
-        .popup-message {
-            font-size: 1rem;
-            color: #888;
-            margin-bottom: 30px;
-            line-height: 1.6;
-        }
-
-        .contact-info {
-            margin-bottom: 30px;
-        }
-
-        .contact-link {
-            color: #000;
-            text-decoration: none;
-            font-weight: 500;
-            border-bottom: 2px solid #000;
-            transition: all 0.3s ease;
-            padding-bottom: 2px;
-        }
-
-        .contact-link:hover {
-            color: #666;
-            border-bottom-color: #666;
-        }
-
-        .social-links {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-top: 20px;
-        }
-
-        .social-link {
-            color: #666;
-            text-decoration: none;
-            font-size: 0.9rem;
-            font-weight: 500;
-            transition: color 0.3s ease;
-        }
-
-        .social-link:hover {
-            color: #000;
-        }
-
-        .loading-dots {
-            display: inline-flex;
-            gap: 4px;
-            margin-left: 8px;
-        }
-
-        .dot {
-            width: 4px;
-            height: 4px;
-            background-color: #666;
-            border-radius: 50%;
-            animation: bounce 1.4s ease-in-out infinite both;
-        }
-
-        .dot:nth-child(1) { animation-delay: -0.32s; }
-        .dot:nth-child(2) { animation-delay: -0.16s; }
-
-        @keyframes bounce {
-            0%, 80%, 100% {
-                transform: scale(0);
-            }
-            40% {
-                transform: scale(1);
-            }
-        }
-
-        .status-badge {
-            display: inline-block;
-            background-color: #f0f0f0;
-            color: #666;
-            padding: 8px 16px;
-            border-radius: 50px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            margin-bottom: 20px;
-        }
-
-        @media (max-width: 600px) {
-            .redesign-popup {
-                padding: 40px 30px;
-                margin: 20px;
-            }
-
-            .popup-icon {
-                font-size: 3rem;
-            }
-
-            .popup-title {
-                font-size: 1.8rem;
-            }
-
-            .popup-subtitle {
-                font-size: 1rem;
-            }
-
-            .social-links {
-                flex-direction: column;
-                gap: 15px;
-            }
-        }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="redesign-popup">
-        <div class="popup-icon">🚀</div>
-        
-        <div class="status-badge">Currently Redesigning</div>
-        
-        <h1 class="popup-title">BRB - Building Something Amazing</h1>
-        
-        <p class="popup-subtitle">
-            I'm completely redesigning my portfolio to showcase my latest work and skills. 
-            The new site will be worth the wait!
-        </p>
-        
-        <p class="popup-message">
-            Working hard behind the scenes
-            <span class="loading-dots">
-                <span class="dot"></span>
-                <span class="dot"></span>
-                <span class="dot"></span>
-            </span>
-        </p>
-        
-        <div class="contact-info">
-            <p>Got a project in mind? Let's chat:</p>
-            <a href="mailto:liamrolert@gmail.com" class="contact-link">liamrolert@gmail.com</a>
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <h1 class="sidebar-title">Liam Rolert</h1>
         </div>
         
-        <div class="social-links">
-            <a href="https://github.com/irrssue" class="social-link" target="_blank">GitHub</a>
-            <a href="https://www.linkedin.com/in/liamrolert/" class="social-link" target="_blank">LinkedIn</a>
-            <a href="https://www.instagram.com/irrssue" class="social-link" target="_blank">Instagram</a>
+        <div class="sidebar-section">
+            <h3 class="sidebar-section-title">Me</h3>
+            <ul class="sidebar-links">
+                <li><a href="#home" class="sidebar-link active">📍 Home</a></li>
+                <li><a href="#writing" class="sidebar-link">✍️ Writing</a></li>
+            </ul>
         </div>
-    </div>
+        
+        <div class="sidebar-section">
+            <h3 class="sidebar-section-title">Projects</h3>
+            <ul class="sidebar-links">
+                <li><a href="#" class="sidebar-link">⚡ Task Manager</a></li>
+                <li><a href="#" class="sidebar-link">🎯 Campus Events</a></li>
+                <li><a href="#" class="sidebar-link">🌤️ Weather API</a></li>
+                <li><a href="#" class="sidebar-link">💡 Portfolio Site</a></li>
+                <li><a href="#" class="sidebar-link">🔒 Security Tools</a></li>
+            </ul>
+        </div>
+        
+        <div class="sidebar-section">
+            <h3 class="sidebar-section-title">Online</h3>
+            <ul class="sidebar-links">
+                <li><a href="https://github.com/irrssue" target="_blank" class="sidebar-link">🐙 GitHub</a></li>
+                <li><a href="https://www.linkedin.com/in/liamrolert/" target="_blank" class="sidebar-link">💼 LinkedIn</a></li>
+                <li><a href="https://www.instagram.com/irrssue" target="_blank" class="sidebar-link">📷 Instagram</a></li>
+            </ul>
+        </div>
+        
+        <!-- Mobile menu button -->
+        <button class="mobile-menu-btn">☰</button>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Hero Section -->
+        <section id="home" class="hero-section">
+            <div class="intro-text">
+                <p class="intro-paragraph">
+                    Hey, I'm Liam. I'm a <strong>software engineer</strong>, <strong>full-stack developer</strong>, and <strong>CS student</strong>. I'm currently pursuing my degree while building modern web applications with Python and JavaScript.
+                </p>
+                <p class="intro-paragraph">
+                    I'm passionate about creating digital solutions that solve real problems. Currently seeking opportunities in startups where I can make a meaningful impact while continuing to grow as a developer.
+                </p>
+                <p class="intro-paragraph">
+                    I love learning new technologies, contributing to open-source projects, and turning complex challenges into elegant, user-friendly solutions.
+                </p>
+            </div>
+            
+            <!-- Social Links -->
+            <div class="social-section">
+                <div class="social-row">
+                    <span class="social-label">Online</span>
+                    <div class="social-links">
+                        <a href="https://github.com/irrssue" target="_blank" class="social-link">GitHub</a>
+                        <span class="social-link">Follow</span>
+                    </div>
+                </div>
+                
+                <div class="social-row">
+                    <span class="social-label">LinkedIn</span>
+                    <div class="social-links">
+                        <a href="https://www.linkedin.com/in/liamrolert/" target="_blank" class="social-link">Connect</a>
+                        <span class="social-link">Follow</span>
+                    </div>
+                </div>
+                
+                <div class="social-row">
+                    <span class="social-label">Email</span>
+                    <div class="social-links">
+                        <a href="mailto:liamrolert@gmail.com" class="social-link">Contact</a>
+                        <span class="social-link">Available</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Location Section -->
+            <div class="location-section">
+                <h3 class="section-title">Where</h3>
+                <div class="location-content">
+                    <div class="map-placeholder">
+                        <div class="map-pin"></div>
+                    </div>
+                    <p class="location-text">📍 Brooklyn, New York</p>
+                </div>
+            </div>
+            
+            <!-- Work Experience -->
+            <div class="work-section">
+                <h3 class="section-title">Work</h3>
+                <div class="work-list">
+                    <div class="work-item">
+                        <div class="work-details">
+                            <span class="work-company">Freelance</span>
+                            <span class="work-role">Full-Stack Developer</span>
+                            <span class="work-period">2024—</span>
+                        </div>
+                    </div>
+                    
+                    <div class="work-item">
+                        <div class="work-details">
+                            <span class="work-company">Personal Projects</span>
+                            <span class="work-role">Software Engineer</span>
+                            <span class="work-period">2023—24</span>
+                        </div>
+                    </div>
+                    
+                    <div class="work-item">
+                        <div class="work-details">
+                            <span class="work-company">University</span>
+                            <span class="work-role">CS Student</span>
+                            <span class="work-period">2022—25</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Projects Section -->
+            <div class="projects-section">
+                <h3 class="section-title">Projects</h3>
+                <div class="project-list">
+                    <div class="project-item">
+                        <a href="#" class="project-link">Task Management Platform</a>
+                    </div>
+                    
+                    <div class="project-item">
+                        <a href="#" class="project-link">Campus Event Finder</a>
+                    </div>
+                    
+                    <div class="project-item">
+                        <a href="#" class="project-link">Weather Analytics API</a>
+                    </div>
+                    
+                    <div class="project-item">
+                        <a href="#" class="project-link">Portfolio Website</a>
+                    </div>
+                    
+                    <div class="project-item">
+                        <a href="#" class="project-link">Security Toolkit</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Mobile Overlay -->
+    <div class="mobile-overlay"></div>
+
+    <script src="script.js"></script>
 </body>
 </html>
