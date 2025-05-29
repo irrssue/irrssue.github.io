@@ -7,162 +7,254 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <!-- Sidebar Navigation -->
-    <nav class="sidebar">
-        <div class="sidebar-header">
-            <h1 class="sidebar-title">Liam Rolert</h1>
-        </div>
-        
-        <div class="sidebar-section">
-            <h3 class="sidebar-section-title">Me</h3>
-            <ul class="sidebar-links">
-                <li><a href="#home" class="sidebar-link active">📍 Home</a></li>
-                <li><a href="#writing" class="sidebar-link">✍️ Writing</a></li>
-            </ul>
-        </div>
-        
-        <div class="sidebar-section">
-            <h3 class="sidebar-section-title">Projects</h3>
-            <ul class="sidebar-links">
-                <li><a href="#" class="sidebar-link">⚡ Task Manager</a></li>
-                <li><a href="#" class="sidebar-link">🎯 Campus Events</a></li>
-                <li><a href="#" class="sidebar-link">🌤️ Weather API</a></li>
-                <li><a href="#" class="sidebar-link">💡 Portfolio Site</a></li>
-                <li><a href="#" class="sidebar-link">🔒 Security Tools</a></li>
-            </ul>
-        </div>
-        
-        <div class="sidebar-section">
-            <h3 class="sidebar-section-title">Online</h3>
-            <ul class="sidebar-links">
-                <li><a href="https://github.com/irrssue" target="_blank" class="sidebar-link">🐙 GitHub</a></li>
-                <li><a href="https://www.linkedin.com/in/liamrolert/" target="_blank" class="sidebar-link">💼 LinkedIn</a></li>
-                <li><a href="https://www.instagram.com/irrssue" target="_blank" class="sidebar-link">📷 Instagram</a></li>
-            </ul>
-        </div>
-        
-        <!-- Mobile menu button -->
-        <button class="mobile-menu-btn">☰</button>
-    </nav>
+    <!-- Dark Mode Toggle -->
+    <div class="dark-mode-toggle">
+        <button id="darkModeBtn" class="dark-mode-btn" aria-label="Toggle dark mode">
+            <i class="fas fa-moon"></i>
+        </button>
+    </div>
 
-    <!-- Main Content -->
-    <main class="main-content">
-        <!-- Hero Section -->
-        <section id="home" class="hero-section">
-            <div class="intro-text">
-                <p class="intro-paragraph">
-                    Hey, I'm Liam. I'm a <strong>software engineer</strong>, <strong>full-stack developer</strong>, and <strong>CS student</strong>. I'm currently pursuing my degree while building modern web applications with Python and JavaScript.
-                </p>
-                <p class="intro-paragraph">
-                    I'm passionate about creating digital solutions that solve real problems. Currently seeking opportunities in startups where I can make a meaningful impact while continuing to grow as a developer.
-                </p>
-                <p class="intro-paragraph">
-                    I love learning new technologies, contributing to open-source projects, and turning complex challenges into elegant, user-friendly solutions.
-                </p>
+    <div class="layout">
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <span class="sidebar-title">Liam Rolert</span>
             </div>
-            
-            <!-- Social Links -->
-            <div class="social-section">
-                <div class="social-row">
-                    <span class="social-label">Online</span>
-                    <div class="social-links">
-                        <a href="https://github.com/irrssue" target="_blank" class="social-link">GitHub</a>
-                        <span class="social-link">Follow</span>
+            <ul class="sidebar-menu">
+                <li>
+                    <a href="#home" class="sidebar-link active">
+                        <span class="sidebar-icon"><i class="fas fa-home"></i></span>
+                        Home
+                    </a>
+                </li>
+                <li>
+                    <a href="#writing" class="sidebar-link">
+                        <span class="sidebar-icon"><i class="fas fa-pen"></i></span>
+                        Writing
+                    </a>
+                </li>
+            </ul>
+            <div class="sidebar-section-label">Me</div>
+            <ul class="sidebar-menu">
+                <li>
+                    <a href="#bookmarks" class="sidebar-link">
+                        <span class="sidebar-icon"><i class="fas fa-bookmark"></i></span>
+                        Bookmarks
+                    </a>
+                </li>
+                <li>
+                    <a href="#ama" class="sidebar-link">
+                        <span class="sidebar-icon"><i class="fas fa-comments"></i></span>
+                        AMA
+                    </a>
+                </li>
+                <li>
+                    <a href="#stack" class="sidebar-link">
+                        <span class="sidebar-icon"><i class="fas fa-tools"></i></span>
+                        Stack
+                    </a>
+                </li>
+            </ul>
+            <div class="sidebar-section-label">Projects</div>
+            <ul class="sidebar-menu">
+                <li>
+                    <a href="#" class="sidebar-link" target="_blank">
+                        <span class="sidebar-icon"><i class="fas fa-campground"></i></span>
+                        Campsite
+                        <span class="sidebar-ext">↗</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="sidebar-link" target="_blank">
+                        <span class="sidebar-icon"><i class="fas fa-microphone"></i></span>
+                        Design Details
+                        <span class="sidebar-ext">↗</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="sidebar-link" target="_blank">
+                        <span class="sidebar-icon"><i class="fas fa-users"></i></span>
+                        Staff Design
+                        <span class="sidebar-ext">↗</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="sidebar-link" target="_blank">
+                        <span class="sidebar-icon"><i class="fas fa-plug"></i></span>
+                        Figma Plugins
+                        <span class="sidebar-ext">↗</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="sidebar-link" target="_blank">
+                        <span class="sidebar-icon"><i class="fas fa-shield-alt"></i></span>
+                        Security Checklist
+                        <span class="sidebar-ext">↗</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="sidebar-link" target="_blank">
+                        <span class="sidebar-icon"><i class="fas fa-newspaper"></i></span>
+                        Hacker News
+                        <span class="sidebar-ext">↗</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="sidebar-link" target="_blank">
+                        <span class="sidebar-icon"><i class="fas fa-puzzle-piece"></i></span>
+                        App Dissection
+                        <span class="sidebar-ext">↗</span>
+                    </a>
+                </li>
+            </ul>
+            <div class="sidebar-section-label">Online</div>
+            <ul class="sidebar-menu">
+                <li>
+                    <a href="#" class="sidebar-link" target="_blank">
+                        <span class="sidebar-icon"><i class="fab fa-twitter"></i></span>
+                        Twitter
+                        <span class="sidebar-ext">↗</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="sidebar-link" target="_blank">
+                        <span class="sidebar-icon"><i class="fab fa-youtube"></i></span>
+                        YouTube
+                        <span class="sidebar-ext">↗</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="sidebar-link" target="_blank">
+                        <span class="sidebar-icon"><i class="fab fa-github"></i></span>
+                        GitHub
+                        <span class="sidebar-ext">↗</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="sidebar-link" target="_blank">
+                        <span class="sidebar-icon"><i class="fab fa-figma"></i></span>
+                        Figma
+                        <span class="sidebar-ext">↗</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        <main class="main-content">
+            <!-- Hero Section -->
+            <section id="home" class="hero-section">
+                <div class="intro-text">
+                    <p class="intro-paragraph">
+                        Hey, I'm Liam. I'm a <strong>software engineer</strong>, <strong>full-stack developer</strong>, and <strong>CS student</strong>. I'm currently pursuing my degree while building modern web applications with Python and JavaScript.
+                    </p>
+                    <p class="intro-paragraph">
+                        I'm passionate about creating digital solutions that solve real problems. Currently seeking opportunities in startups where I can make a meaningful impact while continuing to grow as a developer.
+                    </p>
+                    <p class="intro-paragraph">
+                        I love learning new technologies, contributing to open-source projects, and turning complex challenges into elegant, user-friendly solutions.
+                    </p>
+                </div>
+                
+                <!-- Social Links -->
+                <div class="social-section">
+                    <div class="social-row">
+                        <span class="social-label">Online</span>
+                        <div class="social-links">
+                            <a href="https://github.com/irrssue" target="_blank" class="social-link">GitHub</a>
+                            <span class="social-link">Follow</span>
+                        </div>
+                    </div>
+                    
+                    <div class="social-row">
+                        <span class="social-label">LinkedIn</span>
+                        <div class="social-links">
+                            <a href="https://www.linkedin.com/in/liamrolert/" target="_blank" class="social-link">Connect</a>
+                            <span class="social-link">Follow</span>
+                        </div>
+                    </div>
+                    
+                    <div class="social-row">
+                        <span class="social-label">Email</span>
+                        <div class="social-links">
+                            <a href="mailto:liamrolert@gmail.com" class="social-link">Contact</a>
+                            <span class="social-link">Available</span>
+                        </div>
                     </div>
                 </div>
                 
-                <div class="social-row">
-                    <span class="social-label">LinkedIn</span>
-                    <div class="social-links">
-                        <a href="https://www.linkedin.com/in/liamrolert/" target="_blank" class="social-link">Connect</a>
-                        <span class="social-link">Follow</span>
+                <!-- Location Section -->
+                <div class="location-section">
+                    <h3 class="section-title">Where</h3>
+                    <div class="location-content">
+                        <div class="map-placeholder">
+                            <div class="map-pin"></div>
+                        </div>
+                        <p class="location-text">📍 Brooklyn, New York</p>
                     </div>
                 </div>
                 
-                <div class="social-row">
-                    <span class="social-label">Email</span>
-                    <div class="social-links">
-                        <a href="mailto:liamrolert@gmail.com" class="social-link">Contact</a>
-                        <span class="social-link">Available</span>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Location Section -->
-            <div class="location-section">
-                <h3 class="section-title">Where</h3>
-                <div class="location-content">
-                    <div class="map-placeholder">
-                        <div class="map-pin"></div>
-                    </div>
-                    <p class="location-text">📍 Brooklyn, New York</p>
-                </div>
-            </div>
-            
-            <!-- Work Experience -->
-            <div class="work-section">
-                <h3 class="section-title">Work</h3>
-                <div class="work-list">
-                    <div class="work-item">
-                        <div class="work-details">
-                            <span class="work-company">Freelance</span>
-                            <span class="work-role">Full-Stack Developer</span>
-                            <span class="work-period">2024—</span>
+                <!-- Work Experience -->
+                <div class="work-section">
+                    <h3 class="section-title">Work</h3>
+                    <div class="work-list">
+                        <div class="work-item">
+                            <div class="work-details">
+                                <span class="work-company">Freelance</span>
+                                <span class="work-role">Full-Stack Developer</span>
+                                <span class="work-period">2024—</span>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div class="work-item">
-                        <div class="work-details">
-                            <span class="work-company">Personal Projects</span>
-                            <span class="work-role">Software Engineer</span>
-                            <span class="work-period">2023—24</span>
+                        
+                        <div class="work-item">
+                            <div class="work-details">
+                                <span class="work-company">Personal Projects</span>
+                                <span class="work-role">Software Engineer</span>
+                                <span class="work-period">2023—24</span>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div class="work-item">
-                        <div class="work-details">
-                            <span class="work-company">University</span>
-                            <span class="work-role">CS Student</span>
-                            <span class="work-period">2022—25</span>
+                        
+                        <div class="work-item">
+                            <div class="work-details">
+                                <span class="work-company">University</span>
+                                <span class="work-role">CS Student</span>
+                                <span class="work-period">2022—25</span>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            
-            <!-- Projects Section -->
-            <div class="projects-section">
-                <h3 class="section-title">Projects</h3>
-                <div class="project-list">
-                    <div class="project-item">
-                        <a href="#" class="project-link">Task Management Platform</a>
-                    </div>
-                    
-                    <div class="project-item">
-                        <a href="#" class="project-link">Campus Event Finder</a>
-                    </div>
-                    
-                    <div class="project-item">
-                        <a href="#" class="project-link">Weather Analytics API</a>
-                    </div>
-                    
-                    <div class="project-item">
-                        <a href="#" class="project-link">Portfolio Website</a>
-                    </div>
-                    
-                    <div class="project-item">
-                        <a href="#" class="project-link">Security Toolkit</a>
+                
+                <!-- Projects Section -->
+                <div class="projects-section">
+                    <h3 class="section-title">Projects</h3>
+                    <div class="project-list">
+                        <div class="project-item">
+                            <a href="#" class="project-link">Task Management Platform</a>
+                        </div>
+                        
+                        <div class="project-item">
+                            <a href="#" class="project-link">Campus Event Finder</a>
+                        </div>
+                        
+                        <div class="project-item">
+                            <a href="#" class="project-link">Weather Analytics API</a>
+                        </div>
+                        
+                        <div class="project-item">
+                            <a href="#" class="project-link">Portfolio Website</a>
+                        </div>
+                        
+                        <div class="project-item">
+                            <a href="#" class="project-link">Security Toolkit</a>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </section>
-    </main>
-
-    <!-- Mobile Overlay -->
+            </section>
+        </main>
+    </div>
     <div class="mobile-overlay"></div>
-
     <script src="script.js"></script>
 </body>
 </html>
