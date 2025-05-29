@@ -19,7 +19,7 @@
     /* Dark Theme Colors */
     --bg-primary: #0f0f0f;
     --bg-secondary: #1a1a1a;
-    --text-primary: #ffffffc6;
+    --text-primary: #e0e0e0;
     --text-secondary: #b0b0b0;
     --text-tertiary: #808080;
     --text-strong: #ffffff;
@@ -210,37 +210,50 @@ body {
 .social-row {
     display: flex;
     align-items: center;
-    padding: 12px 0;
-    border-bottom: 1px solid var(--border-light);
+    justify-content: space-between;
+    padding: 16px 0;
+    position: relative;
     transition: border-color 0.3s ease;
 }
 
 .social-row:last-child {
-    border-bottom: none;
+    border-bottom: 2px dotted var(--border-color);
 }
 
+
 .social-label {
-    width: 100px;
-    font-size: 14px;
-    color: var(--text-secondary);
+    font-size: 16px;
+    color: var(--text-primary);
     font-weight: 500;
     transition: color 0.3s ease;
 }
 
 .social-links {
     display: flex;
+    align-items: center;
     gap: 16px;
+    text-decoration: none;
 }
 
 .social-link {
-    font-size: 14px;
-    color: var(--accent-color);
+    font-size: 16px;
+    color: var(--text-secondary);
     text-decoration: none;
     font-weight: 500;
     transition: color 0.3s ease;
 }
 
 .social-link:hover {
+    color: var(--accent-color);
+    text-decoration: none;
+}
+
+/* Style for the action links (Connect, Follow, etc.) */
+.social-link.action {
+    color: var(--accent-color);
+}
+
+.social-link.action:hover {
     text-decoration: underline;
 }
 
@@ -257,33 +270,69 @@ body {
 }
 
 .location-content {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-}
-
-.map-placeholder {
-    width: 40px;
-    height: 40px;
-    background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+    height: 300px;
+    background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-start;
+    padding: 0;
 }
 
-.map-pin {
-    width: 8px;
-    height: 8px;
-    background: white;
-    border-radius: 50%;
+.map-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('source/newyorkmap.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.9;
+}
+
+.location-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.4) 100%);
+}
+
+[data-theme="dark"] .location-overlay {
+    background: linear-gradient(135deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.6) 100%);
+}
+
+.location-info {
+    position: relative;
+    z-index: 2;
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.location-icon {
+    width: 20px;
+    height: 20px;
+    color: white;
+    opacity: 0.9;
 }
 
 .location-text {
-    font-size: 14px;
-    color: var(--text-secondary);
-    transition: color 0.3s ease;
+    font-size: 19px;
+    color: white;
+    font-weight: 500;
+    margin: 0;
+}
+
+/* Remove the old map placeholder styles */
+.map-placeholder {
+    display: none;
 }
 
 .work-section, .projects-section {
