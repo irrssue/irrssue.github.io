@@ -212,6 +212,7 @@ body {
     align-items: center;
     justify-content: space-between;
     padding: 16px 0;
+    border-bottom: 2px dotted var(--border-color);
     position: relative;
     transition: border-color 0.3s ease;
 }
@@ -220,6 +221,37 @@ body {
     border-bottom: 2px dotted var(--border-color);
 }
 
+.social-row:hover {
+    border-color: var(--accent-color);
+}
+
+.social-row::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 140px;
+    right: 140px;
+    height: 2px;
+    background-image: repeating-linear-gradient(
+        to right,
+        var(--border-color) 0px,
+        var(--border-color) 4px,
+        transparent 4px,
+        transparent 8px
+    );
+    transform: translateY(-50%);
+    transition: background-image 0.3s ease;
+}
+
+.social-row:hover::before {
+    background-image: repeating-linear-gradient(
+        to right,
+        var(--accent-color) 0px,
+        var(--accent-color) 4px,
+        transparent 4px,
+        transparent 8px
+    );
+}
 
 .social-label {
     font-size: 16px;
@@ -232,7 +264,6 @@ body {
     display: flex;
     align-items: center;
     gap: 16px;
-    text-decoration: none;
 }
 
 .social-link {
@@ -324,7 +355,7 @@ body {
 }
 
 .location-text {
-    font-size: 19px;
+    font-size: 16px;
     color: white;
     font-weight: 500;
     margin: 0;
@@ -342,25 +373,47 @@ body {
 .work-list, .project-list {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 0;
 }
 
-.work-item {
-    padding: 16px;
-    background: var(--bg-secondary);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
+.work-item, .project-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 0;
+    position: relative;
     transition: all 0.3s ease;
+    background: transparent;
+    border: none;
+    border-radius: 0;
 }
 
-.work-item:hover {
-    border-color: var(--accent-color);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.1);
+.work-item::before, .project-item::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 140px;
+    right: 140px;
+    height: 2px;
+    background-image: repeating-linear-gradient(
+        to right,
+        var(--border-color) 0px,
+        var(--border-color) 4px,
+        transparent 4px,
+        transparent 8px
+    );
+    transform: translateY(-50%);
+    transition: background-image 0.3s ease;
 }
 
-[data-theme="dark"] .work-item:hover {
-    box-shadow: 0 4px 12px rgba(77, 166, 255, 0.1);
+.work-item:hover::before, .project-item:hover::before {
+    background-image: repeating-linear-gradient(
+        to right,
+        var(--accent-color) 0px,
+        var(--accent-color) 4px,
+        transparent 4px,
+        transparent 8px
+    );
 }
 
 .work-details {
@@ -369,54 +422,30 @@ body {
     gap: 4px;
 }
 
-.work-company {
+.work-company, .project-link {
     font-weight: 600;
-    color: var(--text-strong);
-    font-size: 14px;
+    color: var(--text-primary);
+    font-size: 16px;
     transition: color 0.3s ease;
+    text-decoration: none;
 }
 
 .work-role {
     color: var(--text-secondary);
-    font-size: 13px;
-    transition: color 0.3s ease;
-}
-
-.work-period {
-    color: var(--text-tertiary);
-    font-size: 12px;
-    font-weight: 500;
-    transition: color 0.3s ease;
-}
-
-.project-item {
-    padding: 12px 16px;
-    background: var(--bg-secondary);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    transition: all 0.3s ease;
-}
-
-.project-item:hover {
-    border-color: var(--accent-color);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.1);
-}
-
-[data-theme="dark"] .project-item:hover {
-    box-shadow: 0 4px 12px rgba(77, 166, 255, 0.1);
-}
-
-.project-link {
-    color: var(--accent-color);
-    text-decoration: none;
     font-size: 14px;
+    transition: color 0.3s ease;
+}
+
+.work-period, .project-meta {
+    color: var(--text-secondary);
+    font-size: 16px;
     font-weight: 500;
     transition: color 0.3s ease;
 }
 
 .project-link:hover {
-    text-decoration: underline;
+    color: var(--accent-color);
+    text-decoration: none;
 }
 
 .mobile-overlay {
