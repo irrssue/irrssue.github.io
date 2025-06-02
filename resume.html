@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saw Thura Zaw (Liam) - Software Developer</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            background: white;
+            border-radius: 10px;
+            padding: 3rem 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: 1px solid #ddd;
+        }
+
+        .profile-img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 3rem;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .header .subtitle {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 1.5rem;
+        }
+
+        .contact-info {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #555;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .contact-item:hover {
+            color: #333;
+        }
+
+        .contact-item i {
+            font-size: 1.1rem;
+        }
+
+        .resume-section {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: 1px solid #ddd;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: #333;
+            border-bottom: 3px solid #333;
+            padding-bottom: 0.5rem;
+            display: inline-block;
+        }
+
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .skill-category {
+            background: #f9f9f9;
+            padding: 1rem;
+            border-radius: 5px;
+            border-left: 4px solid #333;
+        }
+
+        .skill-category h4 {
+            color: #333;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .experience-item, .project-item {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: #f9f9f9;
+            border-radius: 5px;
+            border-left: 4px solid #333;
+        }
+
+        .experience-item h3, .project-item h3 {
+            color: #333;
+            margin-bottom: 0.5rem;
+            font-size: 1.3rem;
+        }
+
+        .experience-meta {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
+        .experience-item ul, .project-item ul {
+            list-style: none;
+            padding-left: 1rem;
+        }
+
+        .experience-item li, .project-item li {
+            margin-bottom: 0.5rem;
+            position: relative;
+        }
+
+        .experience-item li::before, .project-item li::before {
+            content: "▸";
+            color: #333;
+            font-weight: bold;
+            position: absolute;
+            left: -1rem;
+        }
+
+        .download-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 2rem;
+            background: #333;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn:hover {
+            background: #555;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-secondary {
+            background: #666;
+        }
+
+        .btn-secondary:hover {
+            background: #777;
+        }
+
+        .education-grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .education-item {
+            background: #f9f9f9;
+            padding: 1.5rem;
+            border-radius: 5px;
+            border-left: 4px solid #333;
+        }
+
+        .education-item h4 {
+            color: #333;
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        .achievements {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #ddd;
+        }
+
+        .achievements h5 {
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .header {
+                padding: 2rem 1rem;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .contact-info {
+                flex-direction: column;
+                align-items: center;
+                gap: 1rem;
+            }
+
+            .skills-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .download-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header Section -->
+        <div class="header">
+            <div class="profile-img">L</div>
+            <h1>Saw Thura Zaw (Liam)</h1>
+            <p class="subtitle">Full-Stack Developer & Computer Science Student</p>
+            
+            <div class="contact-info">
+                <a href="mailto:liamrolert@gmail.com" class="contact-item">
+                    <i class="fas fa-envelope"></i>
+                    liamrolert@gmail.com
+                </a>
+                <a href="tel:+14086404801" class="contact-item">
+                    <i class="fas fa-phone"></i>
+                    (408) 640-4801
+                </a>
+                <a href="https://linkedin.com/in/liamrolert" target="_blank" class="contact-item">
+                    <i class="fab fa-linkedin"></i>
+                    LinkedIn
+                </a>
+                <a href="https://irrssue.github.io" target="_blank" class="contact-item">
+                    <i class="fas fa-globe"></i>
+                    Portfolio
+                </a>
+                <div class="contact-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    New York City, NY
+                </div>
+            </div>
+
+            <div class="download-buttons">
+                <a href="resume.pdf" target="_blank" class="btn">
+                    <i class="fas fa-eye"></i>
+                    View Resume PDF
+                </a>
+                <a href="resume.pdf" download class="btn btn-secondary">
+                    <i class="fas fa-download"></i>
+                    Download Resume
+                </a>
+            </div>
+        </div>
+
+        <!-- Education Section -->
+        <div class="resume-section">
+            <h2 class="section-title">Education</h2>
+            <div class="education-grid">
+                <div class="education-item">
+                    <h4>Associate of Science in Computer Science</h4>
+                    <div class="experience-meta">Borough of Manhattan Community College, New York City, NY | Expected Jun 2026</div>
+                    <p>Member of Computer Programming Club</p>
+                    <div class="achievements">
+                        <h5>Awards & Achievements:</h5>
+                        <ul>
+                            <li>3 GitHub achievement awards for consistent open-source contributions</li>
+                            <li>Won 1st place at De Anza Hack and Auston Hack</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Skills Section -->
+        <div class="resume-section">
+            <h2 class="section-title">Technical Skills</h2>
+            <div class="skills-grid">
+                <div class="skill-category">
+                    <h4>Programming Languages</h4>
+                    <p>Python (TensorFlow, Django), JavaScript, C++, HTML/CSS</p>
+                </div>
+                <div class="skill-category">
+                    <h4>Frameworks & Libraries</h4>
+                    <p>React.js, Node.js, Django, Flutter, TensorFlow</p>
+                </div>
+                <div class="skill-category">
+                    <h4>Tools & Technologies</h4>
+                    <p>Firebase, Git, Unreal Engine, Blender 3D</p>
+                </div>
+                <div class="skill-category">
+                    <h4>Interests</h4>
+                    <p>AI & Robotics, Content Creation, Mixed Martial Arts, Piano</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Work Experience Section -->
+        <div class="resume-section">
+            <h2 class="section-title">Work Experience</h2>
+            
+            <div class="experience-item">
+                <h3>Lighting Designer - Mg JawBu</h3>
+                <div class="experience-meta">New York City, NY | Apr 2025 - Present</div>
+                <ul>
+                    <li>Assisted digital creator with video and photo shoots by designing scene lighting and creating visual setups</li>
+                    <li>Operated second camera for behind-the-scenes content production</li>
+                </ul>
+            </div>
+
+            <div class="experience-item">
+                <h3>Private Tutor - Freelance</h3>
+                <div class="experience-meta">New York City, NY | Mar 2025 - Present</div>
+                <ul>
+                    <li>Designed and taught beginner-friendly programming lessons focused on Python and problem-solving</li>
+                    <li>Taught 10+ students Python fundamentals, boosting problem-solving scores by 30% through weekly coding challenges</li>
+                </ul>
+            </div>
+
+            <div class="experience-item">
+                <h3>Volunteer Software Engineer - HackDavis</h3>
+                <div class="experience-meta">Davis, CA (Remote) | Apr 2025</div>
+                <ul>
+                    <li>Collaborated with team to brainstorm, design, and build tech-driven solutions for social good</li>
+                    <li>Responsibilities included front-end development, ideation, and presenting final projects</li>
+                </ul>
+            </div>
+
+            <div class="experience-item">
+                <h3>Computer Lab Hardware Engineer - De Anza College</h3>
+                <div class="experience-meta">Cupertino, CA | Apr 2024 - Dec 2024</div>
+                <ul>
+                    <li>Provided technical support for hardware/software issues and maintained lab computer equipment</li>
+                    <li>Fixed student laptops for better performance including OS installation and hardware repairs</li>
+                </ul>
+            </div>
+
+            <div class="experience-item">
+                <h3>Software Engineer - Auston College</h3>
+                <div class="experience-meta">Yangon, Myanmar | Sept 2022 - Jun 2023</div>
+                <ul>
+                    <li>Developed and maintained official school website, improving site speed and mobile responsiveness</li>
+                    <li>Enhanced user experience for 500+ students with integrated event calendar and navigation systems</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Project Experience Section -->
+        <div class="resume-section">
+            <h2 class="section-title">Project Experience</h2>
+            
+            <div class="project-item">
+                <h3>Lead Co-Software Developer - Mahar Church</h3>
+                <div class="experience-meta">Yangon, Myanmar | Apr 2020 - Jul 2020</div>
+                <ul>
+                    <li>Built full-stack charity website using React and Firebase, raising $929 in donations within 30 days</li>
+                    <li>Co-led and managed development team of 7, coordinating task assignments and weekly check-ins</li>
+                    <li>Supported church's digital presence during COVID-19 with virtual fundraising and community outreach</li>
+                </ul>
+            </div>
+
+            <div class="project-item">
+                <h3>GitHub Personal Projects - Full-Stack Developer</h3>
+                <div class="experience-meta">Remote | Oct 2020 - Present</div>
+                <ul>
+                    <li>Developing and maintaining series of personal projects focused on web development</li>
+                    <li>Technologies: Python, JavaScript, Flutter, Firebase, Git, Node.js, React.js, C++</li>
+                    <li>View projects at: <a href="https://github.com/irrssue" target="_blank">github.com/irrssue</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
