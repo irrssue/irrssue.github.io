@@ -47,8 +47,20 @@ body {
     transform: scale(0.95);
 }
 
+.main-content {
+    margin-left: 180px; /* Updated from 220px to match new sidebar width */
+    flex: 1;
+    padding: 48px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    box-sizing: border-box;
+}
 
-
+.mobile-overlay {
+    display: none;
+}
 
 /* Mobile Responsive */
 @media (max-width: 768px) {
