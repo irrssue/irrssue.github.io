@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Writing - Liam Rolert</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="../main.css">
+</head>
+<body>
+    <!-- Dark Mode Toggle -->
+    <div class="dark-mode-toggle">
+        <button id="darkModeBtn" class="dark-mode-btn" aria-label="Toggle dark mode">
+            <i class="fas fa-moon"></i>
+        </button>
+    </div>
+
+    <div class="layout blog-layout">
+        <!-- Main Sidebar -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <span class="sidebar-title">Liam Rolert</span>
+            </div>
+            <ul class="sidebar-menu">
+                <li>
+                    <a href="../index.html" class="sidebar-link">
+                        <span class="sidebar-icon"><i class="fas fa-home"></i></span>
+                        Home
+                    </a>
+                </li>
+                <li>
+                    <a href="blog.html" class="sidebar-link active">
+                        <span class="sidebar-icon"><i class="fas fa-pen"></i></span>
+                        Writing
+                    </a>
+                </li>
+            </ul>
+            <div class="sidebar-section-label">Me</div>
+            <ul class="sidebar-menu">
+                <li>
+                    <a href="#bookmarks" class="sidebar-link">
+                        <span class="sidebar-icon"><i class="fas fa-bookmark"></i></span>
+                        Bookmarks
+                    </a>
+                </li>
+                <li>
+                    <a href="#ama" class="sidebar-link">
+                        <span class="sidebar-icon"><i class="fas fa-comments"></i></span>
+                        AMA
+                    </a>
+                </li>
+                <li>
+                    <a href="#stack" class="sidebar-link">
+                        <span class="sidebar-icon"><i class="fas fa-tools"></i></span>
+                        Stack
+                    </a>
+                </li>
+            </ul>
+            <div class="sidebar-section-label">Projects</div>
+            <ul class="sidebar-menu">
+                <li>
+                    <a href="#" class="sidebar-link" target="_blank">
+                        <span class="sidebar-icon"><i class="fas fa-campground"></i></span>
+                        Campsite
+                        <span class="sidebar-ext">↗</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="sidebar-link" target="_blank">
+                        <span class="sidebar-icon"><i class="fas fa-microphone"></i></span>
+                        Design Details
+                        <span class="sidebar-ext">↗</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="sidebar-link" target="_blank">
+                        <span class="sidebar-icon"><i class="fas fa-users"></i></span>
+                        Staff Design
+                        <span class="sidebar-ext">↗</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="sidebar-link" target="_blank">
+                        <span class="sidebar-icon"><i class="fas fa-plug"></i></span>
+                        Figma Plugins
+                        <span class="sidebar-ext">↗</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="sidebar-link" target="_blank">
+                        <span class="sidebar-icon"><i class="fas fa-shield-alt"></i></span>
+                        Security Checklist
+                        <span class="sidebar-ext">↗</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="sidebar-link" target="_blank">
+                        <span class="sidebar-icon"><i class="fas fa-newspaper"></i></span>
+                        Hacker News
+                        <span class="sidebar-ext">↗</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="sidebar-link" target="_blank">
+                        <span class="sidebar-icon"><i class="fas fa-puzzle-piece"></i></span>
+                        App Dissection
+                        <span class="sidebar-ext">↗</span>
+                    </a>
+                </li>
+            </ul>
+            <div class="sidebar-section-label">Online</div>
+            <ul class="sidebar-menu">
+                <li>
+                    <a href="https://twitter.com/liamrolert" class="sidebar-link" target="_blank">
+                        <span class="sidebar-icon"><i class="fab fa-twitter"></i></span>
+                        Twitter
+                        <span class="sidebar-ext">↗</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="https://youtube.com/@irrssue" class="sidebar-link" target="_blank">
+                        <span class="sidebar-icon"><i class="fab fa-youtube"></i></span>
+                        YouTube
+                        <span class="sidebar-ext">↗</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="https://github.com/irrssue" class="sidebar-link" target="_blank">
+                        <span class="sidebar-icon"><i class="fab fa-github"></i></span>
+                        GitHub
+                        <span class="sidebar-ext">↗</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="https://linkedin.com/in/liamrolert" class="sidebar-link" target="_blank">
+                        <span class="sidebar-icon"><i class="fab fa-linkedin"></i></span>
+                        LinkedIn
+                        <span class="sidebar-ext">↗</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Blog Sidebar -->
+        <nav class="blog-sidebar" id="blogSidebar">
+            <div class="blog-sidebar-header">
+                <h2 class="blog-sidebar-title">Writing</h2>
+            </div>
+            
+
+            <!-- <div class="blog-search">  TODO: serach function I have to work onthis
+                <input 
+                    type="text" 
+                    class="blog-search-input" 
+                    placeholder="Search posts..." 
+                    id="blogSearchInput"
+                >
+            </div> -->
+           
+            
+            <ul class="blog-posts-list" id="blogPostsList">
+                <!-- Blog posts will be loaded here via JavaScript -->
+                <li class="blog-post-item">
+                    <div style="padding: 20px; color: var(--text-secondary); text-align: center;">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p style="margin-top: 8px;">Loading posts...</p>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Blog Content -->
+        <main class="blog-content">
+            <article class="blog-article" id="blogArticle">
+                <header class="blog-article-header">
+                    <h1 class="blog-article-title" id="articleTitle">Loading...</h1>
+                    <p class="blog-article-date" id="articleDate"></p>
+                </header>
+                <div class="blog-article-content" id="articleContent">
+                    <div style="text-align: center; padding: 48px 0; color: var(--text-secondary);">
+                        <i class="fas fa-spinner fa-spin fa-2x"></i>
+                        <p style="margin-top: 16px;">Loading article content...</p>
+                    </div>
+                </div>
+            </article>
+        </main>
+    </div>
+    
+    <!-- Mobile overlay for sidebar -->
+    <div class="mobile-overlay" id="mobileOverlay"></div>
+    
+    <!-- Mobile toggle button for blog sidebar -->
+    <button class="blog-mobile-toggle" id="blogMobileToggle" style="display: none;">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <!-- JavaScript -->
+    <script src="blog.js"></script>
+    
+    <!-- Optional: Search functionality script (uncomment to enable) -->
+    <script>
+        // Uncomment this section to enable search functionality
+        /*
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('blogSearchInput');
+            if (searchInput) {
+                let searchTimeout;
+                searchInput.addEventListener('input', function(e) {
+                    clearTimeout(searchTimeout);
+                    searchTimeout = setTimeout(() => {
+                        if (window.blogManager) {
+                            window.blogManager.searchPosts(e.target.value);
+                        }
+                    }, 300);
+                });
+                
+                // Clear search on escape
+                searchInput.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape') {
+                        this.value = '';
+                        if (window.blogManager) {
+                            window.blogManager.searchPosts('');
+                        }
+                    }
+                });
+            }
+        });
+        */
+    </script>
+    
+    <!-- Mobile navigation script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const blogMobileToggle = document.getElementById('blogMobileToggle');
+            const blogSidebar = document.getElementById('blogSidebar');
+            const mobileOverlay = document.getElementById('mobileOverlay');
+            
+            if (blogMobileToggle && blogSidebar) {
+                // Show mobile toggle on small screens
+                function updateMobileVisibility() {
+                    if (window.innerWidth <= 768) {
+                        blogMobileToggle.style.display = 'flex';
+                    } else {
+                        blogMobileToggle.style.display = 'none';
+                        blogSidebar.classList.remove('mobile-open');
+                        if (mobileOverlay) {
+                            mobileOverlay.style.display = 'none';
+                        }
+                    }
+                }
+                
+                // Toggle mobile sidebar
+                blogMobileToggle.addEventListener('click', function() {
+                    const isOpen = blogSidebar.classList.contains('mobile-open');
+                    
+                    if (isOpen) {
+                        blogSidebar.classList.remove('mobile-open');
+                        if (mobileOverlay) {
+                            mobileOverlay.style.display = 'none';
+                        }
+                        blogMobileToggle.innerHTML = '<i class="fas fa-bars"></i>';
+                    } else {
+                        blogSidebar.classList.add('mobile-open');
+                        if (mobileOverlay) {
+                            mobileOverlay.style.display = 'block';
+                        }
+                        blogMobileToggle.innerHTML = '<i class="fas fa-times"></i>';
+                    }
+                });
+                
+                // Close on overlay click
+                if (mobileOverlay) {
+                    mobileOverlay.addEventListener('click', function() {
+                        blogSidebar.classList.remove('mobile-open');
+                        mobileOverlay.style.display = 'none';
+                        blogMobileToggle.innerHTML = '<i class="fas fa-bars"></i>';
+                    });
+                }
+                
+                // Close on post selection (mobile)
+                document.addEventListener('click', function(e) {
+                    if (e.target.closest('.blog-post-link') && window.innerWidth <= 768) {
+                        setTimeout(() => {
+                            blogSidebar.classList.remove('mobile-open');
+                            if (mobileOverlay) {
+                                mobileOverlay.style.display = 'none';
+                            }
+                            blogMobileToggle.innerHTML = '<i class="fas fa-bars"></i>';
+                        }, 300);
+                    }
+                });
+                
+                // Handle resize
+                window.addEventListener('resize', updateMobileVisibility);
+                updateMobileVisibility();
+            }
+        });
+    </script>
+    
+    <!-- Analytics or other tracking scripts can go here -->
+    
+</body>
+</html>
