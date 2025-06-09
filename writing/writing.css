@@ -1,0 +1,118 @@
+/* Writing Page Styles */
+
+.writing-section {
+    max-width: 600px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.writing-container {
+    width: 100%;
+}
+
+.writing-header {
+    margin-bottom: 48px;
+}
+
+.writing-title {
+    font-size: 32px;
+    font-weight: 600;
+    color: var(--text-strong);
+    margin-bottom: 16px;
+    transition: color 0.3s ease;
+}
+
+.writing-description {
+    font-size: 18px;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    transition: color 0.3s ease;
+}
+
+.writing-content {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+.post-item {
+    padding: 24px 0;
+    border-bottom: 1px solid var(--border-color);
+    transition: border-color 0.3s ease;
+}
+
+.post-item:last-child {
+    border-bottom: none;
+}
+
+.post-title {
+    margin-bottom: 12px;
+}
+
+.post-link {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-strong);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.post-link:hover {
+    color: var(--accent-color);
+}
+
+.post-excerpt {
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+    transition: color 0.3s ease;
+}
+
+.post-date {
+    font-size: 14px;
+    color: var(--text-secondary);
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .writing-header {
+        margin-bottom: 32px;
+    }
+    
+    .writing-title {
+        font-size: 28px;
+    }
+    
+    .writing-description {
+        font-size: 16px;
+    }
+    
+    .writing-content {
+        gap: 24px;
+    }
+    
+    .post-item {
+        padding: 20px 0;
+    }
+    
+    .post-link {
+        font-size: 18px;
+    }
+}
+
+@media (max-width: 480px) {
+    .writing-title {
+        font-size: 24px;
+    }
+    
+    .post-link {
+        font-size: 16px;
+    }
+    
+    .post-excerpt {
+        font-size: 15px;
+    }
+}
