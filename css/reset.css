@@ -10,7 +10,9 @@
     --border-color: #e5e5e5;
     --border-light: #f0f0f0;
     --accent-color: #007bff;
+    --accent-soft: #6b728087; /* New soft gray for sidebar */
     --hover-bg: #f5f5f5;
+    --hover-soft: #f3f4f6; /* Softer hover state */
     --gradient-start: #667eea;
     --gradient-end: #764ba2;
 }
@@ -26,7 +28,9 @@
     --border-color: #333333;
     --border-light: #2a2a2a;
     --accent-color: #4da6ff;
+    --accent-soft: #74706c64; /* Soft gray for dark mode */
     --hover-bg: #2a2a2a;
+    --hover-soft: #374151; /* Softer hover for dark mode */
     --gradient-start: #667eea;
     --gradient-end: #764ba2;
 }
