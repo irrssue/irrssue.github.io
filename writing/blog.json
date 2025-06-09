@@ -1,0 +1,20 @@
+{
+    "posts": [
+
+      {
+        "id": "team-communication-broken",
+        "title": "Team communication is broken",
+        "date": "August 7, 2024",
+        "excerpt": "How poor communication patterns are destroying team productivity and what we can do about it.",
+        "content": "<p>Team communication has become one of the biggest challenges in modern software development. Despite having more tools than ever, many teams struggle with information silos, unclear expectations, and constant context switching.</p><p>In this post, I'll explore the common patterns that break team communication and provide practical strategies for building better collaborative workflows.</p><h2>The Problem with Tool Overload</h2><p>Most teams use multiple communication channels: Slack for quick messages, email for formal communication, video calls for meetings, and project management tools for task tracking. This fragmentation creates confusion about where information lives and how to access it.</p><p>The result? Important decisions get buried in Slack threads, project updates are scattered across multiple platforms, and team members waste time searching for information that should be easily accessible.</p><h2>Building Better Communication Patterns</h2><p>The solution isn't fewer tools, but better processes. Successful teams establish clear communication protocols that define when and how to use each channel effectively.</p>"
+      },
+
+      {
+        "id": "hi-this-is-testing",
+        "title": "Hi this is testing",
+        "date": "August 7, 2024",
+        "excerpt": "How poor communication patterns are destroying team productivity and what we can do about it.",
+        "content": "Lorem Lasdfadsf lakdjfklsdajfkl asdjflaskdjflsakdjf lksdjflaksdjflaksdjfklsadfjaklsdfjlksad jfklsadjflkasdjf alskdjfaslkdnlsacxnvasijdvnsdifajvnalkscselurifgjdkamsvdnkhgrufesijdoa;kcvndsfiauhoi jasnd"
+      }
+    ]
+  }
