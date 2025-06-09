@@ -1,7 +1,88 @@
+/* Compact Sidebar Styles (Brian Lovin inspired) */
 
 .layout {
     display: flex;
     min-height: 100vh;
+}
+
+.sidebar {
+    width: 180px; /* Reduced from 220px */
+    background: var(--bg-secondary);
+    border-right: 1px solid var(--border-color);
+    padding: 16px; /* Reduced from 20px */
+    position: fixed;
+    height: 100vh;
+    overflow-y: auto;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.sidebar-header {
+    margin-bottom: 24px; /* Reduced from 32px */
+}
+
+.sidebar-title {
+    font-size: 18px; /* Reduced from 20px */
+    font-weight: 600;
+    color: var(--text-strong);
+    transition: color 0.3s ease;
+}
+
+.sidebar-section-label {
+    font-size: 11px; /* Reduced from 12px */
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 20px 0 8px 0; /* Reduced margins */
+    transition: color 0.3s ease;
+}
+
+.sidebar-menu {
+    list-style: none;
+    margin-bottom: 12px; /* Reduced from 16px */
+}
+
+.sidebar-menu li {
+    margin-bottom: 2px; /* Reduced from 4px */
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    padding: 6px 8px; /* Reduced from 8px 12px */
+    color: var(--text-secondary);
+    text-decoration: none;
+    border-radius: 4px; /* Reduced from 6px */
+    font-size: 13px; /* Reduced from 14px */
+    font-weight: 400;
+    transition: all 0.2s ease;
+    min-height: 28px; /* Added for consistent height */
+}
+
+.sidebar-link:hover {
+    background-color: var(--hover-soft);
+    color: var(--text-primary);
+}
+
+.sidebar-link.active {
+    background-color: var(--accent-soft);
+    color: white;
+}
+
+.sidebar-icon {
+    width: 14px; /* Reduced from 16px */
+    height: 14px; /* Reduced from 16px */
+    margin-right: 8px; /* Reduced from 12px */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px; /* Reduced from 14px */
+}
+
+.sidebar-ext {
+    margin-left: auto;
+    font-size: 11px; /* Reduced from 12px */
+    opacity: 0.6;
 }
 
 /* Hide Scrollbar */
@@ -13,83 +94,4 @@
 
 .sidebar::-webkit-scrollbar {
     display: none; /* Safari and Chrome */
-}
-
-.sidebar {
-    width: 220px;
-    background: var(--bg-secondary);
-    border-right: 1px solid var(--border-color);
-    padding: 20px;
-    position: fixed;
-    height: 100vh;
-    overflow-y: auto;
-    transition: background-color 0.3s ease, border-color 0.3s ease;
-}
-
-.sidebar-header {
-    margin-bottom: 32px;
-}
-
-.sidebar-title {
-    font-size: 20px;
-    font-weight: 600;
-    color: var(--text-strong);
-    transition: color 0.3s ease;
-}
-
-.sidebar-section-label {
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin: 24px 0 12px 0;
-    transition: color 0.3s ease;
-}
-
-.sidebar-menu {
-    list-style: none;
-    margin-bottom: 16px;
-}
-
-.sidebar-menu li {
-    margin-bottom: 4px;
-}
-
-.sidebar-link {
-    display: flex;
-    align-items: center;
-    padding: 8px 12px;
-    color: var(--text-secondary);
-    text-decoration: none;
-    border-radius: 6px;
-    font-size: 14px;
-    font-weight: 400;
-    transition: all 0.2s ease;
-}
-
-.sidebar-link:hover {
-    background-color: var(--hover-bg);
-    color: var(--text-primary);
-}
-
-.sidebar-link.active {
-    background-color: var(--accent-color);
-    color: white;
-}
-
-.sidebar-icon {
-    width: 16px;
-    height: 16px;
-    margin-right: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-}
-
-.sidebar-ext {
-    margin-left: auto;
-    font-size: 12px;
-    opacity: 0.6;
 }
