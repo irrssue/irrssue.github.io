@@ -1,0 +1,285 @@
+
+
+.main-content {
+    margin-left: 220px;
+    flex: 1;
+    padding: 48px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    box-sizing: border-box;
+}
+
+.hero-section {
+    max-width: 600px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.intro-text {
+    margin-bottom: 48px;
+}
+
+.intro-paragraph {
+    font-size: 16px;
+    line-height: 1.7;
+    margin-bottom: 16px;
+    color: var(--text-primary);
+    transition: color 0.3s ease;
+}
+
+.intro-paragraph strong {
+    color: var(--text-strong);
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.social-section {
+    margin-bottom: 48px;
+}
+
+.social-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 0;
+    border-bottom: 2px dotted var(--border-color);
+    position: relative;
+    transition: border-color 0.3s ease;
+}
+
+.social-row:last-child {
+    border-bottom: 2px dotted var(--border-color);
+}
+
+.social-row:hover {
+    border-color: var(--accent-color);
+}
+
+.social-row::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 140px;
+    right: 140px;
+    height: 2px;
+    background-image: repeating-linear-gradient(
+        to right,
+        var(--border-color) 0px,
+        var(--border-color) 4px,
+        transparent 4px,
+        transparent 8px
+    );
+    transform: translateY(-50%);
+    transition: background-image 0.3s ease;
+}
+
+.social-row:hover::before {
+    background-image: repeating-linear-gradient(
+        to right,
+        var(--accent-color) 0px,
+        var(--accent-color) 4px,
+        transparent 4px,
+        transparent 8px
+    );
+}
+
+.social-label {
+    font-size: 16px;
+    color: var(--text-primary);
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.social-links {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.social-link {
+    font-size: 16px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.social-link:hover {
+    color: var(--accent-color);
+    text-decoration: none;
+}
+
+/* Style for the action links (Connect, Follow, etc.) */
+.social-link.action {
+    color: var(--accent-color);
+}
+
+.social-link.action:hover {
+    text-decoration: underline;
+}
+
+.section-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-strong);
+    margin-bottom: 16px;
+    transition: color 0.3s ease;
+}
+
+.location-section {
+    margin-bottom: 48px;
+}
+
+.location-content {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+    height: 300px;
+    background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-start;
+    padding: 0;
+}
+
+.map-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('source/newyorkmap.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.9;
+}
+
+.location-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.4) 100%);
+}
+
+[data-theme="dark"] .location-overlay {
+    background: linear-gradient(135deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.6) 100%);
+}
+
+.location-info {
+    position: relative;
+    z-index: 2;
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.location-icon {
+    width: 20px;
+    height: 20px;
+    color: white;
+    opacity: 0.9;
+}
+
+.location-text {
+    font-size: 16px;
+    color: white;
+    font-weight: 500;
+    margin: 0;
+}
+
+/* Remove the old map placeholder styles */
+.map-placeholder {
+    display: none;
+}
+
+.work-section, .projects-section {
+    margin-bottom: 48px;
+}
+
+.work-list, .project-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.work-item, .project-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 0;
+    position: relative;
+    transition: all 0.3s ease;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+}
+
+.work-item::before, .project-item::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 140px;
+    right: 140px;
+    height: 2px;
+    background-image: repeating-linear-gradient(
+        to right,
+        var(--border-color) 0px,
+        var(--border-color) 4px,
+        transparent 4px,
+        transparent 8px
+    );
+    transform: translateY(-50%);
+    transition: background-image 0.3s ease;
+}
+
+.work-item:hover::before, .project-item:hover::before {
+    background-image: repeating-linear-gradient(
+        to right,
+        var(--accent-color) 0px,
+        var(--accent-color) 4px,
+        transparent 4px,
+        transparent 8px
+    );
+}
+
+.work-details {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.work-company, .project-link {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 16px;
+    transition: color 0.3s ease;
+    text-decoration: none;
+}
+
+.work-role {
+    color: var(--text-secondary);
+    font-size: 14px;
+    transition: color 0.3s ease;
+}
+
+.work-period, .project-meta {
+    color: var(--text-secondary);
+    font-size: 16px;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.project-link:hover {
+    color: var(--accent-color);
+    text-decoration: none;
+}
+
+.mobile-overlay {
+    display: none;
+}
