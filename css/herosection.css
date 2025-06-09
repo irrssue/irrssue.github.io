@@ -17,6 +17,7 @@
 
 .intro-text {
     margin-bottom: 48px;
+    margin-top: 80px;
 }
 
 .intro-paragraph {
@@ -47,6 +48,7 @@
     transition: border-color 0.3s ease;
     text-decoration: none;
     cursor: pointer;
+    outline: none;
 }
 
 .social-row:hover {
