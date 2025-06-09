@@ -1,7 +1,7 @@
 .main-content {
     margin-left: 220px;
     flex: 1;
-    padding: 48px;
+    padding: 0; /* Changed from 48px */
     display: flex;
     justify-content: center;
     align-items: flex-start;
@@ -13,6 +13,7 @@
     max-width: 600px;
     width: 100%;
     margin: 0 auto;
+    padding: 48px; /* Add padding here instead */
 }
 
 .intro-text {
