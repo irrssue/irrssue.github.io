@@ -47,16 +47,6 @@ body {
     transform: scale(0.95);
 }
 
-.main-content {
-    margin-left: 180px;
-    flex: 1;
-    padding: 0; /* Changed from 48px */
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    min-height: 100vh;
-    box-sizing: border-box;
-}
 
 /* In the mobile section: */
 @media (max-width: 768px) {
