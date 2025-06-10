@@ -1,5 +1,5 @@
 .main-content {
-    margin-left: 220px;
+    margin-left: 180px;
     flex: 1;
     padding: 0; /* Changed from 48px */
     display: flex;
@@ -10,7 +10,7 @@
 }
 
 .hero-section {
-    max-width: 600px;
+    max-width: 700px;
     width: 100%;
     margin: 0 auto;
     padding: 48px; /* Add padding here instead */
