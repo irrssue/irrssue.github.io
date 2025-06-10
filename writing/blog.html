@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- CSS Files -->
     <link rel="stylesheet" href="../main.css">
+    <link rel="stylesheet" href="blog.css">
 </head>
 <body>
     <!-- Dark Mode Toggle -->
@@ -150,18 +151,23 @@
         <nav class="blog-sidebar" id="blogSidebar">
             <div class="blog-sidebar-header">
                 <h2 class="blog-sidebar-title">Writing</h2>
+                
+                <!-- Search Container -->
+                <div class="blog-search-container">
+                    <input 
+                        type="text" 
+                        class="blog-search-input" 
+                        placeholder="Search posts..." 
+                        id="blogSearchInput"
+                        autocomplete="off"
+                        spellcheck="false"
+                    >
+                    <i class="fas fa-search blog-search-icon"></i>
+                    <button class="blog-search-clear" id="blogSearchClear" title="Clear search">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
             </div>
-            
-
-            <!-- <div class="blog-search">  TODO: serach function I have to work onthis
-                <input 
-                    type="text" 
-                    class="blog-search-input" 
-                    placeholder="Search posts..." 
-                    id="blogSearchInput"
-                >
-            </div> -->
-           
             
             <ul class="blog-posts-list" id="blogPostsList">
                 <!-- Blog posts will be loaded here via JavaScript -->
