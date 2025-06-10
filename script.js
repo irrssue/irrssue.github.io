@@ -521,7 +521,6 @@ class MobileNavigation {
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize all classes
     new DarkModeToggle();
-    new SPARouter(); // New SPA routing functionality
     new Navigation();
     new EnhancedInteractions();
     new AccessibilityEnhancements();
