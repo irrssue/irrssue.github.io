@@ -1,3 +1,29 @@
+// Development Notice Protection
+document.addEventListener('DOMContentLoaded', function() {
+    const overlay = document.getElementById('devNoticeOverlay');
+    
+    if (overlay) {
+        // Disable right-click on overlay
+        overlay.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+        });
+        
+        // Disable escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+        });
+        
+        console.log('🚧 Development notice active - remove from HTML to disable');
+    }
+});
+
+
+
+
+
 // Enhanced Dark Mode Functionality with localStorage persistence
 class DarkModeToggle {
     constructor() {

@@ -1,3 +1,187 @@
+.dev-notice-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.95);
+    backdrop-filter: blur(10px);
+    z-index: 999999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    animation: fadeIn 0.5s ease-out;
+}
+
+.dev-notice-content {
+    background: #1a1a1a;
+    border: 2px solid #333;
+    border-radius: 16px;
+    padding: 48px;
+    max-width: 600px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    position: relative;
+    animation: slideUp 0.6s ease-out 0.2s both;
+}
+
+.dev-notice-icon {
+    font-size: 64px;
+    color: #fbbf24;
+    margin-bottom: 24px;
+    animation: pulse 2s infinite;
+}
+
+.dev-notice-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 16px;
+    line-height: 1.2;
+}
+
+.dev-notice-message {
+    font-size: 18px;
+    color: #b0b0b0;
+    line-height: 1.6;
+    margin-bottom: 32px;
+}
+
+.dev-notice-links {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-items: center;
+}
+
+.dev-notice-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 24px;
+    background: #333;
+    color: #ffffff;
+    text-decoration: none;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    min-width: 280px;
+    justify-content: center;
+}
+
+.dev-notice-link:hover {
+    background: #4a5568;
+    border-color: #4da6ff;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(77, 166, 255, 0.2);
+}
+
+.dev-notice-link.primary {
+    background: #4da6ff;
+    color: #ffffff;
+}
+
+.dev-notice-link.primary:hover {
+    background: #3d8bff;
+    border-color: #ffffff;
+}
+
+.dev-notice-link i {
+    font-size: 18px;
+}
+
+.dev-notice-footer {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid #333;
+    color: #666;
+    font-size: 14px;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(40px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .dev-notice-content {
+        padding: 32px 24px;
+        margin: 20px;
+    }
+    .dev-notice-title { font-size: 24px; }
+    .dev-notice-message { font-size: 16px; }
+    .dev-notice-icon { font-size: 48px; }
+    .dev-notice-link {
+        min-width: 240px;
+        padding: 14px 20px;
+        font-size: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .dev-notice-content { padding: 24px 20px; }
+    .dev-notice-title { font-size: 20px; }
+    .dev-notice-message { font-size: 15px; }
+}
+
+/* Light mode support */
+[data-theme="light"] .dev-notice-overlay {
+    background: rgba(255, 255, 255, 0.95);
+}
+
+[data-theme="light"] .dev-notice-content {
+    background: #ffffff;
+    border-color: #e5e5e5;
+}
+
+[data-theme="light"] .dev-notice-title {
+    color: #1a1a1a;
+}
+
+[data-theme="light"] .dev-notice-message {
+    color: #666666;
+}
+
+[data-theme="light"] .dev-notice-link {
+    background: #f5f5f5;
+    color: #333333;
+    border-color: #e5e5e5;
+}
+
+[data-theme="light"] .dev-notice-link:hover {
+    background: #e5e5e5;
+    border-color: #4da6ff;
+}
+
+[data-theme="light"] .dev-notice-footer {
+    color: #999999;
+    border-color: #e5e5e5;
+}
+
+
+/* the actual main code start form this line */
 
 
 body {
