@@ -1,11 +1,11 @@
-// blog.js - Complete Blog Management System
+// blog.js - Complete Blog Management System with Floating Navbar (Brian Lovin Style)
 
 class MarkdownBlogManager {
     constructor() {
         this.posts = [];
         this.currentPost = null;
         this.isLoading = false;
-        this.markdownCache = new Map(); // Cache loaded markdown files
+        this.markdownCache = new Map();
         
         // DOM elements
         this.blogPostsList = null;
@@ -13,6 +13,11 @@ class MarkdownBlogManager {
         this.articleDate = null;
         this.articleContent = null;
         this.blogArticle = null;
+        
+        // Floating navbar references
+        this.floatingNavbarObserver = null;
+        this.floatingNavbarElement = null;
+        this.updateFloatingNavbar = null;
         
         this.init();
     }
@@ -96,10 +101,13 @@ class MarkdownBlogManager {
         this.renderBlogList();
         this.loadDefaultPost();
         this.setupEventListeners();
+        this.setupSearchFunctionality();
+        this.setupFloatingNavbar(); // Floating navbar instead of sticky header
         this.initializeDarkMode();
         
-        console.log('✅ Markdown Blog Manager initialized successfully');
+        console.log('✅ Blog with floating navbar initialized (Brian Lovin style)');
         console.log('📚 Available commands:');
+        console.log('- Press "/" to focus search');
         console.log('- blogManager.navigateToNextPost() (or Ctrl/Cmd + J)');
         console.log('- blogManager.navigateToPreviousPost() (or Ctrl/Cmd + K)');
     }
@@ -123,7 +131,6 @@ class MarkdownBlogManager {
         try {
             this.setLoading(true);
             
-            // Load the blog index (JSON file with post metadata)
             const response = await fetch('./blog.json');
             if (!response.ok) {
                 throw new Error('Failed to load blog index');
@@ -143,7 +150,6 @@ class MarkdownBlogManager {
     
     async loadMarkdownContent(markdownPath) {
         try {
-            // Check cache first
             if (this.markdownCache.has(markdownPath)) {
                 console.log('📋 Loading from cache:', markdownPath);
                 return this.markdownCache.get(markdownPath);
@@ -159,7 +165,6 @@ class MarkdownBlogManager {
             const markdownText = await response.text();
             const htmlContent = this.parseMarkdown(markdownText);
             
-            // Cache the processed content
             this.markdownCache.set(markdownPath, htmlContent);
             
             return htmlContent;
@@ -215,13 +220,17 @@ class MarkdownBlogManager {
                 const htmlContent = await this.loadMarkdownContent(post.markdown);
                 this.articleContent.innerHTML = htmlContent;
             } else if (post.content) {
-                // Fallback to inline content
                 this.articleContent.innerHTML = post.content;
             } else {
                 this.articleContent.innerHTML = '<p>No content available for this post.</p>';
             }
             
             this.currentPost = post;
+            
+            // Update floating navbar content
+            if (this.updateFloatingNavbar) {
+                this.updateFloatingNavbar();
+            }
             
             // Update URL and page title
             if (history.pushState) {
@@ -230,9 +239,11 @@ class MarkdownBlogManager {
             }
             document.title = `${post.title} - Writing - Liam Rolert`;
             
-            // Scroll to top
-            if (this.articleContent.scrollIntoView) {
-                this.articleContent.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            // Scroll to the entire article (including title)
+            if (this.blogArticle && this.blogArticle.scrollIntoView) {
+                this.blogArticle.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             }
             
         } catch (error) {
@@ -246,7 +257,6 @@ class MarkdownBlogManager {
     setupEventListeners() {
         if (!this.blogPostsList) return;
         
-        // Blog post navigation
         this.blogPostsList.addEventListener('click', (e) => {
             e.preventDefault();
             
@@ -255,6 +265,12 @@ class MarkdownBlogManager {
                 const postId = link.getAttribute('data-post-id');
                 this.loadPost(postId);
                 this.setActivePost(link);
+                
+                const searchInput = document.getElementById('blogSearchInput');
+                if (searchInput && searchInput.value) {
+                    searchInput.value = '';
+                    document.getElementById('blogSearchClear').classList.remove('visible');
+                }
             }
         });
         
@@ -285,6 +301,238 @@ class MarkdownBlogManager {
                 }
             }
         });
+    }
+    
+    setupSearchFunctionality() {
+        const searchInput = document.getElementById('blogSearchInput');
+        const searchClear = document.getElementById('blogSearchClear');
+        
+        if (!searchInput) return;
+        
+        let searchTimeout;
+        
+        searchInput.addEventListener('input', (e) => {
+            clearTimeout(searchTimeout);
+            const query = e.target.value.trim();
+            
+            if (query.length > 0) {
+                searchClear.classList.add('visible');
+            } else {
+                searchClear.classList.remove('visible');
+            }
+            
+            searchTimeout = setTimeout(() => {
+                this.performSearch(query);
+            }, 300);
+        });
+        
+        if (searchClear) {
+            searchClear.addEventListener('click', () => {
+                searchInput.value = '';
+                searchClear.classList.remove('visible');
+                this.clearSearch();
+            });
+        }
+        
+        searchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                searchInput.blur();
+                if (searchInput.value) {
+                    searchInput.value = '';
+                    searchClear.classList.remove('visible');
+                    this.clearSearch();
+                }
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                const firstResult = document.querySelector('.blog-post-link');
+                if (firstResult) {
+                    firstResult.click();
+                    searchInput.blur();
+                }
+            }
+        });
+        
+        document.addEventListener('keydown', (e) => {
+            if (e.key === '/' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+                if (document.activeElement.tagName !== 'INPUT' && 
+                    document.activeElement.tagName !== 'TEXTAREA') {
+                    e.preventDefault();
+                    searchInput.focus();
+                }
+            }
+        });
+    }
+    
+    // ============ FLOATING NAVBAR (BRIAN LOVIN STYLE) ============
+    setupFloatingNavbar() {
+        // Create the floating navbar element
+        const createFloatingNavbar = () => {
+            const navbar = document.createElement('div');
+            navbar.className = 'floating-navbar';
+            navbar.innerHTML = `
+                <div class="floating-navbar-title" id="floatingTitle"></div>
+                <div class="floating-navbar-date" id="floatingDate"></div>
+            `;
+            document.body.appendChild(navbar);
+            return navbar;
+        };
+
+        // Get or create the floating navbar
+        let floatingNavbar = document.querySelector('.floating-navbar');
+        if (!floatingNavbar) {
+            floatingNavbar = createFloatingNavbar();
+        }
+
+        const floatingTitle = document.getElementById('floatingTitle');
+        const floatingDate = document.getElementById('floatingDate');
+        const originalHeader = document.querySelector('.blog-article-header');
+
+        if (!originalHeader || !floatingTitle || !floatingDate) return;
+
+        // Update floating navbar content with current post
+        const updateFloatingNavbar = () => {
+            const title = document.querySelector('.blog-article-title');
+            const date = document.querySelector('.blog-article-date');
+            
+            if (title && date) {
+                floatingTitle.textContent = title.textContent;
+                floatingDate.textContent = date.textContent;
+            }
+        };
+
+        // Initial update
+        updateFloatingNavbar();
+
+        // Set up Intersection Observer to watch the original header
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        // Original header is visible - hide floating navbar
+                        floatingNavbar.classList.remove('visible');
+                    } else {
+                        // Original header is out of view - show floating navbar
+                        floatingNavbar.classList.add('visible');
+                    }
+                });
+            },
+            {
+                // Trigger when header is completely out of view
+                threshold: 0,
+                rootMargin: '0px 0px 0px 0px'
+            }
+        );
+
+        // Start observing the original header
+        observer.observe(originalHeader);
+
+        // Store references for cleanup
+        this.floatingNavbarObserver = observer;
+        this.floatingNavbarElement = floatingNavbar;
+        this.updateFloatingNavbar = updateFloatingNavbar;
+
+        console.log('✨ Floating navbar enabled (Brian Lovin style)');
+    }
+    // ============ END FLOATING NAVBAR ============
+    
+    performSearch(query) {
+        const blogPostsList = document.getElementById('blogPostsList');
+        
+        if (!query) {
+            this.clearSearch();
+            return;
+        }
+        
+        console.log('🔍 Searching for:', query);
+        
+        const filteredPosts = this.posts.filter(post => {
+            const searchableText = [
+                post.title,
+                post.excerpt || '',
+                post.content || ''
+            ].join(' ').toLowerCase();
+            
+            return searchableText.includes(query.toLowerCase());
+        });
+        
+        blogPostsList.classList.add('search-active');
+        this.renderSearchResults(filteredPosts, query);
+    }
+
+    renderSearchResults(posts, searchTerm) {
+        const blogPostsList = document.getElementById('blogPostsList');
+        
+        if (!blogPostsList) return;
+        
+        blogPostsList.innerHTML = '';
+        
+        if (posts.length === 0) {
+            const noResults = document.createElement('li');
+            noResults.className = 'blog-post-item search-no-results';
+            noResults.innerHTML = `
+                <div class="search-no-results-icon">
+                    <i class="fas fa-search"></i>
+                </div>
+                <p class="search-no-results-text">
+                    No posts found for "${searchTerm}"
+                </p>
+            `;
+            blogPostsList.appendChild(noResults);
+            return;
+        }
+        
+        posts.forEach((post, index) => {
+            const listItem = document.createElement('li');
+            listItem.className = 'blog-post-item search-result';
+            
+            const link = document.createElement('a');
+            link.className = 'blog-post-link';
+            link.setAttribute('data-post-id', post.id);
+            link.href = `#${post.id}`;
+            
+            const highlightedTitle = this.highlightSearchTerm(post.title, searchTerm);
+            
+            link.innerHTML = `
+                <h3 class="blog-post-title">${highlightedTitle}</h3>
+                <p class="blog-post-date">${this.escapeHtml(post.date)}</p>
+            `;
+            
+            link.style.animationDelay = `${index * 50}ms`;
+            
+            listItem.appendChild(link);
+            blogPostsList.appendChild(listItem);
+        });
+        
+        console.log(`✅ Found ${posts.length} posts for "${searchTerm}"`);
+    }
+
+    highlightSearchTerm(text, searchTerm) {
+        if (!searchTerm) return this.escapeHtml(text);
+        
+        const escapedText = this.escapeHtml(text);
+        const escapedSearchTerm = this.escapeHtml(searchTerm);
+        
+        const regex = new RegExp(`(${escapedSearchTerm})`, 'gi');
+        return escapedText.replace(regex, '<span class="search-highlight">$1</span>');
+    }
+
+    clearSearch() {
+        const blogPostsList = document.getElementById('blogPostsList');
+        
+        if (blogPostsList) {
+            blogPostsList.classList.remove('search-active');
+        }
+        
+        this.renderBlogList();
+        
+        if (this.currentPost) {
+            const activeLink = document.querySelector(`[data-post-id="${this.currentPost.id}"]`);
+            if (activeLink) {
+                this.setActivePost(activeLink);
+            }
+        }
+        
+        console.log('🔄 Search cleared, restored original list');
     }
     
     loadDefaultPost() {
@@ -353,15 +601,14 @@ class MarkdownBlogManager {
         this.posts = [
             {
                 "id": "fallback-test",
-                "title": "Markdown System Ready",
-                "date": "June 9, 2025",
-                "excerpt": "Your markdown blog system is set up and ready to use!",
-                "content": "<p>✅ The markdown blog system is working!</p><p>Create your first post by:</p><ol><li>Adding a <code>.md</code> file to the <code>blogs/</code> folder</li><li>Adding an entry to <code>blog.json</code></li><li>Refreshing the page</li></ol>"
+                "title": "Blog System Ready",
+                "date": "June 15, 2025",
+                "excerpt": "Your blog system is set up and ready to use!",
+                "content": "<p>✅ The blog system is working!</p><p>Create your first post by:</p><ol><li>Adding a <code>.md</code> file to the <code>blogs/</code> folder</li><li>Adding an entry to <code>blog.json</code></li><li>Refreshing the page</li></ol>"
             }
         ];
     }
     
-    // Utility methods
     escapeHtml(text) {
         const div = document.createElement('div');
         div.textContent = text;
@@ -385,232 +632,6 @@ class MarkdownBlogManager {
             this.updateDarkModeButton(newTheme);
         });
     }
-
-    // Enhanced search functionality for blog.js
-
-// Add these methods to your MarkdownBlogManager class
-
-setupSearchFunctionality() {
-    const searchInput = document.getElementById('blogSearchInput');
-    const searchClear = document.getElementById('blogSearchClear');
-    const blogPostsList = document.getElementById('blogPostsList');
-    
-    if (!searchInput) return;
-    
-    let searchTimeout;
-    let currentSearchTerm = '';
-    
-    // Search input handler
-    searchInput.addEventListener('input', (e) => {
-        clearTimeout(searchTimeout);
-        const query = e.target.value.trim();
-        
-        // Show/hide clear button
-        if (query.length > 0) {
-            searchClear.classList.add('visible');
-        } else {
-            searchClear.classList.remove('visible');
-        }
-        
-        // Debounce search
-        searchTimeout = setTimeout(() => {
-            this.performSearch(query);
-        }, 300);
-    });
-    
-    // Clear search handler
-    if (searchClear) {
-        searchClear.addEventListener('click', () => {
-            searchInput.value = '';
-            searchClear.classList.remove('visible');
-            this.clearSearch();
-        });
-    }
-    
-    // Keyboard shortcuts
-    searchInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-            searchInput.blur();
-            if (searchInput.value) {
-                searchInput.value = '';
-                searchClear.classList.remove('visible');
-                this.clearSearch();
-            }
-        } else if (e.key === 'Enter') {
-            e.preventDefault();
-            // Focus first search result if any
-            const firstResult = document.querySelector('.blog-post-link');
-            if (firstResult) {
-                firstResult.click();
-                searchInput.blur();
-            }
-        }
-    });
-    
-    // Global keyboard shortcut (/ to focus search)
-    document.addEventListener('keydown', (e) => {
-        if (e.key === '/' && !e.ctrlKey && !e.metaKey && !e.altKey) {
-            // Only if not typing in an input field
-            if (document.activeElement.tagName !== 'INPUT' && 
-                document.activeElement.tagName !== 'TEXTAREA') {
-                e.preventDefault();
-                searchInput.focus();
-            }
-        }
-    });
-}
-
-    performSearch(query) {
-        const blogPostsList = document.getElementById('blogPostsList');
-        
-        if (!query) {
-            this.clearSearch();
-            return;
-        }
-        
-        console.log('🔍 Searching for:', query);
-        
-        const filteredPosts = this.posts.filter(post => {
-            const searchableText = [
-                post.title,
-                post.excerpt || '',
-                post.content || ''
-            ].join(' ').toLowerCase();
-            
-            return searchableText.includes(query.toLowerCase());
-        });
-        
-        // Add search state to list
-        blogPostsList.classList.add('search-active');
-        
-        this.renderSearchResults(filteredPosts, query);
-    }
-
-    renderSearchResults(posts, searchTerm) {
-        const blogPostsList = document.getElementById('blogPostsList');
-        
-        if (!blogPostsList) return;
-        
-        blogPostsList.innerHTML = '';
-        
-        if (posts.length === 0) {
-            const noResults = document.createElement('li');
-            noResults.className = 'blog-post-item search-no-results';
-            noResults.innerHTML = `
-                <div class="search-no-results-icon">
-                    <i class="fas fa-search"></i>
-                </div>
-                <p class="search-no-results-text">
-                    No posts found for "${searchTerm}"
-                </p>
-            `;
-            blogPostsList.appendChild(noResults);
-            return;
-        }
-        
-        posts.forEach((post, index) => {
-            const listItem = document.createElement('li');
-            listItem.className = 'blog-post-item search-result';
-            
-            const link = document.createElement('a');
-            link.className = 'blog-post-link';
-            link.setAttribute('data-post-id', post.id);
-            link.href = `#${post.id}`;
-            
-            // Highlight search term in title
-            const highlightedTitle = this.highlightSearchTerm(post.title, searchTerm);
-            
-            link.innerHTML = `
-                <h3 class="blog-post-title">${highlightedTitle}</h3>
-                <p class="blog-post-date">${this.escapeHtml(post.date)}</p>
-            `;
-            
-            // Add animation delay for staggered effect
-            link.style.animationDelay = `${index * 50}ms`;
-            
-            listItem.appendChild(link);
-            blogPostsList.appendChild(listItem);
-        });
-        
-        console.log(`✅ Found ${posts.length} posts for "${searchTerm}"`);
-    }
-
-    highlightSearchTerm(text, searchTerm) {
-        if (!searchTerm) return this.escapeHtml(text);
-        
-        const escapedText = this.escapeHtml(text);
-        const escapedSearchTerm = this.escapeHtml(searchTerm);
-        
-        const regex = new RegExp(`(${escapedSearchTerm})`, 'gi');
-        return escapedText.replace(regex, '<span class="search-highlight">$1</span>');
-    }
-
-    clearSearch() {
-        const blogPostsList = document.getElementById('blogPostsList');
-        const searchInput = document.getElementById('blogSearchInput');
-        
-        // Remove search state
-        if (blogPostsList) {
-            blogPostsList.classList.remove('search-active');
-        }
-        
-        // Restore original blog list
-        this.renderBlogList();
-        
-        // Restore active post state if there was one
-        if (this.currentPost) {
-            const activeLink = document.querySelector(`[data-post-id="${this.currentPost.id}"]`);
-            if (activeLink) {
-                this.setActivePost(activeLink);
-            }
-        }
-        
-        console.log('🔄 Search cleared, restored original list');
-    }
-
-    // Update your initializeApp method to include search setup
-    async initializeApp() {
-        this.initializeElements();
-        await this.loadBlogIndex();
-        this.renderBlogList();
-        this.loadDefaultPost();
-        this.setupEventListeners();
-        this.setupSearchFunctionality(); // Add this line
-        this.initializeDarkMode();
-        
-        console.log('✅ Markdown Blog Manager initialized successfully');
-        console.log('📚 Available commands:');
-        console.log('- Press "/" to focus search');
-        console.log('- blogManager.navigateToNextPost() (or Ctrl/Cmd + J)');
-        console.log('- blogManager.navigateToPreviousPost() (or Ctrl/Cmd + K)');
-    }
-
-    // Also update your setupEventListeners method to handle search results clicks
-    setupEventListeners() {
-        if (!this.blogPostsList) return;
-        
-        // Blog post navigation (works for both regular and search results)
-        this.blogPostsList.addEventListener('click', (e) => {
-            e.preventDefault();
-            
-            const link = e.target.closest('.blog-post-link');
-            if (link && !this.isLoading) {
-                const postId = link.getAttribute('data-post-id');
-                this.loadPost(postId);
-                this.setActivePost(link);
-                
-                // Clear search when selecting a post
-                const searchInput = document.getElementById('blogSearchInput');
-                if (searchInput && searchInput.value) {
-                    searchInput.value = '';
-                    document.getElementById('blogSearchClear').classList.remove('visible');
-                    // Don't clear search results immediately, let user see which post they selected
-                }
-            }
-        });
-        
-        // ... rest of your existing event listeners
-    }
     
     updateDarkModeButton(theme) {
         const darkModeBtn = document.getElementById('darkModeBtn');
@@ -628,7 +649,16 @@ setupSearchFunctionality() {
         }
     }
     
-    // Public API methods
+    // Cleanup method
+    cleanup() {
+        if (this.floatingNavbarObserver) {
+            this.floatingNavbarObserver.disconnect();
+        }
+        if (this.floatingNavbarElement) {
+            this.floatingNavbarElement.remove();
+        }
+    }
+    
     clearCache() {
         this.markdownCache.clear();
         console.log('🗑️ Markdown cache cleared');
@@ -643,7 +673,7 @@ setupSearchFunctionality() {
     }
 }
 
-// Initialize the markdown blog manager
+// Initialize the blog manager
 let blogManager;
 
 if (document.readyState === 'loading') {
@@ -654,7 +684,7 @@ if (document.readyState === 'loading') {
 
 function initializeBlog() {
     blogManager = new MarkdownBlogManager();
-    window.blogManager = blogManager; // Global access for debugging
+    window.blogManager = blogManager;
 }
 
 if (typeof module !== 'undefined' && module.exports) {
