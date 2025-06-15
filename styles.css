@@ -195,8 +195,8 @@ body {
 /* Dark Mode Toggle */
 .dark-mode-toggle {
     position: fixed;
-    top: 24px;
-    right: 24px;
+    top: 60px;
+    right: 26px;
     z-index: 1000;
 }
 
