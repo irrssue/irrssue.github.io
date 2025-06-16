@@ -1,29 +1,3 @@
-// Development Notice Protection
-document.addEventListener('DOMContentLoaded', function() {
-    const overlay = document.getElementById('devNoticeOverlay');
-    
-    if (overlay) {
-        // Disable right-click on overlay
-        overlay.addEventListener('contextmenu', function(e) {
-            e.preventDefault();
-        });
-        
-        // Disable escape key
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                e.preventDefault();
-                e.stopPropagation();
-            }
-        });
-        
-        console.log('🚧 Development notice active - remove from HTML to disable');
-    }
-});
-
-
-
-
-
 // Enhanced Dark Mode Functionality with localStorage persistence
 class DarkModeToggle {
     constructor() {
@@ -110,7 +84,7 @@ class SPARouter {
         });
         
         // Load initial page based on URL hash
-        const initialPage = this.getPageFromHash() || 'writing'; // Default to writing since this is writing.html
+        const initialPage = this.getPageFromHash() || 'home';
         this.navigateTo(initialPage, true);
     }
     
@@ -232,8 +206,8 @@ class Navigation {
     }
 }
 
-// Enhanced Interactions (keeping existing functionality)
-class EnhancedInteractions {
+// Enhanced Grid Interactions
+class GridInteractions {
     constructor() {
         this.init();
     }
@@ -242,14 +216,15 @@ class EnhancedInteractions {
         this.addHoverEffects();
         this.addClickAnimations();
         this.addKeyboardNavigation();
+        this.setupGridAnimations();
     }
     
     addHoverEffects() {
-        const items = document.querySelectorAll('.work-item, .project-item, .post-item');
+        const items = document.querySelectorAll('.grid-item, .work-grid-item, .project-item, .post-item');
         
         items.forEach(item => {
             item.addEventListener('mouseenter', () => {
-                item.style.transform = 'translateY(-2px)';
+                item.style.transform = 'translateY(-1px)';
             });
             
             item.addEventListener('mouseleave', () => {
@@ -259,7 +234,7 @@ class EnhancedInteractions {
     }
     
     addClickAnimations() {
-        const clickableElements = document.querySelectorAll('button, .sidebar-link, .social-link, .project-link, .post-link');
+        const clickableElements = document.querySelectorAll('button, .sidebar-link, .grid-item, .work-grid-item, .project-link, .post-link');
         
         clickableElements.forEach(element => {
             element.addEventListener('click', function(e) {
@@ -319,11 +294,102 @@ class EnhancedInteractions {
                 e.preventDefault();
                 document.getElementById('darkModeBtn').click();
             }
+            
+            // Navigate grid items with arrow keys
+            this.handleGridKeyNavigation(e);
         });
+    }
+    
+    handleGridKeyNavigation(e) {
+        const focusedElement = document.activeElement;
+        if (!focusedElement.classList.contains('grid-item') && 
+            !focusedElement.classList.contains('work-grid-item')) return;
+        
+        const container = focusedElement.closest('.grid-container');
+        if (!container) return;
+        
+        const items = Array.from(container.querySelectorAll('.grid-item, .work-grid-item'));
+        const currentIndex = items.indexOf(focusedElement);
+        
+        let newIndex = currentIndex;
+        
+        switch(e.key) {
+            case 'ArrowDown':
+                e.preventDefault();
+                newIndex = Math.min(currentIndex + 1, items.length - 1);
+                break;
+            case 'ArrowUp':
+                e.preventDefault();
+                newIndex = Math.max(currentIndex - 1, 0);
+                break;
+            case 'Home':
+                e.preventDefault();
+                newIndex = 0;
+                break;
+            case 'End':
+                e.preventDefault();
+                newIndex = items.length - 1;
+                break;
+        }
+        
+        if (newIndex !== currentIndex) {
+            items[newIndex].focus();
+        }
+    }
+    
+    setupGridAnimations() {
+        // Animate grid items on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animation = 'fadeInUp 0.6s ease-out forwards';
+                }
+            });
+        }, observerOptions);
+        
+        // Observe all grid sections
+        document.querySelectorAll('.grid-section').forEach(section => {
+            observer.observe(section);
+        });
+        
+        // Add CSS for fade in animation
+        if (!document.querySelector('#grid-animations')) {
+            const style = document.createElement('style');
+            style.id = 'grid-animations';
+            style.textContent = `
+                @keyframes fadeInUp {
+                    from {
+                        opacity: 0;
+                        transform: translateY(20px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+                
+                .grid-section {
+                    opacity: 0;
+                }
+                
+                @media (prefers-reduced-motion: reduce) {
+                    .grid-section {
+                        opacity: 1;
+                        animation: none !important;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        }
     }
 }
 
-// Accessibility Enhancements (keeping existing functionality)
+// Accessibility Enhancements
 class AccessibilityEnhancements {
     constructor() {
         this.init();
@@ -334,15 +400,39 @@ class AccessibilityEnhancements {
         this.addSkipNavigation();
         this.handleReducedMotion();
         this.addFocusIndicators();
+        this.setupKeyboardTraps();
     }
     
     addAriaLabels() {
         const sidebar = document.querySelector('.sidebar');
-        sidebar.setAttribute('role', 'navigation');
-        sidebar.setAttribute('aria-label', 'Main navigation');
+        if (sidebar) {
+            sidebar.setAttribute('role', 'navigation');
+            sidebar.setAttribute('aria-label', 'Main navigation');
+        }
         
         const mainContent = document.querySelector('.main-content');
-        mainContent.setAttribute('role', 'main');
+        if (mainContent) {
+            mainContent.setAttribute('role', 'main');
+        }
+        
+        // Add aria labels to grid items
+        document.querySelectorAll('.grid-item').forEach((item, index) => {
+            const label = item.querySelector('.item-label');
+            if (label) {
+                item.setAttribute('aria-label', label.textContent);
+            }
+            item.setAttribute('tabindex', '0');
+        });
+        
+        // Add aria labels to work items
+        document.querySelectorAll('.work-grid-item').forEach((item, index) => {
+            const company = item.querySelector('.work-company');
+            const role = item.querySelector('.work-role');
+            if (company && role) {
+                item.setAttribute('aria-label', `${company.textContent}, ${role.textContent}`);
+            }
+            item.setAttribute('tabindex', '0');
+        });
     }
     
     addSkipNavigation() {
@@ -397,7 +487,8 @@ class AccessibilityEnhancements {
             style.textContent = `
                 .sidebar-link:focus,
                 .dark-mode-btn:focus,
-                .social-link:focus,
+                .grid-item:focus,
+                .work-grid-item:focus,
                 .project-link:focus,
                 .post-link:focus {
                     outline: 2px solid var(--accent-color);
@@ -405,7 +496,9 @@ class AccessibilityEnhancements {
                 }
                 
                 .sidebar-link:focus-visible,
-                .dark-mode-btn:focus-visible {
+                .dark-mode-btn:focus-visible,
+                .grid-item:focus-visible,
+                .work-grid-item:focus-visible {
                     outline: 2px solid var(--accent-color);
                     outline-offset: 2px;
                 }
@@ -413,9 +506,34 @@ class AccessibilityEnhancements {
             document.head.appendChild(style);
         }
     }
+    
+    setupKeyboardTraps() {
+        // Ensure grid items are focusable and properly navigable
+        document.querySelectorAll('.grid-container').forEach(container => {
+            const items = container.querySelectorAll('.grid-item, .work-grid-item');
+            
+            items.forEach((item, index) => {
+                // Make items focusable
+                if (!item.hasAttribute('tabindex')) {
+                    item.setAttribute('tabindex', '0');
+                }
+                
+                // Add role for screen readers
+                item.setAttribute('role', 'button');
+                
+                // Handle Enter and Space key activation
+                item.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        item.click();
+                    }
+                });
+            });
+        });
+    }
 }
 
-// Mobile Navigation Handler (keeping existing functionality)
+// Mobile Navigation Handler
 class MobileNavigation {
     constructor() {
         this.sidebar = document.querySelector('.sidebar');
@@ -462,9 +580,11 @@ class MobileNavigation {
     }
     
     handleMobileInteractions() {
-        this.overlay.addEventListener('click', () => {
-            this.closeMobileNav();
-        });
+        if (this.overlay) {
+            this.overlay.addEventListener('click', () => {
+                this.closeMobileNav();
+            });
+        }
         
         document.querySelectorAll('.sidebar-link').forEach(link => {
             link.addEventListener('click', () => {
@@ -490,9 +610,13 @@ class MobileNavigation {
     }
     
     openMobileNav() {
-        this.sidebar.style.transform = 'translateX(0)';
-        this.overlay.style.display = 'block';
-        this.overlay.style.opacity = '1';
+        if (this.sidebar) {
+            this.sidebar.style.transform = 'translateX(0)';
+        }
+        if (this.overlay) {
+            this.overlay.style.display = 'block';
+            this.overlay.style.opacity = '1';
+        }
         this.isOpen = true;
         document.body.style.overflow = 'hidden';
         
@@ -501,11 +625,15 @@ class MobileNavigation {
     }
     
     closeMobileNav() {
-        this.sidebar.style.transform = 'translateX(-100%)';
-        this.overlay.style.opacity = '0';
-        setTimeout(() => {
-            this.overlay.style.display = 'none';
-        }, 300);
+        if (this.sidebar) {
+            this.sidebar.style.transform = 'translateX(-100%)';
+        }
+        if (this.overlay) {
+            this.overlay.style.opacity = '0';
+            setTimeout(() => {
+                this.overlay.style.display = 'none';
+            }, 300);
+        }
         this.isOpen = false;
         document.body.style.overflow = '';
         
@@ -517,22 +645,28 @@ class MobileNavigation {
         window.addEventListener('resize', () => {
             if (window.innerWidth <= 768) {
                 this.mobileToggle.style.display = 'flex';
-                this.overlay.style.cssText = `
-                    position: fixed;
-                    top: 0;
-                    left: 0;
-                    width: 100%;
-                    height: 100%;
-                    background: rgba(0, 0, 0, 0.5);
-                    z-index: 999;
-                    display: none;
-                    opacity: 0;
-                    transition: opacity 0.3s ease;
-                `;
+                if (this.overlay) {
+                    this.overlay.style.cssText = `
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        background: rgba(0, 0, 0, 0.5);
+                        z-index: 999;
+                        display: none;
+                        opacity: 0;
+                        transition: opacity 0.3s ease;
+                    `;
+                }
             } else {
                 this.mobileToggle.style.display = 'none';
-                this.sidebar.style.transform = '';
-                this.overlay.style.display = 'none';
+                if (this.sidebar) {
+                    this.sidebar.style.transform = '';
+                }
+                if (this.overlay) {
+                    this.overlay.style.display = 'none';
+                }
                 this.isOpen = false;
                 document.body.style.overflow = '';
             }
@@ -543,14 +677,66 @@ class MobileNavigation {
     }
 }
 
+// Performance Monitor
+class PerformanceMonitor {
+    constructor() {
+        this.metrics = {
+            loadTime: 0,
+            domContentLoaded: 0,
+            firstPaint: 0,
+            firstContentfulPaint: 0
+        };
+        this.init();
+    }
+    
+    init() {
+        // Measure load time
+        window.addEventListener('load', () => {
+            this.metrics.loadTime = performance.now();
+            this.logMetrics();
+        });
+        
+        // Measure DOM content loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            this.metrics.domContentLoaded = performance.now();
+        });
+        
+        // Measure paint metrics
+        if ('PerformanceObserver' in window) {
+            const observer = new PerformanceObserver((list) => {
+                const entries = list.getEntries();
+                entries.forEach(entry => {
+                    if (entry.name === 'first-paint') {
+                        this.metrics.firstPaint = entry.startTime;
+                    }
+                    if (entry.name === 'first-contentful-paint') {
+                        this.metrics.firstContentfulPaint = entry.startTime;
+                    }
+                });
+            });
+            
+            observer.observe({ entryTypes: ['paint'] });
+        }
+    }
+    
+    logMetrics() {
+        console.log('📊 Performance Metrics:', this.metrics);
+    }
+    
+    getMetrics() {
+        return this.metrics;
+    }
+}
+
 // Initialize all functionality when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize all classes
-    new DarkModeToggle();
-    new Navigation();
-    new EnhancedInteractions();
-    new AccessibilityEnhancements();
-    new MobileNavigation();
+    const darkMode = new DarkModeToggle();
+    const navigation = new Navigation();
+    const gridInteractions = new GridInteractions();
+    const accessibility = new AccessibilityEnhancements();
+    const mobileNav = new MobileNavigation();
+    const perfMonitor = new PerformanceMonitor();
     
     // Add loading animation
     document.body.classList.add('loaded');
@@ -560,19 +746,30 @@ document.addEventListener('DOMContentLoaded', () => {
     🚀 Enhanced Portfolio Website Loaded Successfully!
     
     New Features:
-    - Single Page Application (SPA) Navigation
-    - Persistent Dark Mode across pages
-    - Client-side Routing (no page refreshes)
+    - Grid-based Layout System
     - Enhanced Accessibility
+    - Performance Monitoring
+    - Mobile-first Responsive Design
+    - Advanced Keyboard Navigation
     
-    Original Features:
+    Existing Features:
     - Dark/Light Mode Toggle (Ctrl/Cmd + D)
-    - Responsive Navigation
+    - Single Page Application Navigation
     - Smooth Animations
-    - Mobile Friendly
+    - Focus Management
     
     Built with ❤️ for modern web development
     `);
+    
+    // Expose utilities to global scope for debugging
+    window.portfolio = {
+        darkMode,
+        navigation,
+        gridInteractions,
+        accessibility,
+        mobileNav,
+        perfMonitor
+    };
 });
 
 // Add loading styles
