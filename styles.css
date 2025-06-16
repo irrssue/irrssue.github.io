@@ -1,4 +1,4 @@
-.dev-notice-overlay {
+/* .dev-notice-overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -178,7 +178,7 @@
 [data-theme="light"] .dev-notice-footer {
     color: #999999;
     border-color: #e5e5e5;
-}
+} */
 
 
 /* the actual main code start form this line */
