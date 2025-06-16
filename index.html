@@ -60,18 +60,18 @@
 
 
     <!-- Dark Mode Toggle -->
+
+    <!-- Dark Mode Toggle -->
     <div class="dark-mode-toggle">
         <button id="darkModeBtn" class="dark-mode-btn" aria-label="Toggle dark mode">
             <i class="fas fa-moon"></i>
         </button>
-
-        
     </div>
 
     <div class="layout">
         <nav class="sidebar">
             <div class="sidebar-header">
-                <span class="sidebar-title">Saw Thura Zaw</span>
+                <span class="sidebar-title">Liam Rolert</span>
             </div>
             <ul class="sidebar-menu">
                 <li>
@@ -102,11 +102,8 @@
                     </a>
                 </li>
             </ul>
-
-
             <div class="sidebar-section-label">Projects</div>
             <ul class="sidebar-menu">
-
                 <li>
                     <a href="#" class="sidebar-link" target="_blank">
                         <span class="sidebar-icon"><i class="fas fa-newspaper"></i></span>
@@ -156,54 +153,55 @@
         </nav>
         
         <main class="main-content">
-            <!-- Hero Section -->
             <section id="home" class="hero-section">
                 <div class="intro-text">
                     <p class="intro-paragraph">
-                        Hey, I'm Liam. I'm a <strong>software engineer</strong>, <strong>full-stack developer</strong>, and <strong>CS student</strong>. I'm currently pursuing my degree while building modern web applications with Python and JavaScript.
+                        Hey, I'm Liam! I'm a <strong><a class="intro-link" href="https://github.com/irrssue">full-stack dev</a></strong>, CS student, and someone who's always building passion project or just tinkering with random ideas in Python and Javascript.
                     </p>
                     <p class="intro-paragraph">
-                        I'm passionate about creating digital solutions that solve real problems. Currently seeking opportunities in startups where I can make a meaningful impact while continuing to grow as a developer.
+                        Right now, I’m juggling <a href="https://www.bmcc.cuny.edu" class="intro-link">college</a> and <a href="https://github.com/irrssue?tab=repositories" class="intro-link">side projects</a>, learning as I go and <a href="writing/blog.html" class="intro-link">sharing</a> what I figure out along the way. I’m especially into clean UI, useful tools, and solving real-world problems (even if it’s just making something slightly less annoying).
                     </p>
                     <p class="intro-paragraph">
-                        I love learning new technologies, contributing to open-source projects, and turning complex challenges into elegant, user-friendly solutions.
+                        This site’s basically my little corner on the internet where I can tinker around and build whatever I want — feel free to poke around, check out my projects, or just say hi.
                     </p>
                 </div>
                 
-                <!-- Social Links -->
-                <div class="social-section">
+                <!-- Online Section with Grid Layout -->
+                <div class="grid-section">
                     <h3 class="section-title">Online</h3>
-                    <a href="https://www.instagram.com/irrssue/" target="_blank" class="social-row">
-                        <span class="social-label">Instagram</span>
-                        <div class="social-links">
-                            <span class="social-link action">Follow</span>
-                        </div>
-                    </a>
-                    
-                    <a href="https://www.youtube.com/@irrssue" target="_blank" class="social-row">
-                        <span class="social-label">YouTube</span>
-                        <div class="social-links">
-                            <span class="social-link action">Subscribe</span>
-                        </div>
-                    </a>
-                    
-                    <a href="https://www.linkedin.com/in/liamrolert/" target="_blank" class="social-row">
-                        <span class="social-label">LinkedIn</span>
-                        <div class="social-links">
-                            <span class="social-link action">Connect</span>
-                        </div>
-                    </a>
-                    
-                    <a href="https://github.com/irrssue" target="_blank" class="social-row">
-                        <span class="social-label">GitHub</span>
-                        <div class="social-links">
-                            <span class="social-link action">Follow</span>
-                        </div>
-                    </a>
+                    <div class="grid-container">
+                        <a href="https://www.instagram.com/irrssue/" target="_blank" class="grid-item">
+                            <span class="item-label">Instagram</span>
+                            <div class="item-action">
+                                <span class="item-link">Follow</span>
+                            </div>
+                        </a>
+                        
+                        <a href="https://www.youtube.com/@irrssue" target="_blank" class="grid-item">
+                            <span class="item-label">YouTube</span>
+                            <div class="item-action">
+                                <span class="item-link">Subscribe</span>
+                            </div>
+                        </a>
+                        
+                        <a href="https://www.linkedin.com/in/liamrolert/" target="_blank" class="grid-item">
+                            <span class="item-label">LinkedIn</span>
+                            <div class="item-action">
+                                <span class="item-link">Connect</span>
+                            </div>
+                        </a>
+                        
+                        <a href="https://github.com/irrssue" target="_blank" class="grid-item">
+                            <span class="item-label">GitHub</span>
+                            <div class="item-action">
+                                <span class="item-link">Follow</span>
+                            </div>
+                        </a>
+                    </div>
                 </div>
                 
                 <!-- Location Section -->
-                <div class="location-section">
+                <div class="grid-section">
                     <h3 class="section-title">Where</h3>
                     <div class="location-content">
                         <div class="map-background"></div>
@@ -215,11 +213,11 @@
                     </div>
                 </div>
                 
-                <!-- Work Experience -->
-                <div class="work-section">
+                <!-- Work Experience with Grid Layout -->
+                <div class="grid-section">
                     <h3 class="section-title">Work</h3>
-                    <div class="work-list">
-                        <div class="work-item">
+                    <div class="grid-container">
+                        <div class="work-grid-item">
                             <div class="work-details">
                                 <span class="work-company">Freelance</span>
                                 <span class="work-role">Full-Stack Developer</span>
@@ -227,7 +225,7 @@
                             <span class="work-period">2024—</span>
                         </div>
                         
-                        <div class="work-item">
+                        <div class="work-grid-item">
                             <div class="work-details">
                                 <span class="work-company">Personal Projects</span>
                                 <span class="work-role">Software Engineer</span>
@@ -235,7 +233,7 @@
                             <span class="work-period">2023—24</span>
                         </div>
                         
-                        <div class="work-item">
+                        <div class="work-grid-item">
                             <div class="work-details">
                                 <span class="work-company">University</span>
                                 <span class="work-role">CS Student</span>
@@ -245,29 +243,29 @@
                     </div>
                 </div>
                 
-                <!-- Projects Section -->
-                <div class="projects-section">
+                <!-- Projects Section with Grid Layout -->
+                <div class="grid-section">
                     <h3 class="section-title">Projects</h3>
-                    <div class="project-list">
-                        <div class="project-item">
-                            <a href="#" class="project-link">Task Management Platform</a>
-                        </div>
+                    <div class="grid-container">
+                        <a href="#" class="grid-item">
+                            <span class="item-label">Task Management Platform</span>
+                        </a>
                         
-                        <div class="project-item">
-                            <a href="#" class="project-link">Campus Event Finder</a>
-                        </div>
+                        <a href="#" class="grid-item">
+                            <span class="item-label">Campus Event Finder</span>
+                        </a>
                         
-                        <div class="project-item">
-                            <a href="#" class="project-link">Weather Analytics API</a>
-                        </div>
+                        <a href="#" class="grid-item">
+                            <span class="item-label">Weather Analytics API</span>
+                        </a>
                         
-                        <div class="project-item">
-                            <a href="#" class="project-link">Portfolio Website</a>
-                        </div>
+                        <a href="#" class="grid-item">
+                            <span class="item-label">Portfolio Website</span>
+                        </a>
                         
-                        <div class="project-item">
-                            <a href="#" class="project-link">Security Toolkit</a>
-                        </div>
+                        <a href="#" class="grid-item">
+                            <span class="item-label">Security Toolkit</span>
+                        </a>
                     </div>
                 </div>
             </section>
