@@ -64,6 +64,7 @@ class DarkModeToggle {
 }
 
 // Single Page Application Router
+// Enhanced Single Page Application Router
 class SPARouter {
     constructor() {
         this.routes = {
@@ -71,53 +72,116 @@ class SPARouter {
             'writing': 'writing'
         };
         this.currentPage = null;
+        this.blogPosts = [];
         this.init();
     }
     
-    init() {
-        // Handle navigation clicks
+    async init() {
         this.setupNavigation();
+        await this.loadBlogPosts();
+        this.handleInitialRoute();
         
         // Handle browser back/forward buttons
         window.addEventListener('popstate', (e) => {
-            this.handleRouteChange(e.state?.page || 'home');
+            const page = e.state?.page || this.getPageFromHash() || 'home';
+            this.navigateTo(page, false);
         });
-        
-        // Load initial page based on URL hash
-        const initialPage = this.getPageFromHash() || 'home';
-        this.navigateTo(initialPage, true);
     }
     
     setupNavigation() {
-        const navLinks = document.querySelectorAll('.sidebar-link[data-page]');
-        
-        navLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
+        // Handle SPA navigation links
+        document.addEventListener('click', (e) => {
+            const spaLink = e.target.closest('.spa-nav');
+            if (spaLink) {
                 e.preventDefault();
-                const page = link.getAttribute('data-page');
-                this.navigateTo(page);
-            });
+                const page = spaLink.getAttribute('data-page');
+                if (page) {
+                    this.navigateTo(page);
+                }
+            }
         });
     }
     
-    getPageFromHash() {
-        const hash = window.location.hash.slice(1); // Remove #
-        return this.routes[hash] ? hash : null;
-    }
-    
-    navigateTo(page, isInitial = false) {
-        if (!this.routes[page] || this.currentPage === page) return;
-        
-        // Update URL without page reload
-        if (!isInitial) {
-            history.pushState({ page }, '', `#${page}`);
+    async loadBlogPosts() {
+        try {
+            // Try to load from your existing blog.json
+            const response = await fetch('./writing/blog.json');
+            if (response.ok) {
+                const data = await response.json();
+                this.blogPosts = data.posts || [];
+            } else {
+                throw new Error('Could not load blog.json');
+            }
+        } catch (error) {
+            console.log('Using fallback blog posts');
+            // Fallback blog posts
+            this.blogPosts = [
+                {
+                    id: "team-communication-broken",
+                    title: "Team communication is broken",
+                    date: "August 7, 2024",
+                    excerpt: "How poor communication patterns are destroying team productivity and what we can do about it."
+                },
+                {
+                    id: "building-fullstack-app",
+                    title: "Building my first full-stack app",
+                    date: "July 15, 2024",
+                    excerpt: "Lessons learned from creating a task management platform with Django and React."
+                }
+            ];
         }
         
-        // Update page title
-        this.updatePageTitle(page);
+        this.renderBlogPosts();
+    }
+    
+    renderBlogPosts() {
+        const container = document.getElementById('blogPostsPreview');
+        if (!container) return;
         
-        // Handle route change
-        this.handleRouteChange(page);
+        container.innerHTML = this.blogPosts.map(post => `
+            <article class="blog-post-preview" onclick="router.openBlogPost('${post.id}')">
+                <h3>${this.escapeHtml(post.title)}</h3>
+                <div class="post-date">${this.escapeHtml(post.date)}</div>
+                <p class="post-excerpt">${this.escapeHtml(post.excerpt)}</p>
+            </article>
+        `).join('');
+    }
+    
+    openBlogPost(postId) {
+        // Navigate to your existing blog system
+        window.location.href = `./writing/blog.html#${postId}`;
+    }
+    
+    navigateTo(page, updateHistory = true) {
+        if (!this.routes[page] || this.currentPage === page) return;
+        
+        // Hide current page
+        const currentSection = document.getElementById(this.currentPage);
+        if (currentSection) {
+            currentSection.classList.remove('active');
+        }
+        
+        // Show new page
+        const newSection = document.getElementById(page);
+        if (newSection) {
+            newSection.classList.add('active');
+            this.currentPage = page;
+            
+            // Update page title
+            this.updatePageTitle(page);
+            
+            // Update active navigation
+            this.updateActiveNavigation(page);
+            
+            // Update URL without page refresh
+            if (updateHistory) {
+                const newUrl = page === 'home' ? '/' : `/#${page}`;
+                history.pushState({ page }, this.getPageTitle(page), newUrl);
+            }
+            
+            // Scroll to top for better UX
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
     }
     
     updatePageTitle(page) {
@@ -128,33 +192,17 @@ class SPARouter {
         document.title = titles[page] || 'Liam Rolert';
     }
     
-    handleRouteChange(page) {
-        // Hide all sections
-        const sections = document.querySelectorAll('main section');
-        sections.forEach(section => {
-            section.style.display = 'none';
-        });
-        
-        // Show target section
-        const targetSection = document.getElementById(page);
-        if (targetSection) {
-            targetSection.style.display = 'block';
-        }
-        
-        // Update active navigation
-        this.updateActiveNavigation(page);
-        
-        // Update current page
-        this.currentPage = page;
-        
-        // Scroll to top for better UX
-        window.scrollTo(0, 0);
+    getPageTitle(page) {
+        const titles = {
+            'home': 'Liam Rolert',
+            'writing': 'Writing - Liam Rolert'
+        };
+        return titles[page] || 'Liam Rolert';
     }
     
     updateActiveNavigation(page) {
         // Remove active class from all nav links
-        const navLinks = document.querySelectorAll('.sidebar-link');
-        navLinks.forEach(link => {
+        document.querySelectorAll('.sidebar-link').forEach(link => {
             link.classList.remove('active');
         });
         
@@ -163,6 +211,23 @@ class SPARouter {
         if (activeLink) {
             activeLink.classList.add('active');
         }
+    }
+    
+    getPageFromHash() {
+        const hash = window.location.hash.slice(1);
+        return this.routes[hash] ? hash : null;
+    }
+    
+    handleInitialRoute() {
+        const hash = this.getPageFromHash();
+        const initialPage = hash || 'home';
+        this.navigateTo(initialPage, false);
+    }
+    
+    escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
     }
 }
 
@@ -732,7 +797,8 @@ class PerformanceMonitor {
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize all classes
     const darkMode = new DarkModeToggle();
-    const navigation = new Navigation();
+    const spaRouter = new SPARouter();
+    window.router = spaRouter; // Make router globally accessible
     const gridInteractions = new GridInteractions();
     const accessibility = new AccessibilityEnhancements();
     const mobileNav = new MobileNavigation();

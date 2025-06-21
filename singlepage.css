@@ -1,0 +1,102 @@
+/* SPA Page Sections */
+.page-section {
+    display: none;
+    width: 100%;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.page-section.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Writing Page Styles */
+.writing-section {
+    max-width: 800px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 48px;
+}
+
+.writing-header {
+    margin-bottom: 48px;
+    margin-top: 80px;
+}
+
+.writing-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--text-strong);
+    margin-bottom: 16px;
+}
+
+.writing-subtitle {
+    font-size: 18px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+.blog-posts-preview {
+    display: grid;
+    gap: 24px;
+}
+
+.blog-post-preview {
+    padding: 24px;
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.blog-post-preview:hover {
+    border-color: var(--accent-color);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="dark"] .blog-post-preview:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.blog-post-preview h3 {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-strong);
+    margin-bottom: 8px;
+}
+
+.blog-post-preview .post-date {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+}
+
+.blog-post-preview .post-excerpt {
+    font-size: 15px;
+    color: var(--text-primary);
+    line-height: 1.6;
+}
+
+/* Mobile responsive for writing page */
+@media (max-width: 768px) {
+    .writing-section {
+        padding: 24px;
+        padding-top: 80px;
+    }
+
+    .writing-title {
+        font-size: 28px;
+    }
+}

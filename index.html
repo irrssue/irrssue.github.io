@@ -75,18 +75,19 @@
             </div>
             <ul class="sidebar-menu">
                 <li>
-                    <a href="#home" class="sidebar-link active">
+                    <a href="#" class="sidebar-link spa-nav active" data-page="home">
                         <span class="sidebar-icon"><i class="fas fa-home"></i></span>
                         Home
                     </a>
                 </li>
                 <li>
-                    <a href="writing/blog.html" class="sidebar-link">
+                    <a href="#" class="sidebar-link spa-nav" data-page="writing">
                         <span class="sidebar-icon"><i class="fas fa-pen"></i></span>
                         Writing
                     </a>
                 </li>
             </ul>
+            
             <div class="sidebar-section-label">Me</div>
             <ul class="sidebar-menu">
                 <li>
@@ -153,18 +154,22 @@
         </nav>
         
         <main class="main-content">
-            <section id="home" class="hero-section">
-                <div class="intro-text">
-                    <p class="intro-paragraph">
-                        Hey, I'm Liam! I'm a <strong><a class="intro-link" href="https://github.com/irrssue">full-stack dev</a></strong>, CS student, and someone who's always building passion project or just tinkering with random ideas in Python and Javascript.
-                    </p>
-                    <p class="intro-paragraph">
-                        Right now, I’m juggling <a href="https://www.bmcc.cuny.edu" class="intro-link">college</a> and <a href="https://github.com/irrssue?tab=repositories" class="intro-link">side projects</a>, learning as I go and <a href="writing/blog.html" class="intro-link">sharing</a> what I figure out along the way. I’m especially into clean UI, useful tools, and solving real-world problems (even if it’s just making something slightly less annoying).
-                    </p>
-                    <p class="intro-paragraph">
-                        This site’s basically my little corner on the internet where I can tinker around and build whatever I want — feel free to poke around, check out my projects, or just say hi.
-                    </p>
-                </div>
+            <!-- Home Page -->
+            <section id="home" class="page-section active">
+                <div class="hero-section">
+                    <!-- Keep all your existing home content exactly as is -->
+                    <div class="intro-text">
+                        <p class="intro-paragraph">
+                            Hey, I'm Liam! I'm a <strong><a class="intro-link" href="https://github.com/irrssue">full-stack dev</a></strong>, CS student, and someone who's always building passion project or just tinkering with random ideas in Python and Javascript.
+                        </p>
+                        <p class="intro-paragraph">
+                            Right now, I'm juggling <a href="https://www.bmcc.cuny.edu" class="intro-link">college</a> and <a href="https://github.com/irrssue?tab=repositories" class="intro-link">side projects</a>, learning as I go and <span class="intro-link spa-nav" data-page="writing" style="cursor: pointer;">sharing</span> what I figure out along the way. I'm especially into clean UI, useful tools, and solving real-world problems (even if it's just making something slightly less annoying).
+                        </p>
+                        <p class="intro-paragraph">
+                            This site's basically my little corner on the internet where I can tinker around and build whatever I want — feel free to poke around, check out my projects, or just say hi.
+                        </p>
+                    </div>
+        
                 
                 <!-- Online Section with Grid Layout -->
                 <div class="grid-section">
@@ -268,7 +273,26 @@
                         </a>
                     </div>
                 </div>
+            
             </section>
+
+            <section id="writing" class="page-section">
+                <div class="writing-section">
+                    <div class="writing-header">
+                        <h1 class="writing-title">Writing</h1>
+                        <p class="writing-subtitle">
+                            Thoughts on software development, learning, and building things. I write about my experiences with full-stack development, the challenges of being a CS student, and lessons learned from various projects.
+                        </p>
+                    </div>
+                    
+                    <div class="blog-posts-preview" id="blogPostsPreview">
+                        <div style="text-align: center; padding: 48px 0; color: var(--text-secondary);">
+                            <i class="fas fa-spinner fa-spin fa-2x"></i>
+                            <p style="margin-top: 16px;">Loading blog posts...</p>
+                        </div>
+                    </div>
+                </div>
+        
         </main>
     </div>
     <div class="mobile-overlay"></div>
