@@ -232,6 +232,41 @@ body {
     transform: scale(0.95);
 }
 
+/* Add these lines to the end of your existing styles.css file */
+
+/* SPA Page Sections - Basic Setup */
+.page-section {
+    display: none;
+    width: 100%;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.page-section.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Blog Post Preview Focus States */
+.blog-post-preview {
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.blog-post-preview:focus {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
+}
+
 
 /* In the mobile section: */
 @media (max-width: 768px) {

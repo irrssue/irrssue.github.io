@@ -1,19 +1,18 @@
 {
-    "posts": [
-      {
-        "id": "team-communication-broken",
-        "title": "Team communication is broken",
-        "date": "August 7, 2024",
-        "excerpt": "How poor communication patterns are destroying team productivity and what we can do about it.",
-        "markdown": "blogs/team-communicatoin-broken.md"
-      },
-      {
-        "id": "test",
-        "title": "testing",
-        "date": "August 9, 2024",
-        "excerpt": "How poor communication patterns are destroying team productivity and what we can do about it.",
-        "markdown": "blogs/testing.md"
-      }
-      
-    ]
-  }
+  "posts": [
+    {
+      "id": "team-communication-broken",
+      "title": "Team communication is broken",
+      "date": "August 7, 2024",
+      "excerpt": "How poor communication patterns are destroying team productivity and what we can do about it.",
+      "markdown": "writing/blogs/team-communication-broken.md"
+    },
+    {
+      "id": "test",
+      "title": "testing",
+      "date": "August 9, 2024",
+      "excerpt": "How poor communication patterns are destroying team productivity and what we can do about it.",
+      "markdown": "writing/blogs/testing.md"
+    }
+  ]
+}
