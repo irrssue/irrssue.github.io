@@ -14,9 +14,11 @@ class DarkModeToggle {
         this.setTheme(this.currentTheme);
         
         // Add event listener
-        this.darkModeBtn.addEventListener('click', () => {
-            this.toggleTheme();
-        });
+        if (this.darkModeBtn) {
+            this.darkModeBtn.addEventListener('click', () => {
+                this.toggleTheme();
+            });
+        }
         
         // Listen for system theme changes (only if no manual preference set)
         this.listenForSystemThemeChange();
@@ -26,14 +28,16 @@ class DarkModeToggle {
         document.documentElement.setAttribute('data-theme', theme);
         this.currentTheme = theme;
         
-        // Update button icon
-        const icon = this.darkModeBtn.querySelector('i');
-        if (theme === 'dark') {
-            icon.className = 'fas fa-sun';
-            this.darkModeBtn.setAttribute('aria-label', 'Switch to light mode');
-        } else {
-            icon.className = 'fas fa-moon';
-            this.darkModeBtn.setAttribute('aria-label', 'Switch to dark mode');
+        if (this.darkModeBtn) {
+            // Update button icon
+            const icon = this.darkModeBtn.querySelector('i');
+            if (theme === 'dark') {
+                icon.className = 'fas fa-sun';
+                this.darkModeBtn.setAttribute('aria-label', 'Switch to light mode');
+            } else {
+                icon.className = 'fas fa-moon';
+                this.darkModeBtn.setAttribute('aria-label', 'Switch to dark mode');
+            }
         }
         
         // Save to localStorage for persistence across pages
@@ -63,8 +67,7 @@ class DarkModeToggle {
     }
 }
 
-// Single Page Application Router
-// Enhanced Single Page Application Router
+// Enhanced Single Page Application Router with Blog Popup
 class SPARouter {
     constructor() {
         this.routes = {
@@ -73,11 +76,13 @@ class SPARouter {
         };
         this.currentPage = null;
         this.blogPosts = [];
+        this.markdownCache = new Map();
         this.init();
     }
     
     async init() {
         this.setupNavigation();
+        this.setupBlogPopup();
         await this.loadBlogPosts();
         this.handleInitialRoute();
         
@@ -102,6 +107,31 @@ class SPARouter {
         });
     }
     
+    setupBlogPopup() {
+        const popup = document.getElementById('blogPopup');
+        const overlay = document.getElementById('blogPopupOverlay');
+        const closeBtn = document.getElementById('blogPopupClose');
+        
+        if (!popup || !overlay || !closeBtn) return;
+        
+        // Close popup when clicking overlay
+        overlay.addEventListener('click', () => {
+            this.closeBlogPopup();
+        });
+        
+        // Close popup when clicking close button
+        closeBtn.addEventListener('click', () => {
+            this.closeBlogPopup();
+        });
+        
+        // Close popup with Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && popup.classList.contains('active')) {
+                this.closeBlogPopup();
+            }
+        });
+    }
+    
     async loadBlogPosts() {
         try {
             // Try to load from your existing blog.json
@@ -109,6 +139,7 @@ class SPARouter {
             if (response.ok) {
                 const data = await response.json();
                 this.blogPosts = data.posts || [];
+                console.log('📄 Loaded blog posts:', this.blogPosts.length);
             } else {
                 throw new Error('Could not load blog.json');
             }
@@ -120,13 +151,15 @@ class SPARouter {
                     id: "team-communication-broken",
                     title: "Team communication is broken",
                     date: "August 7, 2024",
-                    excerpt: "How poor communication patterns are destroying team productivity and what we can do about it."
+                    excerpt: "How poor communication patterns are destroying team productivity and what we can do about it.",
+                    markdown: "writing/blogs/team-communication-broken.md"  // ← Fixed typo
                 },
                 {
-                    id: "building-fullstack-app",
-                    title: "Building my first full-stack app",
-                    date: "July 15, 2024",
-                    excerpt: "Lessons learned from creating a task management platform with Django and React."
+                    id: "test",
+                    title: "testing",
+                    date: "August 9, 2024",
+                    excerpt: "How poor communication patterns are destroying team productivity and what we can do about it.",
+                    markdown: "writing/blogs/testing.md"
                 }
             ];
         }
@@ -139,21 +172,190 @@ class SPARouter {
         if (!container) return;
         
         container.innerHTML = this.blogPosts.map(post => `
-            <article class="blog-post-preview" onclick="router.openBlogPost('${post.id}')">
+            <article class="blog-post-preview" onclick="router.openBlogPost('${post.id}')" tabindex="0" role="button">
                 <h3>${this.escapeHtml(post.title)}</h3>
                 <div class="post-date">${this.escapeHtml(post.date)}</div>
                 <p class="post-excerpt">${this.escapeHtml(post.excerpt)}</p>
             </article>
         `).join('');
+        
+        // Add keyboard support for blog post previews
+        container.addEventListener('keydown', (e) => {
+            if (e.target.classList.contains('blog-post-preview') && (e.key === 'Enter' || e.key === ' ')) {
+                e.preventDefault();
+                e.target.click();
+            }
+        });
     }
     
-    openBlogPost(postId) {
-        // Navigate to your existing blog system
-        window.location.href = `./writing/blog.html#${postId}`;
+    async openBlogPost(postId) {
+        const post = this.blogPosts.find(p => p.id === postId);
+        if (!post) return;
+        
+        const popup = document.getElementById('blogPopup');
+        const title = document.getElementById('popupBlogTitle');
+        const date = document.getElementById('popupBlogDate');
+        const content = document.getElementById('popupBlogContent');
+        
+        if (!popup || !title || !date || !content) return;
+        
+        // Show popup immediately
+        popup.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        
+        // Set basic info
+        title.textContent = post.title;
+        date.textContent = post.date;
+        
+        // Show loading state
+        content.innerHTML = `
+            <div style="text-align: center; padding: 48px 0; color: var(--text-secondary);">
+                <i class="fas fa-spinner fa-spin fa-2x"></i>
+                <p style="margin-top: 16px;">Loading content...</p>
+            </div>
+        `;
+        
+        try {
+            // Load markdown content if available
+            if (post.markdown) {
+                const htmlContent = await this.loadMarkdownContent(post.markdown);
+                content.innerHTML = htmlContent;
+            } else if (post.content) {
+                content.innerHTML = post.content;
+            } else {
+                content.innerHTML = '<p>No content available for this post.</p>';
+            }
+        } catch (error) {
+            console.error('Error loading blog post:', error);
+            content.innerHTML = '<p>Error loading post content. Please try again.</p>';
+        }
+        
+        // Scroll to top of popup content
+        const popupBody = popup.querySelector('.blog-popup-body');
+        if (popupBody) {
+            popupBody.scrollTop = 0;
+        }
+        
+        // Focus management for accessibility
+        const closeButton = document.getElementById('blogPopupClose');
+        if (closeButton) {
+            closeButton.focus();
+        }
+    }
+    
+    async loadMarkdownContent(markdownPath) {
+        try {
+            if (this.markdownCache.has(markdownPath)) {
+                console.log('📋 Loading from cache:', markdownPath);
+                return this.markdownCache.get(markdownPath);
+            }
+            
+            console.log('📡 Fetching markdown file:', markdownPath);
+            const response = await fetch(markdownPath);
+            
+            if (!response.ok) {
+                throw new Error(`Failed to load markdown: ${response.status}`);
+            }
+            
+            const markdownText = await response.text();
+            const htmlContent = this.parseMarkdown(markdownText);
+            
+            this.markdownCache.set(markdownPath, htmlContent);
+            
+            return htmlContent;
+            
+        } catch (error) {
+            console.error('❌ Error loading markdown:', error);
+            return `<p>Error loading content from ${markdownPath}</p><p>Please check that the file exists and is accessible.</p>`;
+        }
+    }
+    
+    parseMarkdown(markdownText) {
+        console.log('🔍 Parsing markdown, length:', markdownText.length);
+        
+        let html = markdownText;
+        
+        // Images FIRST (before links to avoid conflicts)
+        html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (match, alt, src) => {
+            console.log('🖼️ Found image:', { alt, src });
+            return `<img src="${src}" alt="${alt}" class="blog-image" loading="lazy">`;
+        });
+        
+        // Links (after images)
+        html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+        
+        // Headers (must be on their own lines)
+        html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+        html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+        html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>');
+        
+        // Bold and Italic
+        html = html.replace(/\*\*\*(.*?)\*\*\*/g, '<strong><em>$1</em></strong>');
+        html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+        
+        // Code blocks (before inline code)
+        html = html.replace(/```(\w+)?\n([\s\S]*?)```/g, (match, lang, code) => {
+            return `<pre><code class="language-${lang || 'text'}">${code.trim()}</code></pre>`;
+        });
+        
+        // Inline code
+        html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+        
+        // Lists
+        html = html.replace(/^\* (.+)$/gm, '<li>$1</li>');
+        html = html.replace(/^- (.+)$/gm, '<li>$1</li>');
+        
+        // Wrap consecutive list items in ul tags
+        html = html.replace(/(<li>.*<\/li>)(\n<li>.*<\/li>)*/g, (match) => {
+            return `<ul>${match}</ul>`;
+        });
+        
+        // Blockquotes
+        html = html.replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>');
+        
+        // Line breaks and paragraphs
+        html = html.split('\n\n').map(paragraph => {
+            paragraph = paragraph.trim();
+            if (!paragraph) return '';
+            
+            // Don't wrap certain elements in p tags
+            if (paragraph.match(/^<(h[1-6]|ul|ol|li|blockquote|pre|img|div)/)) {
+                return paragraph;
+            }
+            
+            return `<p>${paragraph}</p>`;
+        }).join('\n');
+        
+        // Clean up
+        html = html.replace(/\n+/g, '\n');
+        html = html.replace(/^\s+|\s+$/g, '');
+        
+        console.log('✅ Markdown parsed, result length:', html.length);
+        return html;
+    }
+    
+    closeBlogPopup() {
+        const popup = document.getElementById('blogPopup');
+        if (popup) {
+            popup.classList.remove('active');
+            document.body.style.overflow = '';
+            
+            // Return focus to the writing page
+            const writingSection = document.getElementById('writing');
+            if (writingSection && writingSection.classList.contains('active')) {
+                writingSection.focus();
+            }
+        }
     }
     
     navigateTo(page, updateHistory = true) {
         if (!this.routes[page] || this.currentPage === page) return;
+        
+        console.log(`🔄 Navigating from ${this.currentPage} to ${page}`);
+        
+        // Close any open blog popup
+        this.closeBlogPopup();
         
         // Hide current page
         const currentSection = document.getElementById(this.currentPage);
@@ -253,7 +455,7 @@ class Navigation {
         const href = clickedLink.getAttribute('href');
         
         // Handle external links normally
-        if (href && (href.startsWith('http') || href.startsWith('mailto') || href.includes('target="_blank"'))) {
+        if (href && (href.startsWith('http') || href.startsWith('mailto') || clickedLink.hasAttribute('target'))) {
             return; // Let browser handle normally
         }
         
@@ -285,7 +487,7 @@ class GridInteractions {
     }
     
     addHoverEffects() {
-        const items = document.querySelectorAll('.grid-item, .work-grid-item, .project-item, .post-item');
+        const items = document.querySelectorAll('.grid-item, .work-grid-item, .project-item, .post-item, .blog-post-preview');
         
         items.forEach(item => {
             item.addEventListener('mouseenter', () => {
@@ -299,7 +501,7 @@ class GridInteractions {
     }
     
     addClickAnimations() {
-        const clickableElements = document.querySelectorAll('button, .sidebar-link, .grid-item, .work-grid-item, .project-link, .post-link');
+        const clickableElements = document.querySelectorAll('button, .sidebar-link, .grid-item, .work-grid-item, .project-link, .post-link, .blog-post-preview');
         
         clickableElements.forEach(element => {
             element.addEventListener('click', function(e) {
@@ -357,7 +559,10 @@ class GridInteractions {
             // Toggle dark mode with Ctrl/Cmd + D
             if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
                 e.preventDefault();
-                document.getElementById('darkModeBtn').click();
+                const darkModeBtn = document.getElementById('darkModeBtn');
+                if (darkModeBtn) {
+                    darkModeBtn.click();
+                }
             }
             
             // Navigate grid items with arrow keys
@@ -368,12 +573,13 @@ class GridInteractions {
     handleGridKeyNavigation(e) {
         const focusedElement = document.activeElement;
         if (!focusedElement.classList.contains('grid-item') && 
-            !focusedElement.classList.contains('work-grid-item')) return;
+            !focusedElement.classList.contains('work-grid-item') &&
+            !focusedElement.classList.contains('blog-post-preview')) return;
         
-        const container = focusedElement.closest('.grid-container');
+        const container = focusedElement.closest('.grid-container, .blog-posts-preview');
         if (!container) return;
         
-        const items = Array.from(container.querySelectorAll('.grid-item, .work-grid-item'));
+        const items = Array.from(container.querySelectorAll('.grid-item, .work-grid-item, .blog-post-preview'));
         const currentIndex = items.indexOf(focusedElement);
         
         let newIndex = currentIndex;
@@ -555,7 +761,8 @@ class AccessibilityEnhancements {
                 .grid-item:focus,
                 .work-grid-item:focus,
                 .project-link:focus,
-                .post-link:focus {
+                .post-link:focus,
+                .blog-post-preview:focus {
                     outline: 2px solid var(--accent-color);
                     outline-offset: 2px;
                 }
@@ -798,7 +1005,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize all classes
     const darkMode = new DarkModeToggle();
     const spaRouter = new SPARouter();
-    window.router = spaRouter; // Make router globally accessible
+    const navigation = new Navigation();
     const gridInteractions = new GridInteractions();
     const accessibility = new AccessibilityEnhancements();
     const mobileNav = new MobileNavigation();
@@ -809,27 +1016,36 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Console message for developers
     console.log(`
-    🚀 Enhanced Portfolio Website Loaded Successfully!
+    🚀 Enhanced SPA Portfolio with Notion-Style Blog Popup Loaded!
     
     New Features:
+    - Notion-style blog popup overlay
+    - Seamless SPA navigation (no page refreshes)
+    - Enhanced blog reading experience
+    - Markdown content support
+    - Mobile-optimized popup design
+    
+    Existing Features:
     - Grid-based Layout System
     - Enhanced Accessibility
     - Performance Monitoring
     - Mobile-first Responsive Design
     - Advanced Keyboard Navigation
-    
-    Existing Features:
     - Dark/Light Mode Toggle (Ctrl/Cmd + D)
-    - Single Page Application Navigation
-    - Smooth Animations
-    - Focus Management
+    
+    Commands:
+    - router.openBlogPost('post-id') - Open specific blog post
+    - router.navigateTo('writing') - Navigate to writing page
+    - router.closeBlogPopup() - Close current popup
     
     Built with ❤️ for modern web development
     `);
     
     // Expose utilities to global scope for debugging
+    window.router = spaRouter;
     window.portfolio = {
         darkMode,
+        spaRouter,
         navigation,
         gridInteractions,
         accessibility,
