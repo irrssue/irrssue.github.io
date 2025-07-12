@@ -29,5 +29,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const savedTheme = localStorage.getItem('darkMode');
     if (savedTheme === 'true') {
         document.body.classList.add('dark-mode');
+        
     }
 });

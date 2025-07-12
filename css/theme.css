@@ -56,7 +56,7 @@
 
 /* Dark Mode Styles */
 body.dark-mode {
-    background-color: #1a1a1a;
+    background-color: #111111;
     color: #fff;
 }
 
@@ -89,7 +89,7 @@ body.dark-mode .navbar a.active {
 }
 
 body.dark-mode .main-content {
-    background-color: #1a1a1a;
+    background-color: #111111;
 }
 
 body.dark-mode .content-section h1,
