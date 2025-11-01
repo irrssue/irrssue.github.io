@@ -137,3 +137,11 @@ body.dark-mode .moon-icon {
 body.dark-mode .theme-toggle-container {
     border-top-color: #404040;
 }
+
+body.dark-mode .blog-title a {
+    color: #e0e0e0;
+}
+
+body.dark-mode .blog-post:hover .blog-title a {
+    background-color: rgba(255, 255, 255, 0.15);
+}
