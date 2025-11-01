@@ -245,6 +245,47 @@ a {
     text-decoration: underline;
 }
 
+/* Blog Section */
+.blog-section {
+    margin-top: 80px;
+}
+
+.blog-post {
+    display: grid;
+    grid-template-columns: 80px 1fr 150px;
+    gap: 24px;
+    align-items: baseline;
+    padding: 16px 0;
+}
+
+.blog-year {
+    font-size: 1rem;
+    color: #999;
+    font-weight: 400;
+}
+
+.blog-title a {
+    font-size: 1rem;
+    color: var(--main-text-color);
+    text-decoration: none;
+    font-weight: 400;
+    transition: all 0.2s ease;
+    padding: 6px 12px;
+    border-radius: 8px;
+    display: inline-block;
+}
+
+.blog-post:hover .blog-title a {
+    background-color: rgba(128, 128, 128, 0.25);
+}
+
+.blog-tag {
+    font-size: 1rem;
+    color: #999;
+    text-align: right;
+    font-weight: 400;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .grid-container {
