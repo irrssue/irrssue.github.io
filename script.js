@@ -30,10 +30,9 @@ document.addEventListener('DOMContentLoaded', function() {
         localStorage.setItem('darkMode', isDarkMode);
     });
 
-    // Load saved theme preference
+    // Load saved theme preference or default to dark mode
     const savedTheme = localStorage.getItem('darkMode');
-    if (savedTheme === 'true') {
+    if (savedTheme === null || savedTheme === 'true') {
         document.body.classList.add('dark-mode');
-        
     }
 });
