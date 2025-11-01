@@ -252,16 +252,17 @@ a {
 
 .blog-post {
     display: grid;
-    grid-template-columns: 80px 1fr 150px;
-    gap: 24px;
+    grid-template-columns: 60px 0.9fr 110px;
+    gap: 6px;
     align-items: baseline;
-    padding: 16px 0;
+    padding: 8px 0;
 }
 
 .blog-year {
-    font-size: 1rem;
+    font-size: 0.9rem;
     color: #999;
     font-weight: 400;
+    text-align: center;
 }
 
 .blog-title a {
@@ -269,7 +270,7 @@ a {
     color: var(--main-text-color);
     text-decoration: none;
     font-weight: 400;
-    transition: all 0.2s ease;
+    transition: background-color 0.3s ease, color 0.3s ease;
     padding: 6px 12px;
     border-radius: 8px;
     display: inline-block;
@@ -280,7 +281,7 @@ a {
 }
 
 .blog-tag {
-    font-size: 1rem;
+    font-size: 0.9rem;
     color: #999;
     text-align: right;
     font-weight: 400;
