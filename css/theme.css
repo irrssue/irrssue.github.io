@@ -197,3 +197,17 @@ body.dark-mode .blog-post-content pre {
 body.dark-mode .blog-post-content pre code {
     color: #e0e0e0;
 }
+
+/* Floating Back Button Dark Mode */
+body.dark-mode .floating-back-button {
+    background-color: #2a2a2a;
+    border-color: #404040;
+}
+
+body.dark-mode .floating-back-button:hover {
+    background-color: #333333;
+}
+
+body.dark-mode .back-arrow-icon {
+    color: #e0e0e0;
+}
