@@ -369,6 +369,38 @@ a {
     color: #333;
 }
 
+/* Floating Back Button */
+.floating-back-button {
+    position: fixed;
+    right: 50px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 48px;
+    height: 48px;
+    background-color: #f8f8f8;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e5e5;
+    transition: all 0.3s ease;
+    z-index: 999;
+    cursor: pointer;
+}
+
+.floating-back-button:hover {
+    background-color: #ebebeb;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    transform: translateY(-50%) scale(1.05);
+}
+
+.back-arrow-icon {
+    width: 24px;
+    height: 24px;
+    color: #333;
+}
+
 /* Blog Section */
 .blog-section {
     margin-top: 80px;
@@ -454,5 +486,16 @@ a {
     .content-grid {
         grid-template-columns: 1fr;
         gap: 20px;
+    }
+
+    .floating-back-button {
+        right: 20px;
+        width: 44px;
+        height: 44px;
+    }
+
+    .back-arrow-icon {
+        width: 22px;
+        height: 22px;
     }
 }
