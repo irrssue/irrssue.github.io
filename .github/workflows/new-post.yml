@@ -1,0 +1,34 @@
+name: New Post
+on:
+  workflow_dispatch:
+    inputs:
+      title:
+        description: "Post Title"
+        required: true
+      slug:
+        description: "Custom slug (optional, lowercase-dashes)"
+        required: false
+jobs:
+  make:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create post
+        run: |
+          TITLE="${{ github.event.inputs.title }}"
+          SLUG="${{ github.event.inputs.slug }}"
+          DATE=$(date -u +"%Y-%m-%d")
+          TIME=$(date -u +"%Y-%m-%d %H:%M:%S %z")
+          [ -z "$SLUG" ] && SLUG=$(echo "$TITLE" | tr '[:upper:]' '[:lower:]' | sed -e 's/[^a-z0-9 ]/-/g' -e 's/--*/-/g' -e 's/^-//' -e 's/-$//')
+          mkdir -p posts
+          FILE="posts/${DATE}-${SLUG}.md"
+          sed "s/{{DATE}}/${TIME}/" posts/_template.md > "$FILE"
+          sed -i "s/Your Title/${TITLE}/" "$FILE"
+          echo "Created $FILE"
+      - name: Commit
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@users.noreply.github.com"
+          git add posts/*.md
+          git commit -m "new post: ${{ github.event.inputs.title }}" || echo "No changes"
+          git push
