@@ -138,14 +138,6 @@ body.dark-mode .theme-toggle-container {
     border-top-color: #404040;
 }
 
-body.dark-mode .blog-title a {
-    color: #e0e0e0;
-}
-
-body.dark-mode .blog-post:hover .blog-title a {
-    background-color: rgba(255, 255, 255, 0.15);
-}
-
 body.dark-mode .intro-line a:hover {
     background-color: rgba(255, 255, 255, 0.15);
 }
@@ -160,54 +152,4 @@ body.dark-mode .online-link-row a {
 
 body.dark-mode .online-link-row a:hover {
     background-color: rgba(255, 255, 255, 0.15);
-}
-
-/* Blog Post Dark Mode */
-body.dark-mode .blog-post-title {
-    color: #e0e0e0;
-}
-
-body.dark-mode .blog-post-content {
-    color: #b0b0b0;
-}
-
-body.dark-mode .blog-post-content h2,
-body.dark-mode .blog-post-content h3 {
-    color: #e0e0e0;
-}
-
-body.dark-mode .blog-post-content li {
-    color: #b0b0b0;
-}
-
-body.dark-mode .blog-post-content blockquote {
-    border-left-color: #404040;
-    color: #888;
-}
-
-body.dark-mode .blog-post-content code {
-    background-color: #2a2a2a;
-    color: #ff6b6b;
-}
-
-body.dark-mode .blog-post-content pre {
-    background-color: #2a2a2a;
-}
-
-body.dark-mode .blog-post-content pre code {
-    color: #e0e0e0;
-}
-
-/* Floating Back Button Dark Mode */
-body.dark-mode .floating-back-button {
-    background-color: #2a2a2a;
-    border-color: #404040;
-}
-
-body.dark-mode .floating-back-button:hover {
-    background-color: #333333;
-}
-
-body.dark-mode .back-arrow-icon {
-    color: #e0e0e0;
 }
