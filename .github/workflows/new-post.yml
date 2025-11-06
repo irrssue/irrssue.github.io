@@ -18,11 +18,10 @@ jobs:
           TITLE="${{ github.event.inputs.title }}"
           SLUG="${{ github.event.inputs.slug }}"
           DATE=$(date -u +"%Y-%m-%d")
-          TIME=$(date -u +"%Y-%m-%d %H:%M:%S %z")
           [ -z "$SLUG" ] && SLUG=$(echo "$TITLE" | tr '[:upper:]' '[:lower:]' | sed -e 's/[^a-z0-9 ]/-/g' -e 's/--*/-/g' -e 's/^-//' -e 's/-$//')
           mkdir -p posts
-          FILE="posts/${DATE}-${SLUG}.md"
-          sed "s/{{DATE}}/${TIME}/" posts/_template.md > "$FILE"
+          FILE="posts/${SLUG}.md"
+          sed "s/{{DATE}}/${DATE}/" posts/_template.md > "$FILE"
           sed -i "s/Your Title/${TITLE}/" "$FILE"
           echo "Created $FILE"
       - name: Commit
