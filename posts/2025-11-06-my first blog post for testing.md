@@ -1,10 +1,10 @@
 ---
 title: "My First blog post for testing"
 date: "2025-11-06 08:55:06 +0000"
-tags: []
-summary: ""
+tags: ["testing"]
+summary: "This is a test post to verify the blog system is working correctly."
 cover: ""
-draft: true
+draft: false
 ---
 
 ## TL;DR
