@@ -1,7 +1,7 @@
 ---
 title: "Your Title"
 date: "{{DATE}}"
-tags: []
+tags: ["tag"]
 summary: ""
 cover: ""
 draft: true
