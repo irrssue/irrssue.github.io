@@ -388,11 +388,9 @@
             const coverHtml = frontMatter.cover ?
                 `<img src="${frontMatter.cover}" alt="${frontMatter.title}" class="post-cover-image">` : '';
 
-            // Render tags
+            // Render tags (only first tag)
             const tagsHtml = frontMatter.tags && frontMatter.tags.length > 0 ?
-                `<div class="post-tags">${frontMatter.tags.map(tag =>
-                    `<span class="post-tag">#${tag}</span>`
-                ).join(' ')}</div>` : '';
+                `<div class="post-tags"><span class="post-tag">#${frontMatter.tags[0]}</span></div>` : '';
 
             // Convert markdown to HTML and sanitize
             const htmlContent = md.render(markdownContent);
