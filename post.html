@@ -157,15 +157,43 @@
             }
         }
 
+        function getRelativeTime(date) {
+            const now = new Date();
+            const postDate = new Date(date);
+            const diffInSeconds = Math.floor((now - postDate) / 1000);
+
+            const intervals = {
+                year: 31536000,
+                month: 2592000,
+                week: 604800,
+                day: 86400,
+                hour: 3600,
+                minute: 60
+            };
+
+            if (diffInSeconds < 60) return 'just now';
+
+            for (const [unit, secondsInUnit] of Object.entries(intervals)) {
+                const interval = Math.floor(diffInSeconds / secondsInUnit);
+                if (interval >= 1) {
+                    return `${interval} ${unit}${interval > 1 ? 's' : ''} ago`;
+                }
+            }
+
+            return 'just now';
+        }
+
         function renderPost(frontMatter, markdownContent) {
             const container = document.getElementById('post-content');
 
-            // Format date
-            const formattedDate = frontMatter.date ? new Date(frontMatter.date).toLocaleDateString('en-US', {
+            // Format dates
+            const fullDate = frontMatter.date ? new Date(frontMatter.date).toLocaleDateString('en-US', {
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric'
             }) : '';
+
+            const relativeDate = frontMatter.date ? getRelativeTime(frontMatter.date) : '';
 
             // Render cover image if exists
             const coverHtml = frontMatter.cover ?
@@ -185,7 +213,7 @@
                         ${coverHtml}
                         <h1 class="post-title">${frontMatter.title || 'Untitled'}</h1>
                         <div class="post-meta">
-                            <span class="post-date">${formattedDate || ''}</span>
+                            <span class="post-date" title="${fullDate}">${relativeDate || ''}</span>
                             <span class="post-tag">${tag ? `#${tag}` : ''}</span>
                         </div>
                     </header>
