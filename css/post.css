@@ -39,6 +39,8 @@
 
 .post-date {
     color: #999;
+    cursor: help;
+    border-bottom: 1px dotted #999;
 }
 
 .post-tag {
@@ -175,6 +177,10 @@
 }
 
 /* Dark mode adjustments */
+body.dark-mode .post-date {
+    border-bottom-color: #666;
+}
+
 body.dark-mode .post-title {
     color: #e0e0e0;
 }
