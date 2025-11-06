@@ -7,94 +7,49 @@
     <link rel="stylesheet" href="main.css">
     <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
     <style>
-        .blog-container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 2rem;
+        .blog-section {
+            margin-top: 80px;
         }
 
-        .blog-header {
-            margin-bottom: 3rem;
+        .blog-post {
+            display: grid;
+            grid-template-columns: 60px 0.9fr 110px;
+            gap: 6px;
+            align-items: baseline;
+            padding: 8px 0;
         }
 
-        .blog-header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-            color: var(--text-color, #1a1a1a);
-        }
-
-        .blog-header p {
-            color: var(--text-secondary, #666);
-            font-size: 1.1rem;
-        }
-
-        .posts-list {
-            display: flex;
-            flex-direction: column;
-            gap: 2rem;
-        }
-
-        .post-card {
-            padding: 1.5rem;
-            border: 1px solid var(--border-color, #e0e0e0);
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            color: inherit;
-            display: block;
-        }
-
-        .post-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            border-color: var(--accent-color, #007bff);
-        }
-
-        .post-cover {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            border-radius: 4px;
-            margin-bottom: 1rem;
-        }
-
-        .post-title {
-            font-size: 1.75rem;
-            margin-bottom: 0.5rem;
-            color: var(--text-color, #1a1a1a);
-        }
-
-        .post-meta {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1rem;
+        .blog-year {
             font-size: 0.9rem;
-            color: var(--text-secondary, #666);
+            color: #999;
+            font-weight: 400;
+            text-align: center;
         }
 
-        .post-date {
-            display: flex;
-            align-items: center;
-            gap: 0.25rem;
+        .blog-title {
+            font-size: 1rem;
         }
 
-        .post-tags {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
+        .blog-title a {
+            font-size: 1rem;
+            color: var(--main-text-color);
+            text-decoration: none;
+            font-weight: 400;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            padding: 6px 12px;
+            border-radius: 8px;
+            display: inline-block;
         }
 
-        .post-tag {
-            background: var(--tag-bg, #f0f0f0);
-            color: var(--tag-text, #555);
-            padding: 0.25rem 0.75rem;
-            border-radius: 12px;
-            font-size: 0.85rem;
+        .blog-post:hover .blog-title a {
+            background-color: rgba(128, 128, 128, 0.25);
         }
 
-        .post-summary {
-            color: var(--text-secondary, #666);
-            line-height: 1.6;
+        .blog-tag {
+            font-size: 0.9rem;
+            color: #999;
+            text-align: right;
+            font-weight: 400;
         }
 
         .loading {
@@ -116,17 +71,12 @@
         }
 
         /* Dark mode adjustments */
-        [data-theme="dark"] .post-card {
-            border-color: #444;
+        body.dark-mode .blog-title a {
+            color: #e0e0e0;
         }
 
-        [data-theme="dark"] .post-card:hover {
-            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
-        }
-
-        [data-theme="dark"] .post-tag {
-            background: #333;
-            color: #ccc;
+        body.dark-mode .blog-post:hover .blog-title a {
+            background-color: rgba(255, 255, 255, 0.15);
         }
     </style>
 </head>
@@ -197,16 +147,11 @@
 
         <!-- Main Content Area -->
         <main class="main-content">
-            <div class="blog-container">
-                <div class="blog-header">
-                    <h1>Writing</h1>
-                    <p>Thoughts, stories, and ideas</p>
-                </div>
-
+            <section class="blog-section">
                 <div id="posts-container">
                     <div class="loading">Loading posts...</div>
                 </div>
-            </div>
+            </section>
         </main>
     </div>
 
@@ -263,8 +208,6 @@
                                 title: frontMatter.title || 'Untitled',
                                 date: frontMatter.date || '',
                                 tags: frontMatter.tags || [],
-                                summary: frontMatter.summary || '',
-                                cover: frontMatter.cover || '',
                                 dateObj: new Date(frontMatter.date || 0)
                             };
                         } catch (error) {
@@ -285,9 +228,7 @@
                 }
 
                 // Render posts
-                container.innerHTML = '<div class="posts-list">' +
-                    validPosts.map(post => renderPostCard(post)).join('') +
-                    '</div>';
+                container.innerHTML = validPosts.map(post => renderPostRow(post)).join('');
 
             } catch (error) {
                 console.error('Error fetching posts:', error);
@@ -295,31 +236,16 @@
             }
         }
 
-        function renderPostCard(post) {
-            const formattedDate = post.date ? new Date(post.date).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            }) : '';
-
-            const coverHtml = post.cover ?
-                `<img src="${post.cover}" alt="${post.title}" class="post-cover">` : '';
-
-            const tagsHtml = post.tags.length > 0 ?
-                `<div class="post-tags">${post.tags.map(tag =>
-                    `<span class="post-tag">${tag}</span>`
-                ).join('')}</div>` : '';
+        function renderPostRow(post) {
+            const year = post.date ? new Date(post.date).getFullYear() : '';
+            const primaryTag = post.tags.length > 0 ? `#${post.tags[0]}` : '';
 
             return `
-                <a href="post.html?name=${encodeURIComponent(post.filename)}" class="post-card">
-                    ${coverHtml}
-                    <h2 class="post-title">${post.title}</h2>
-                    <div class="post-meta">
-                        ${formattedDate ? `<span class="post-date">📅 ${formattedDate}</span>` : ''}
-                    </div>
-                    ${tagsHtml}
-                    ${post.summary ? `<p class="post-summary">${post.summary}</p>` : ''}
-                </a>
+                <div class="blog-post">
+                    <div class="blog-year">${year}</div>
+                    <div class="blog-title"><a href="post.html?name=${encodeURIComponent(post.filename)}">${post.title}</a></div>
+                    <div class="blog-tag">${primaryTag}</div>
+                </div>
             `;
         }
 
