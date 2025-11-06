@@ -39,22 +39,20 @@
 
         .post-meta {
             display: flex;
-            gap: 1rem;
-            margin-bottom: 0.75rem;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
             color: #999;
             font-size: 0.9rem;
         }
 
-        .post-tags {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-            margin-bottom: 1.5rem;
+        .post-date {
+            color: #999;
         }
 
         .post-tag {
             color: #999;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
         }
 
         .post-content {
@@ -388,9 +386,8 @@
             const coverHtml = frontMatter.cover ?
                 `<img src="${frontMatter.cover}" alt="${frontMatter.title}" class="post-cover-image">` : '';
 
-            // Render tags (only first tag)
-            const tagsHtml = frontMatter.tags && frontMatter.tags.length > 0 ?
-                `<div class="post-tags"><span class="post-tag">#${frontMatter.tags[0]}</span></div>` : '';
+            // Get first tag
+            const tag = frontMatter.tags && frontMatter.tags.length > 0 ? frontMatter.tags[0] : '';
 
             // Convert markdown to HTML and sanitize
             const htmlContent = md.render(markdownContent);
@@ -402,12 +399,10 @@
                     <header class="post-header">
                         ${coverHtml}
                         <h1 class="post-title">${frontMatter.title || 'Untitled'}</h1>
-                        ${formattedDate ? `
-                            <div class="post-meta">
-                                <span>${formattedDate}</span>
-                            </div>
-                        ` : ''}
-                        ${tagsHtml}
+                        <div class="post-meta">
+                            <span class="post-date">${formattedDate || ''}</span>
+                            <span class="post-tag">${tag ? `#${tag}` : ''}</span>
+                        </div>
                     </header>
                     <div class="post-content">
                         ${sanitizedContent}
