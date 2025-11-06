@@ -1,6 +1,6 @@
 ---
 title: "Building My Portfolio Site"
-date: "2025-09-15 10:30:00"
+date: "2025-09-15"
 tags: ["web"]
 summary: "A journey through creating a personal portfolio site with GitHub Pages, dark mode, and a custom blog system."
 cover: ""
