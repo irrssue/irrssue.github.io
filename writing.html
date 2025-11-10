@@ -365,7 +365,19 @@
                 return;
             }
 
-            container.innerHTML = posts.map(post => renderPostRow(post)).join('');
+            // Track displayed years to show only once
+            let lastDisplayedYear = null;
+
+            container.innerHTML = posts.map(post => {
+                const currentYear = post.date ? new Date(post.date).getFullYear() : '';
+                const shouldDisplayYear = currentYear && currentYear !== lastDisplayedYear;
+
+                if (shouldDisplayYear) {
+                    lastDisplayedYear = currentYear;
+                }
+
+                return renderPostRow(post, shouldDisplayYear ? currentYear : '');
+            }).join('');
 
             // Add click handlers to tags
             document.querySelectorAll('.blog-tag').forEach(tagElement => {
@@ -424,8 +436,8 @@
             renderPosts(allPosts);
         }
 
-        function renderPostRow(post) {
-            const year = post.date ? new Date(post.date).getFullYear() : '';
+        function renderPostRow(post, displayYear = null) {
+            const year = displayYear !== null ? displayYear : '';
             const tagDisplay = post.tag ? `#${post.tag}` : '';
 
             return `
