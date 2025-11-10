@@ -81,11 +81,9 @@
 
         /* Tag Filter Styles */
         .filter-container {
-            display: grid;
-            grid-template-columns: auto auto;
+            display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
             margin: 0 auto 30px auto;
             padding: 0 16px;
             background-color: #f5f5f5;
@@ -93,6 +91,13 @@
             border: 1px solid #e0e0e0;
             width: 208px;
             height: 36px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .filter-container:hover {
+            background-color: #e8e8e8;
+            border-color: #d0d0d0;
         }
 
         body.dark-mode .filter-container {
@@ -100,36 +105,9 @@
             border-color: #404040;
         }
 
-        .clear-filter-btn {
-            background: none;
-            border: none;
-            font-size: 22px;
-            line-height: 1;
-            cursor: pointer;
-            color: #666;
-            padding: 0;
-            width: 42px;
-            height: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 4px;
-            transition: all 0.2s ease;
-            flex-shrink: 0;
-        }
-
-        .clear-filter-btn:hover {
-            background-color: rgba(0, 0, 0, 0.1);
-            color: #333;
-        }
-
-        body.dark-mode .clear-filter-btn {
-            color: #aaa;
-        }
-
-        body.dark-mode .clear-filter-btn:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-            color: #fff;
+        body.dark-mode .filter-container:hover {
+            background-color: #353535;
+            border-color: #505050;
         }
 
         .filter-tag-text {
@@ -238,8 +216,7 @@
         <!-- Main Content Area -->
         <main class="main-content">
             <section class="blog-section">
-                <div id="filter-container" class="filter-container" style="display: none;">
-                    <button id="clear-filter" class="clear-filter-btn">×</button>
+                <div id="filter-container" class="filter-container" style="display: none;" title="Clear filter">
                     <span id="filter-tag" class="filter-tag-text"></span>
                 </div>
                 <div id="posts-container">
@@ -370,7 +347,12 @@
                     e.preventDefault();
                     const tagText = this.textContent.replace('#', '').trim();
                     if (tagText) {
-                        filterByTag(tagText);
+                        // Toggle filter: clear if clicking the same tag
+                        if (currentFilter && currentFilter.toLowerCase() === tagText.toLowerCase()) {
+                            clearFilter();
+                        } else {
+                            filterByTag(tagText);
+                        }
                     }
                 });
             });
@@ -432,8 +414,8 @@
         document.addEventListener('DOMContentLoaded', function() {
             fetchPosts();
 
-            // Add clear filter button handler
-            document.getElementById('clear-filter').addEventListener('click', clearFilter);
+            // Add click handler to filter container to clear filter
+            document.getElementById('filter-container').addEventListener('click', clearFilter);
         });
     </script>
 </body>
