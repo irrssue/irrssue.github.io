@@ -82,8 +82,9 @@
         /* Tag Filter Styles */
         .filter-container {
             display: grid;
-            grid-template-columns: auto 1fr;
+            grid-template-columns: auto auto;
             align-items: center;
+            justify-content: center;
             gap: 8px;
             margin: 0 auto 30px auto;
             padding: 0 16px;
@@ -135,9 +136,6 @@
             font-size: 1rem;
             font-weight: 500;
             color: var(--main-text-color);
-            display: flex;
-            align-items: center;
-            height: 100%;
         }
 
         body.dark-mode .filter-tag-text {
