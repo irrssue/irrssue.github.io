@@ -1,7 +1,7 @@
 ---
 title: "Getting Started with Modern Web Development"
 date: "2025-11-09"
-tags: ["web development", "javascript", "tutorial"]
+tag: "Tutorial"
 summary: "A beginner's guide to starting your journey in modern web development with practical tips and resources."
 cover: ""
 draft: false

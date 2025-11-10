@@ -1,7 +1,7 @@
 ---
 title: "What is happening"
 date: "2025-11-10"
-tags: ["tag"]
+tag: "Life"
 summary: ""
 cover: ""
 draft: true
