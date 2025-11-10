@@ -93,6 +93,7 @@
             height: 36px;
             cursor: pointer;
             transition: all 0.2s ease;
+            position: relative;
         }
 
         .filter-container:hover {
@@ -108,6 +109,31 @@
         body.dark-mode .filter-container:hover {
             background-color: #353535;
             border-color: #505050;
+        }
+
+        /* Custom Tooltip */
+        .filter-tooltip {
+            position: absolute;
+            bottom: -32px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            color: #fff;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.1s ease;
+        }
+
+        .filter-container:hover .filter-tooltip {
+            opacity: 1;
+        }
+
+        body.dark-mode .filter-tooltip {
+            background-color: #555;
         }
 
         .filter-tag-text {
@@ -216,8 +242,9 @@
         <!-- Main Content Area -->
         <main class="main-content">
             <section class="blog-section">
-                <div id="filter-container" class="filter-container" style="display: none;" title="Clear filter">
+                <div id="filter-container" class="filter-container" style="display: none;">
                     <span id="filter-tag" class="filter-tag-text"></span>
+                    <span class="filter-tooltip">Clear filter</span>
                 </div>
                 <div id="posts-container">
                     <div class="loading">Loading posts...</div>
