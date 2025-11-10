@@ -53,6 +53,17 @@ document.addEventListener('DOMContentLoaded', function() {
         searchInput.value = '';
     });
 
+    // Handle search submission
+    searchInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            const query = searchInput.value.trim();
+            if (query) {
+                // Redirect to index.html with search query
+                window.location.href = `index.html?q=${encodeURIComponent(query)}`;
+            }
+        }
+    });
+
     // Close search box when clicking outside
     document.addEventListener('click', function(e) {
         if (!searchBox.contains(e.target) && !searchIconBtn.contains(e.target)) {
