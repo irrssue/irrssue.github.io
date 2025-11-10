@@ -45,10 +45,10 @@ a {
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 0 10px 10px 30px;
+    padding: 0 10px 20px 30px;
     margin-bottom: 20px;
     position: relative;
-    min-height: 30px;
+    min-height: 36px;
 }
 
 .navbar-title {
@@ -83,7 +83,7 @@ a {
     position: absolute;
     top: 0;
     left: 0;
-    right: 0;
+    right: 10px;
     display: none;
     align-items: center;
     background-color: #fff;
@@ -91,6 +91,7 @@ a {
     border-radius: 8px;
     padding: 6px 12px;
     gap: 8px;
+    margin-left: 0;
 }
 
 .search-box.active {
