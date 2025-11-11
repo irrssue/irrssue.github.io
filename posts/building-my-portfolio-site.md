@@ -7,11 +7,6 @@ cover: ""
 draft: false
 ---
 
-## TL;DR
-- Built a portfolio site using GitHub Pages with custom navigation and dark mode
-- Created a dynamic blog system that reads Markdown files
-- Automated post creation with GitHub Actions
-
 ## Context
 
 I wanted to create a personal portfolio site that was simple, fast, and easy to maintain. After exploring various options, I decided to use GitHub Pages with a custom-built blog system that uses Markdown files.

@@ -7,10 +7,6 @@ cover: ""
 draft: false
 ---
 
-## TL;DR
-- Good design is about solving problems
-- Consistency and simplicity are key
-
 ## Main
 
 Understanding design principles helps developers create more intuitive and beautiful applications.
