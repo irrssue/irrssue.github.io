@@ -7,10 +7,6 @@ cover: ""
 draft: false
 ---
 
-## TL;DR
-- React Hooks revolutionized functional components
-- useState and useEffect are the most commonly used hooks
-
 ## Main
 
 React Hooks allow you to use state and other React features without writing a class component.

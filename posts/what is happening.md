@@ -7,9 +7,6 @@ cover: ""
 draft: true
 ---
 
-## TL;DR
-- One or two quick summary points.
-
 ## Context
 
 Explain why this post exists or what it's about.

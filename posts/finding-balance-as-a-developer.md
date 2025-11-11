@@ -7,10 +7,6 @@ cover: ""
 draft: false
 ---
 
-## TL;DR
-- Burnout is real in tech
-- Set boundaries and stick to them
-
 ## Main
 
 As developers, we often get lost in code and forget about taking care of ourselves.

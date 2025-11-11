@@ -7,10 +7,6 @@ cover: ""
 draft: false
 ---
 
-## TL;DR
-- AI and ML are transforming technology
-- Start with understanding the fundamentals
-
 ## Main
 
 Artificial intelligence and machine learning are no longer just buzzwords—they're essential technologies.

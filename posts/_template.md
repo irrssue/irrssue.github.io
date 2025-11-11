@@ -15,9 +15,6 @@ IMPORTANT TAG RULES:
 - Examples of valid tags: Web, Tech, Design, Life, Career, Travel
 -->
 
-## TL;DR
-- One or two quick summary points.
-
 ## Context
 
 Explain why this post exists or what it's about.

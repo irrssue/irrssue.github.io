@@ -7,10 +7,6 @@ cover: ""
 draft: false
 ---
 
-## TL;DR
-- Python is perfect for beginners
-- Learn by building projects, not just reading
-
 ## Main
 
 Python's simple syntax and powerful capabilities make it an ideal first programming language.
