@@ -33,12 +33,12 @@ a {
     left: 50px;
     transform: translateY(-50%);
     width: 220px;
-    background-color: #f8f8f8;
+    background-color: #ececec;
     border-radius: 20px;
     padding: 30px 0;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
     z-index: 1000;
-    border: 1px solid #e5e5e5;
+    border: 1px solid #d0d0d0;
 }
 
 .navbar-header {
