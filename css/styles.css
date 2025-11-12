@@ -22,6 +22,17 @@ body {
     line-height: 1.6;
 }
 
+/* Text Selection - Light Mode */
+::selection {
+    background-color: #000000;
+    color: #ffffff;
+}
+
+::-moz-selection {
+    background-color: #000000;
+    color: #ffffff;
+}
+
 a {
     text-decoration: none;
     color: rgb(25, 0, 255);

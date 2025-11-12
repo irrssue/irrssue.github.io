@@ -60,6 +60,17 @@ body.dark-mode {
     color: #fff;
 }
 
+/* Text Selection - Dark Mode */
+body.dark-mode ::selection {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+body.dark-mode ::-moz-selection {
+    background-color: #ffffff;
+    color: #000000;
+}
+
 body.dark-mode .navbar {
     background-color: #2a2a2a;
     border-color: #404040;
