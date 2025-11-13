@@ -267,3 +267,30 @@ body.dark-mode .post-content hr {
 body.dark-mode .post-content a {
     color: #6ba3ff;
 }
+
+/* Highlight pulse animation for search results */
+@keyframes highlight-pulse {
+    0%, 100% {
+        background-color: rgba(255, 235, 59, 0.5);
+    }
+    50% {
+        background-color: rgba(255, 235, 59, 0.9);
+    }
+}
+
+body.dark-mode mark {
+    animation: none;
+}
+
+@keyframes highlight-pulse-dark {
+    0%, 100% {
+        background-color: rgba(255, 193, 7, 0.4);
+    }
+    50% {
+        background-color: rgba(255, 193, 7, 0.7);
+    }
+}
+
+body.dark-mode [style*="highlight-pulse"] {
+    animation: highlight-pulse-dark 2s ease !important;
+}

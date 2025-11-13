@@ -251,10 +251,13 @@
             `;
 
             results.writing.forEach(result => {
+                const urlWithSearch = `${result.url}&search=${encodeURIComponent(query)}`;
                 html += `
                     <div class="search-result-item">
-                        <a href="${result.url}" class="search-result-title">${highlightMatch(result.title, query)}</a>
-                        <p class="search-result-context">${highlightMatch(result.context, query)}</p>
+                        <a href="${urlWithSearch}" class="search-result-title">${highlightMatch(result.title, query)}</a>
+                        <a href="${urlWithSearch}" class="search-result-context-link">
+                            <p class="search-result-context">${highlightMatch(result.context, query)}</p>
+                        </a>
                         ${result.date ? `<span class="search-result-date">${new Date(result.date).getFullYear()}</span>` : ''}
                     </div>
                 `;
