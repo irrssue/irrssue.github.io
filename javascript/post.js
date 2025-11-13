@@ -56,12 +56,6 @@ async function loadPost() {
         // Render post
         renderPost(frontMatter, markdownContent);
 
-        // Handle search term highlighting if coming from search
-        const searchTerm = urlParams.get('search');
-        if (searchTerm) {
-            highlightAndScrollToSearch(searchTerm);
-        }
-
     } catch (error) {
         console.error('Error loading post:', error);
         showError('Post not found', 'The requested post could not be loaded. Please check the URL or return to the blog.');
@@ -144,58 +138,6 @@ function showError(title, message) {
             <p><a href="writing.html">← Return to writing</a></p>
         </div>
     `;
-}
-
-// Highlight search terms and scroll to first match
-function highlightAndScrollToSearch(searchTerm) {
-    const postContent = document.querySelector('.post-content');
-    if (!postContent) return;
-
-    // Use browser's find functionality to highlight all matches
-    const searchRegex = new RegExp(`(${escapeRegex(searchTerm)})`, 'gi');
-
-    // Get all text nodes and highlight matches
-    highlightTextNodes(postContent, searchRegex);
-
-    // Scroll to first match
-    setTimeout(() => {
-        const firstMark = postContent.querySelector('mark');
-        if (firstMark) {
-            firstMark.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            // Add pulsing effect to first match
-            firstMark.style.animation = 'highlight-pulse 2s ease';
-        }
-    }, 100);
-}
-
-// Helper function to highlight text in all text nodes
-function highlightTextNodes(element, regex) {
-    const walker = document.createTreeWalker(
-        element,
-        NodeFilter.SHOW_TEXT,
-        null,
-        false
-    );
-
-    const nodesToReplace = [];
-    let node;
-
-    while (node = walker.nextNode()) {
-        if (node.nodeValue.trim() && regex.test(node.nodeValue)) {
-            nodesToReplace.push(node);
-        }
-    }
-
-    nodesToReplace.forEach(node => {
-        const span = document.createElement('span');
-        span.innerHTML = node.nodeValue.replace(regex, '<mark>$1</mark>');
-        node.parentNode.replaceChild(span, node);
-    });
-}
-
-// Escape special regex characters
-function escapeRegex(string) {
-    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 // Load post when page loads
