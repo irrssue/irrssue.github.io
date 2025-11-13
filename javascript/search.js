@@ -180,21 +180,33 @@
         return results;
     }
 
-    // Extract context around a search match
+    // Extract context around all search matches
     function extractContext(text, query, contextLength = 150) {
-        const index = text.toLowerCase().indexOf(query);
-        if (index === -1) return text.substring(0, contextLength) + '...';
+        const queryLower = query.toLowerCase();
+        const textLower = text.toLowerCase();
+        const matches = [];
 
-        const start = Math.max(0, index - contextLength / 2);
-        const end = Math.min(text.length, index + query.length + contextLength / 2);
+        let index = textLower.indexOf(queryLower);
 
-        let context = text.substring(start, end);
+        // Find all occurrences
+        while (index !== -1) {
+            const start = Math.max(0, index - contextLength / 2);
+            const end = Math.min(text.length, index + query.length + contextLength / 2);
 
-        // Add ellipsis if needed
-        if (start > 0) context = '...' + context;
-        if (end < text.length) context = context + '...';
+            let context = text.substring(start, end);
 
-        return context;
+            // Add ellipsis if needed
+            if (start > 0) context = '...' + context;
+            if (end < text.length) context = context + '...';
+
+            matches.push(context);
+
+            // Find next occurrence
+            index = textLower.indexOf(queryLower, index + 1);
+        }
+
+        // Return all matches joined with visual separator, or first part of text if no matches
+        return matches.length > 0 ? matches.join(' ... ') : text.substring(0, contextLength) + '...';
     }
 
     // Highlight search terms in text
