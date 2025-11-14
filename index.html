@@ -5,8 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Saw Thura Zaw Portfolio</title>
     <link rel="stylesheet" href="main.css">
+    <script>
+        // Apply dark mode immediately to prevent flash
+        (function() {
+            const savedTheme = localStorage.getItem('darkMode');
+            if (savedTheme === null || savedTheme === 'true') {
+                document.documentElement.style.setProperty('--preload-dark-mode', '1');
+            }
+        })();
+    </script>
 </head>
 <body>
+    <script>
+        // Apply dark mode class as early as possible
+        const savedTheme = localStorage.getItem('darkMode');
+        if (savedTheme === null || savedTheme === 'true') {
+            document.body.classList.add('dark-mode');
+        }
+    </script>
     <div class="grid-container">
         <nav class="navbar">
             <div class="navbar-header">
