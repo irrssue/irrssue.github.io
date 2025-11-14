@@ -7,6 +7,7 @@
     const SEARCH_REPO_NAME = 'irrssue.github.io';
     const SEARCH_BRANCH = 'main';
     const SEARCH_POSTS_DIR = 'posts';
+    const SEARCH_BOOKMARKS_DIR = 'bookmarks';
 
     // Cache for search data
     let searchIndex = null;
@@ -109,8 +110,66 @@
                 index.writing = posts.filter(post => post !== null);
             }
 
-            // TODO: Add bookmarks data when available
-            // index.bookmarks = [...];
+            // Fetch bookmarks
+            const bookmarksResponse = await fetch(
+                `https://api.github.com/repos/${SEARCH_REPO_OWNER}/${SEARCH_REPO_NAME}/contents/${SEARCH_BOOKMARKS_DIR}?ref=${SEARCH_BRANCH}`
+            );
+
+            if (bookmarksResponse.ok) {
+                const bookmarkFiles = await bookmarksResponse.json();
+                const bmFiles = bookmarkFiles.filter(file =>
+                    file.name.endsWith('.md') && file.name !== '_template.md'
+                );
+
+                // Fetch content for each bookmark
+                const bookmarks = await Promise.all(
+                    bmFiles.map(async (file) => {
+                        try {
+                            const contentResponse = await fetch(file.download_url);
+                            const content = await contentResponse.text();
+
+                            // Parse front matter
+                            const frontMatterMatch = content.match(/^---\s*\n([\s\S]*?)\n---/);
+                            if (!frontMatterMatch) return null;
+
+                            const frontMatterText = frontMatterMatch[1];
+
+                            // Parse YAML front matter manually (simple parser)
+                            const frontMatter = {};
+                            frontMatterText.split('\n').forEach(line => {
+                                const match = line.match(/^(\w+):\s*(.+)$/);
+                                if (match) {
+                                    const key = match[1];
+                                    let value = match[2].trim();
+
+                                    // Remove quotes
+                                    if ((value.startsWith('"') && value.endsWith('"')) ||
+                                        (value.startsWith("'") && value.endsWith("'"))) {
+                                        value = value.slice(1, -1);
+                                    }
+
+                                    frontMatter[key] = value;
+                                }
+                            });
+
+                            const tag = frontMatter.tag || '';
+
+                            return {
+                                filename: file.name,
+                                title: frontMatter.title || 'Untitled',
+                                url: frontMatter.url || '#',
+                                date: frontMatter.date || '',
+                                tag: tag
+                            };
+                        } catch (error) {
+                            console.error(`Error parsing ${file.name}:`, error);
+                            return null;
+                        }
+                    })
+                );
+
+                index.bookmarks = bookmarks.filter(bookmark => bookmark !== null);
+            }
 
             // TODO: Add featured projects when available
             // index.featured = [...];
@@ -130,49 +189,104 @@
     function performSearch(query) {
         if (!searchIndex) {
             console.error('Search index not ready');
-            return { writing: [], bookmarks: [], featured: [] };
+            return { writing: [], bookmarks: [], featured: [], isTagSearch: false };
         }
 
-        const queryLower = query.toLowerCase().trim();
-        if (!queryLower) return { writing: [], bookmarks: [], featured: [] };
+        const queryTrimmed = query.trim();
+        if (!queryTrimmed) return { writing: [], bookmarks: [], featured: [], isTagSearch: false };
+
+        // Check if this is a tag search (starts with #)
+        const isTagSearch = queryTrimmed.startsWith('#');
+        const searchTerm = isTagSearch ? queryTrimmed.substring(1).toLowerCase() : queryTrimmed.toLowerCase();
 
         const results = {
             writing: [],
             bookmarks: [],
-            featured: []
+            featured: [],
+            isTagSearch: isTagSearch
         };
 
-        // Search in writing posts
-        searchIndex.writing.forEach(post => {
-            const titleMatch = post.title.toLowerCase().includes(queryLower);
-            const summaryMatch = post.summary.toLowerCase().includes(queryLower);
-            const contentMatch = post.content.toLowerCase().includes(queryLower);
-            const tagMatch = post.tag && post.tag.toLowerCase().includes(queryLower);
-
-            if (titleMatch || summaryMatch || contentMatch || tagMatch) {
-                // Extract context around the match
-                let matchContext = '';
-                if (titleMatch) {
-                    matchContext = post.title;
-                } else if (summaryMatch) {
-                    matchContext = post.summary;
-                } else if (contentMatch) {
-                    matchContext = extractContext(post.content, queryLower);
-                } else if (tagMatch) {
-                    matchContext = `Tag: ${post.tag}`;
+        if (isTagSearch) {
+            // Tag search - exact tag match
+            searchIndex.writing.forEach(post => {
+                if (post.tag && post.tag.toLowerCase() === searchTerm) {
+                    results.writing.push({
+                        title: post.title,
+                        url: post.url,
+                        context: `Tag: #${post.tag}`,
+                        date: post.date,
+                        tag: post.tag
+                    });
                 }
+            });
 
-                results.writing.push({
-                    title: post.title,
-                    url: post.url,
-                    context: matchContext,
-                    date: post.date
-                });
-            }
-        });
+            searchIndex.bookmarks.forEach(bookmark => {
+                if (bookmark.tag && bookmark.tag.toLowerCase() === searchTerm) {
+                    results.bookmarks.push({
+                        title: bookmark.title,
+                        url: bookmark.url,
+                        context: `Tag: #${bookmark.tag}`,
+                        date: bookmark.date,
+                        tag: bookmark.tag
+                    });
+                }
+            });
+        } else {
+            // Regular text search
+            searchIndex.writing.forEach(post => {
+                const titleMatch = post.title.toLowerCase().includes(searchTerm);
+                const summaryMatch = post.summary.toLowerCase().includes(searchTerm);
+                const contentMatch = post.content.toLowerCase().includes(searchTerm);
+                const tagMatch = post.tag && post.tag.toLowerCase().includes(searchTerm);
 
-        // TODO: Search in bookmarks when available
-        // searchIndex.bookmarks.forEach(...)
+                if (titleMatch || summaryMatch || contentMatch || tagMatch) {
+                    // Extract context around the match
+                    let matchContext = '';
+                    if (titleMatch) {
+                        matchContext = post.title;
+                    } else if (summaryMatch) {
+                        matchContext = post.summary;
+                    } else if (contentMatch) {
+                        matchContext = extractContext(post.content, searchTerm);
+                    } else if (tagMatch) {
+                        matchContext = `Tag: ${post.tag}`;
+                    }
+
+                    results.writing.push({
+                        title: post.title,
+                        url: post.url,
+                        context: matchContext,
+                        date: post.date,
+                        tag: post.tag
+                    });
+                }
+            });
+
+            searchIndex.bookmarks.forEach(bookmark => {
+                const titleMatch = bookmark.title.toLowerCase().includes(searchTerm);
+                const urlMatch = bookmark.url.toLowerCase().includes(searchTerm);
+                const tagMatch = bookmark.tag && bookmark.tag.toLowerCase().includes(searchTerm);
+
+                if (titleMatch || urlMatch || tagMatch) {
+                    let matchContext = '';
+                    if (titleMatch) {
+                        matchContext = bookmark.title;
+                    } else if (urlMatch) {
+                        matchContext = bookmark.url;
+                    } else if (tagMatch) {
+                        matchContext = `Tag: ${bookmark.tag}`;
+                    }
+
+                    results.bookmarks.push({
+                        title: bookmark.title,
+                        url: bookmark.url,
+                        context: matchContext,
+                        date: bookmark.date,
+                        tag: bookmark.tag
+                    });
+                }
+            });
+        }
 
         // TODO: Search in featured when available
         // searchIndex.featured.forEach(...)
@@ -228,12 +342,14 @@
         if (!mainContent) return;
 
         const totalResults = results.writing.length + results.bookmarks.length + results.featured.length;
+        const searchType = results.isTagSearch ? 'tag' : 'search';
+        const displayQuery = results.isTagSearch && !query.startsWith('#') ? `#${query}` : query;
 
         let html = `
             <div class="search-results-container">
                 <div class="search-results-header">
-                    <h1 class="search-results-title">Search Results</h1>
-                    <p class="search-results-query">Found ${totalResults} result${totalResults !== 1 ? 's' : ''} for "${query}"</p>
+                    <h1 class="search-results-title">${results.isTagSearch ? 'Tag Search Results' : 'Search Results'}</h1>
+                    <p class="search-results-query">Found ${totalResults} result${totalResults !== 1 ? 's' : ''} for "${displayQuery}"</p>
                 </div>
         `;
 
@@ -255,7 +371,10 @@
                     <div class="search-result-item">
                         <a href="${result.url}" class="search-result-title">${highlightMatch(result.title, query)}</a>
                         <p class="search-result-context">${highlightMatch(result.context, query)}</p>
-                        ${result.date ? `<span class="search-result-date">${new Date(result.date).getFullYear()}</span>` : ''}
+                        <div class="search-result-meta">
+                            ${result.date ? `<span class="search-result-date">${new Date(result.date).getFullYear()}</span>` : ''}
+                            ${result.tag ? `<span class="search-result-tag">#${result.tag}</span>` : ''}
+                        </div>
                     </div>
                 `;
             });
@@ -282,8 +401,9 @@
             results.bookmarks.forEach(result => {
                 html += `
                     <div class="search-result-item">
-                        <a href="${result.url}" class="search-result-title">${highlightMatch(result.title, query)}</a>
+                        <a href="${result.url}" class="search-result-title" target="_blank" rel="noopener noreferrer">${highlightMatch(result.title, query)}</a>
                         <p class="search-result-context">${highlightMatch(result.context, query)}</p>
+                        ${result.tag ? `<div class="search-result-meta"><span class="search-result-tag">#${result.tag}</span></div>` : ''}
                     </div>
                 `;
             });
