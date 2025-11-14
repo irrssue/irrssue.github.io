@@ -529,6 +529,13 @@ body.dark-mode .search-result-context {
     color: #aaa;
 }
 
+.search-result-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
 .search-result-date {
     font-size: 0.85rem;
     color: #999;
@@ -536,6 +543,16 @@ body.dark-mode .search-result-context {
 }
 
 body.dark-mode .search-result-date {
+    color: #888;
+}
+
+.search-result-tag {
+    font-size: 0.85rem;
+    color: #999;
+    font-weight: 400;
+}
+
+body.dark-mode .search-result-tag {
     color: #888;
 }
 
