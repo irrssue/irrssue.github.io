@@ -323,12 +323,21 @@
         return matches.length > 0 ? matches.join(' ... ') : text.substring(0, contextLength) + '...';
     }
 
-    // Highlight search terms in text
-    function highlightMatch(text, query) {
+    // Highlight search terms in text and make them clickable
+    function highlightMatch(text, query, url, isExternal = false) {
         if (!query) return text;
 
+        // Add search query to URL for internal posts (to enable scroll-to-match)
+        let linkUrl = url;
+        if (!isExternal && query) {
+            const urlObj = new URL(url, window.location.origin);
+            urlObj.searchParams.set('search', query);
+            linkUrl = urlObj.pathname + urlObj.search;
+        }
+
+        const targetAttr = isExternal ? ' target="_blank" rel="noopener noreferrer"' : '';
         const regex = new RegExp(`(${escapeRegex(query)})`, 'gi');
-        return text.replace(regex, '<mark>$1</mark>');
+        return text.replace(regex, `<a href="${linkUrl}" class="highlight-match"${targetAttr}><mark>$1</mark></a>`);
     }
 
     // Escape special regex characters
@@ -374,14 +383,15 @@
 
             allResults.forEach(result => {
                 const targetAttr = result.sectionType === 'external' ? ' target="_blank" rel="noopener noreferrer"' : '';
+                const isExternal = result.sectionType === 'external';
+                const searchQuery = results.isTagSearch ? '' : query; // Don't highlight for tag searches
+
                 html += `
                     <div class="search-result-item">
                         <div class="search-result-section">${result.section}</div>
                         <div class="search-result-content">
-                            <a href="${result.url}" class="search-result-title"${targetAttr}>${highlightMatch(result.title, query)}</a>
-                            <a href="${result.url}" class="search-result-context-link"${targetAttr}>
-                                <p class="search-result-context">${highlightMatch(result.context, query)}</p>
-                            </a>
+                            <a href="${result.url}" class="search-result-title"${targetAttr}>${result.title}</a>
+                            <p class="search-result-context">${highlightMatch(result.context, searchQuery, result.url, isExternal)}</p>
                             <div class="search-result-meta">
                                 ${result.date ? `<span class="search-result-date">${new Date(result.date).getFullYear()}</span>` : ''}
                                 ${result.tag ? `<span class="search-result-tag">#${result.tag}</span>` : ''}

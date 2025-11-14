@@ -127,6 +127,71 @@ function renderPost(frontMatter, markdownContent) {
             </div>
         </article>
     `;
+
+    // Scroll to search match if search parameter is present
+    highlightAndScrollToSearch();
+}
+
+function highlightAndScrollToSearch() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const searchQuery = urlParams.get('search');
+
+    if (!searchQuery) return;
+
+    // Find all text nodes in the post content
+    const postContent = document.querySelector('.post-content');
+    if (!postContent) return;
+
+    // Use TreeWalker to find text nodes
+    const walker = document.createTreeWalker(
+        postContent,
+        NodeFilter.SHOW_TEXT,
+        null
+    );
+
+    const textNodes = [];
+    let node;
+    while (node = walker.nextNode()) {
+        if (node.textContent.trim()) {
+            textNodes.push(node);
+        }
+    }
+
+    // Search for the query in text nodes
+    const searchLower = searchQuery.toLowerCase();
+    let foundNode = null;
+
+    for (const textNode of textNodes) {
+        const text = textNode.textContent;
+        const index = text.toLowerCase().indexOf(searchLower);
+
+        if (index !== -1) {
+            foundNode = textNode;
+
+            // Highlight the matched text
+            const before = text.substring(0, index);
+            const match = text.substring(index, index + searchQuery.length);
+            const after = text.substring(index + searchQuery.length);
+
+            const span = document.createElement('span');
+            span.innerHTML = `${before}<mark class="search-highlight">${match}</mark>${after}`;
+
+            textNode.parentNode.replaceChild(span, textNode);
+
+            // Scroll to the first match
+            const markElement = span.querySelector('mark');
+            if (markElement) {
+                setTimeout(() => {
+                    markElement.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center'
+                    });
+                }, 100);
+            }
+
+            break; // Only highlight and scroll to first match
+        }
+    }
 }
 
 function showError(title, message) {

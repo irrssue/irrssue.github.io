@@ -267,3 +267,40 @@ body.dark-mode .post-content hr {
 body.dark-mode .post-content a {
     color: #6ba3ff;
 }
+
+/* Search highlight styles */
+.search-highlight {
+    background-color: rgba(255, 235, 59, 0.7);
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-weight: 500;
+    color: #000;
+    animation: highlight-pulse 2s ease-in-out;
+}
+
+@keyframes highlight-pulse {
+    0%, 100% {
+        background-color: rgba(255, 235, 59, 0.7);
+    }
+    50% {
+        background-color: rgba(255, 235, 59, 1);
+    }
+}
+
+body.dark-mode .search-highlight {
+    background-color: rgba(255, 193, 7, 0.6);
+    color: #fff;
+}
+
+body.dark-mode .search-highlight {
+    animation: highlight-pulse-dark 2s ease-in-out;
+}
+
+@keyframes highlight-pulse-dark {
+    0%, 100% {
+        background-color: rgba(255, 193, 7, 0.6);
+    }
+    50% {
+        background-color: rgba(255, 193, 7, 0.9);
+    }
+}
