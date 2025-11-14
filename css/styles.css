@@ -444,42 +444,19 @@ body.dark-mode .search-results-query {
     color: #aaa;
 }
 
-.search-section {
-    margin-bottom: 50px;
-}
-
-.search-section-title {
-    font-size: 1.4rem;
-    font-weight: 600;
-    color: #bbb;
-    margin-bottom: 20px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #e5e5e5;
-    letter-spacing: 0.5px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.search-section-title .section-icon {
-    width: 20px;
-    height: 20px;
-    flex-shrink: 0;
-}
-
-body.dark-mode .search-section-title {
-    border-bottom-color: #333;
-    color: #888;
-}
-
 .search-results-list {
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 0;
+    margin-top: 40px;
 }
 
 .search-result-item {
-    padding: 16px 0;
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    gap: 20px;
+    align-items: baseline;
+    padding: 12px 0;
     border-bottom: 1px solid transparent;
     transition: all 0.3s ease;
 }
@@ -492,15 +469,29 @@ body.dark-mode .search-result-item:hover {
     border-bottom-color: #333;
 }
 
+.search-result-section {
+    font-size: 0.9rem;
+    color: #8f8f8f;
+    font-weight: 400;
+    text-align: left;
+    font-family: 'Courier New', 'Monaco', 'Menlo', 'Consolas', monospace;
+}
+
+body.dark-mode .search-result-section {
+    color: #999;
+}
+
+.search-result-content {
+    min-width: 0;
+}
+
 .search-result-title {
-    display: block;
-    font-size: 1.1rem;
-    font-weight: 500;
+    font-size: 1rem;
+    font-weight: 300;
     color: var(--main-text-color);
     text-decoration: none;
     margin-bottom: 8px;
     padding: 6px 12px;
-    margin-left: -12px;
     border-radius: 8px;
     transition: background-color 0.3s ease;
     display: inline-block;
@@ -519,10 +510,11 @@ body.dark-mode .search-result-title:hover {
 }
 
 .search-result-context {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     color: #909090;
-    line-height: 1.6;
-    margin-bottom: 8px;
+    line-height: 1.5;
+    margin-bottom: 6px;
+    margin-top: -4px;
 }
 
 body.dark-mode .search-result-context {
@@ -532,12 +524,13 @@ body.dark-mode .search-result-context {
 .search-result-meta {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     flex-wrap: wrap;
+    margin-top: 4px;
 }
 
 .search-result-date {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     color: #999;
     font-weight: 400;
 }
@@ -547,7 +540,7 @@ body.dark-mode .search-result-date {
 }
 
 .search-result-tag {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     color: #999;
     font-weight: 400;
 }

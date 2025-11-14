@@ -353,93 +353,42 @@
                 </div>
         `;
 
-        // Display Writing results
-        if (results.writing.length > 0) {
-            html += `
-                <div class="search-section">
-                    <h2 class="search-section-title">
-                        <svg class="section-icon" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
-                        </svg>
-                        Writing
-                    </h2>
-                    <div class="search-results-list">
-            `;
+        // Combine all results with section labels
+        const allResults = [];
 
-            results.writing.forEach(result => {
+        results.writing.forEach(result => {
+            allResults.push({ ...result, section: 'Writing', sectionType: 'internal' });
+        });
+
+        results.bookmarks.forEach(result => {
+            allResults.push({ ...result, section: 'Bookmarks', sectionType: 'external' });
+        });
+
+        results.featured.forEach(result => {
+            allResults.push({ ...result, section: 'Featured', sectionType: 'internal' });
+        });
+
+        // Display all results in grid layout
+        if (allResults.length > 0) {
+            html += `<div class="search-results-list">`;
+
+            allResults.forEach(result => {
                 html += `
                     <div class="search-result-item">
-                        <a href="${result.url}" class="search-result-title">${highlightMatch(result.title, query)}</a>
-                        <p class="search-result-context">${highlightMatch(result.context, query)}</p>
-                        <div class="search-result-meta">
-                            ${result.date ? `<span class="search-result-date">${new Date(result.date).getFullYear()}</span>` : ''}
-                            ${result.tag ? `<span class="search-result-tag">#${result.tag}</span>` : ''}
+                        <div class="search-result-section">${result.section}</div>
+                        <div class="search-result-content">
+                            <a href="${result.url}" class="search-result-title"${result.sectionType === 'external' ? ' target="_blank" rel="noopener noreferrer"' : ''}>${highlightMatch(result.title, query)}</a>
+                            <p class="search-result-context">${highlightMatch(result.context, query)}</p>
+                            <div class="search-result-meta">
+                                ${result.date ? `<span class="search-result-date">${new Date(result.date).getFullYear()}</span>` : ''}
+                                ${result.tag ? `<span class="search-result-tag">#${result.tag}</span>` : ''}
+                            </div>
                         </div>
                     </div>
                 `;
             });
 
-            html += `
-                    </div>
-                </div>
-            `;
-        }
-
-        // Display Bookmarks results
-        if (results.bookmarks.length > 0) {
-            html += `
-                <div class="search-section">
-                    <h2 class="search-section-title">
-                        <svg class="section-icon" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z"/>
-                        </svg>
-                        Bookmarks
-                    </h2>
-                    <div class="search-results-list">
-            `;
-
-            results.bookmarks.forEach(result => {
-                html += `
-                    <div class="search-result-item">
-                        <a href="${result.url}" class="search-result-title" target="_blank" rel="noopener noreferrer">${highlightMatch(result.title, query)}</a>
-                        <p class="search-result-context">${highlightMatch(result.context, query)}</p>
-                        ${result.tag ? `<div class="search-result-meta"><span class="search-result-tag">#${result.tag}</span></div>` : ''}
-                    </div>
-                `;
-            });
-
-            html += `
-                    </div>
-                </div>
-            `;
-        }
-
-        // Display Featured results
-        if (results.featured.length > 0) {
-            html += `
-                <div class="search-section">
-                    <h2 class="search-section-title">
-                        <svg class="section-icon" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                        </svg>
-                        Featured
-                    </h2>
-                    <div class="search-results-list">
-            `;
-
-            results.featured.forEach(result => {
-                html += `
-                    <div class="search-result-item">
-                        <a href="${result.url}" class="search-result-title">${highlightMatch(result.title, query)}</a>
-                        <p class="search-result-context">${highlightMatch(result.context, query)}</p>
-                    </div>
-                `;
-            });
-
-            html += `
-                    </div>
-                </div>
-            `;
+            html += `</div>`;
         }
 
         // No results message
