@@ -178,7 +178,7 @@ function renderBookmarkRow(bookmark) {
     return `
         <div class="bookmark-item">
             <div class="bookmark-link"><a href="${bookmark.url}" target="_blank" rel="noopener noreferrer">${displayUrl}</a></div>
-            <div class="bookmark-title"><span>${bookmark.title}</span></div>
+            <div class="bookmark-title"><a href="${bookmark.url}" target="_blank" rel="noopener noreferrer">${bookmark.title}</a></div>
             <div class="bookmark-tag">${tagDisplay}</div>
         </div>
     `;
