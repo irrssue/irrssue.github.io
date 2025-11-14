@@ -373,12 +373,15 @@
             html += `<div class="search-results-list">`;
 
             allResults.forEach(result => {
+                const targetAttr = result.sectionType === 'external' ? ' target="_blank" rel="noopener noreferrer"' : '';
                 html += `
                     <div class="search-result-item">
                         <div class="search-result-section">${result.section}</div>
                         <div class="search-result-content">
-                            <a href="${result.url}" class="search-result-title"${result.sectionType === 'external' ? ' target="_blank" rel="noopener noreferrer"' : ''}>${highlightMatch(result.title, query)}</a>
-                            <p class="search-result-context">${highlightMatch(result.context, query)}</p>
+                            <a href="${result.url}" class="search-result-title"${targetAttr}>${highlightMatch(result.title, query)}</a>
+                            <a href="${result.url}" class="search-result-context-link"${targetAttr}>
+                                <p class="search-result-context">${highlightMatch(result.context, query)}</p>
+                            </a>
                             <div class="search-result-meta">
                                 ${result.date ? `<span class="search-result-date">${new Date(result.date).getFullYear()}</span>` : ''}
                                 ${result.tag ? `<span class="search-result-tag">#${result.tag}</span>` : ''}
