@@ -8,8 +8,24 @@
     <script src="https://cdn.jsdelivr.net/npm/markdown-it@13.0.1/dist/markdown-it.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+    <script>
+        // Apply dark mode immediately to prevent flash
+        (function() {
+            const savedTheme = localStorage.getItem('darkMode');
+            if (savedTheme === null || savedTheme === 'true') {
+                document.documentElement.style.setProperty('--preload-dark-mode', '1');
+            }
+        })();
+    </script>
 </head>
 <body>
+    <script>
+        // Apply dark mode class as early as possible
+        const savedTheme = localStorage.getItem('darkMode');
+        if (savedTheme === null || savedTheme === 'true') {
+            document.body.classList.add('dark-mode');
+        }
+    </script>
     <div class="grid-container">
         <!-- Floating Navbar -->
         <nav class="navbar">
