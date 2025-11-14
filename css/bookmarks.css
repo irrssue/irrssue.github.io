@@ -15,6 +15,7 @@
     color: #8f8f8f;
     font-weight: 400;
     font-family: 'Courier New', 'Monaco', 'Menlo', 'Consolas', monospace;
+    position: relative;
 }
 
 .bookmark-link a {
@@ -25,6 +26,28 @@
 
 .bookmark-link a:hover {
     color: var(--main-text-color);
+}
+
+/* URL Tooltip */
+.url-tooltip {
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    background-color: #333;
+    color: #fff;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    margin-bottom: 5px;
+    z-index: 1000;
+}
+
+.bookmark-link:hover .url-tooltip {
+    opacity: 1;
 }
 
 .bookmark-title {
@@ -78,6 +101,10 @@ body.dark-mode .bookmark-link a {
 
 body.dark-mode .bookmark-link a:hover {
     color: #e0e0e0;
+}
+
+body.dark-mode .url-tooltip {
+    background-color: #555;
 }
 
 body.dark-mode .bookmark-title a {
