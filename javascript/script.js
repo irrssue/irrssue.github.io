@@ -34,11 +34,8 @@ document.addEventListener('DOMContentLoaded', function() {
         localStorage.setItem('darkMode', isDarkMode);
     });
 
-    // Load saved theme preference or default to dark mode
-    const savedTheme = localStorage.getItem('darkMode');
-    if (savedTheme === null || savedTheme === 'true') {
-        document.body.classList.add('dark-mode');
-    }
+    // Theme is already applied via inline script in HTML head
+    // This is just kept for reference and consistency
 
     // Search functionality
     searchIconBtn.addEventListener('click', function() {
