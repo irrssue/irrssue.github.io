@@ -509,35 +509,29 @@ body.dark-mode .search-result-title:hover {
     background-color: rgba(255, 255, 255, 0.15);
 }
 
-.search-result-context-link {
-    text-decoration: none;
-    display: block;
-    margin-left: -12px;
-    margin-right: -12px;
-    padding: 0 12px;
-    border-radius: 8px;
-    transition: background-color 0.3s ease;
-}
-
-.search-result-context-link:hover {
-    background-color: rgba(128, 128, 128, 0.1);
-}
-
-body.dark-mode .search-result-context-link:hover {
-    background-color: rgba(255, 255, 255, 0.08);
-}
-
 .search-result-context {
     font-size: 0.9rem;
     color: #909090;
     line-height: 1.5;
     margin-bottom: 6px;
     margin-top: -4px;
-    cursor: pointer;
 }
 
 body.dark-mode .search-result-context {
     color: #aaa;
+}
+
+.highlight-match {
+    text-decoration: none;
+    display: inline;
+}
+
+.highlight-match:hover mark {
+    background-color: rgba(255, 235, 59, 0.7);
+}
+
+body.dark-mode .highlight-match:hover mark {
+    background-color: rgba(255, 193, 7, 0.6);
 }
 
 .search-result-meta {
