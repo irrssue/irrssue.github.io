@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Writing - Saw Thura Zaw</title>
+    <title>Bookmarks - Saw Thura Zaw</title>
     <link rel="stylesheet" href="main.css">
-    <link rel="stylesheet" href="css/writing.css">
+    <link rel="stylesheet" href="css/bookmarks.css">
     <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
 </head>
 <body>
@@ -40,13 +40,13 @@
                         </svg>
                         Home
                     </a></li>
-                    <li><a href="writing.html" class="active">
+                    <li><a href="writing.html">
                         <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
                         </svg>
                         Writing
                     </a></li>
-                    <li><a href="bookmarks.html">
+                    <li><a href="bookmarks.html" class="active">
                         <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z"/>
                         </svg>
@@ -92,13 +92,13 @@
 
         <!-- Main Content Area -->
         <main class="main-content">
-            <section class="blog-section">
+            <section class="bookmarks-section">
                 <div id="filter-container" class="filter-container" style="display: none;">
                     <span id="filter-tag" class="filter-tag-text"></span>
                     <span class="filter-tooltip">Clear filter</span>
                 </div>
-                <div id="posts-container">
-                    <div class="loading">Loading posts...</div>
+                <div id="bookmarks-container">
+                    <div class="loading">Loading bookmarks...</div>
                 </div>
             </section>
         </main>
@@ -106,6 +106,6 @@
 
     <script src="javascript/script.js"></script>
     <script src="javascript/search.js"></script>
-    <script src="javascript/writing.js"></script>
+    <script src="javascript/bookmarks.js"></script>
 </body>
 </html>
