@@ -98,7 +98,7 @@
                                 tag: tagString,
                                 summary: frontMatter.summary || '',
                                 content: bodyContent,
-                                url: `post.html?name=${encodeURIComponent(file.name)}`
+                                url: `html/post.html?name=${encodeURIComponent(file.name)}`
                             };
                         } catch (error) {
                             console.error(`Error parsing ${file.name}:`, error);
