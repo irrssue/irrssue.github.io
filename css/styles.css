@@ -237,6 +237,13 @@ a {
 .intro-line {
     margin-bottom: 5px;
     line-height: 1.8;
+    color: #1a1a1a;
+    font-size: 1rem;
+    font-weight: 400;
+}
+
+body.dark-mode .intro-line {
+    color: #f0f0f0;
 }
 
 .intro-line a {
