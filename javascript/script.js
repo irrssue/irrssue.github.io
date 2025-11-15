@@ -56,7 +56,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const query = searchInput.value.trim();
             if (query) {
                 // Redirect to index.html with search query
-                window.location.href = `index.html?q=${encodeURIComponent(query)}`;
+                // Use root-relative path to work from any page
+                const isInHtmlFolder = window.location.pathname.includes('/html/');
+                const indexPath = isInHtmlFolder ? '../index.html' : 'index.html';
+                window.location.href = `${indexPath}?q=${encodeURIComponent(query)}`;
             }
         }
     });
