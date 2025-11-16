@@ -33,14 +33,14 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1rem;
-    color: rgb(163, 163, 163);
+    color: rgb(115, 115, 115);
     font-size: 0.9rem;
 }
 
 .post-date {
-    color: rgb(163, 163, 163);
+    color: rgb(115, 115, 115);
     cursor: default;
-    border-bottom: 1px dotted rgb(163, 163, 163);
+    border-bottom: 1px dotted rgb(115, 115, 115);
     text-decoration: none;
     position: relative;
 }
@@ -83,13 +83,13 @@
 }
 
 .post-tag {
-    color: rgb(163, 163, 163);
+    color: rgb(115, 115, 115);
     font-size: 0.9rem;
 }
 
 .post-content {
     line-height: 1.7;
-    color: rgb(163, 163, 163);
+    color: rgb(115, 115, 115);
     font-size: 1rem;
 }
 
@@ -127,7 +127,7 @@
 }
 
 .post-content a {
-    color: rgb(163, 163, 163);
+    color: rgb(115, 115, 115);
     text-decoration: none;
     transition: opacity 0.2s;
 }
@@ -142,7 +142,7 @@
     border-radius: 3px;
     font-family: 'Courier New', monospace;
     font-size: 0.9em;
-    color: rgb(163, 163, 163);
+    color: rgb(115, 115, 115);
 }
 
 .post-content pre {
@@ -156,14 +156,14 @@
 .post-content pre code {
     background: none;
     padding: 0;
-    color: rgb(163, 163, 163);
+    color: rgb(115, 115, 115);
 }
 
 .post-content blockquote {
     border-left: 3px solid #e5e5e5;
     padding-left: 1rem;
     margin: 1.5rem 0;
-    color: rgb(163, 163, 163);
+    color: rgb(115, 115, 115);
     font-style: italic;
 }
 
@@ -184,7 +184,7 @@
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    color: rgb(163, 163, 163);
+    color: rgb(115, 115, 115);
     text-decoration: none;
     margin-bottom: 2rem;
     transition: color 0.2s;
@@ -198,7 +198,7 @@
 .loading {
     text-align: center;
     padding: 3rem;
-    color: rgb(163, 163, 163);
+    color: rgb(115, 115, 115);
 }
 
 .error {
@@ -212,7 +212,7 @@
 }
 
 .error p {
-    color: rgb(163, 163, 163);
+    color: rgb(115, 115, 115);
 }
 
 /* Dark mode adjustments */
