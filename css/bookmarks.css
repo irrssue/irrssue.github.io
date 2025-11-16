@@ -12,14 +12,14 @@
 
 .bookmark-link {
     font-size: 0.9rem;
-    color: rgb(163, 163, 163);
+    color: rgb(115, 115, 115);
     font-weight: 400;
     font-family: 'Courier New', 'Monaco', 'Menlo', 'Consolas', monospace;
     position: relative;
 }
 
 .bookmark-link a {
-    color: rgb(163, 163, 163);
+    color: rgb(115, 115, 115);
     text-decoration: none;
     transition: color 0.3s ease;
 }
@@ -71,7 +71,7 @@
 
 .bookmark-tag {
     font-size: 0.9rem;
-    color: rgb(163, 163, 163);
+    color: rgb(115, 115, 115);
     text-align: right;
     font-weight: 400;
 }
