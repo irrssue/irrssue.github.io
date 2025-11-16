@@ -13,7 +13,7 @@
 .bookmark-link {
     font-size: 0.9rem;
     color: rgb(115, 115, 115);
-    font-weight: 400;
+    font-weight: 500;
     font-family: 'Courier New', 'Monaco', 'Menlo', 'Consolas', monospace;
     position: relative;
 }
@@ -58,7 +58,7 @@
     font-size: 0.97rem;
     color: var(--main-text-color);
     text-decoration: none;
-    font-weight: 300;
+    font-weight: 500;
     transition: background-color 0.3s ease, color 0.3s ease;
     padding: 6px 12px;
     border-radius: 8px;
@@ -73,7 +73,7 @@
     font-size: 0.9rem;
     color: rgb(115, 115, 115);
     text-align: right;
-    font-weight: 400;
+    font-weight: 500;
 }
 
 .loading {
