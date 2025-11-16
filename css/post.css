@@ -33,14 +33,14 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1rem;
-    color: #999;
+    color: rgb(163, 163, 163);
     font-size: 0.9rem;
 }
 
 .post-date {
-    color: #999;
+    color: rgb(163, 163, 163);
     cursor: default;
-    border-bottom: 1px dotted #999;
+    border-bottom: 1px dotted rgb(163, 163, 163);
     text-decoration: none;
     position: relative;
 }
@@ -83,13 +83,13 @@
 }
 
 .post-tag {
-    color: #999;
+    color: rgb(163, 163, 163);
     font-size: 0.9rem;
 }
 
 .post-content {
     line-height: 1.7;
-    color: #666;
+    color: rgb(163, 163, 163);
     font-size: 1rem;
 }
 
@@ -127,7 +127,7 @@
 }
 
 .post-content a {
-    color: #1a73e8;
+    color: rgb(163, 163, 163);
     text-decoration: none;
     transition: opacity 0.2s;
 }
@@ -142,7 +142,7 @@
     border-radius: 3px;
     font-family: 'Courier New', monospace;
     font-size: 0.9em;
-    color: #d73a49;
+    color: rgb(163, 163, 163);
 }
 
 .post-content pre {
@@ -156,14 +156,14 @@
 .post-content pre code {
     background: none;
     padding: 0;
-    color: #333;
+    color: rgb(163, 163, 163);
 }
 
 .post-content blockquote {
     border-left: 3px solid #e5e5e5;
     padding-left: 1rem;
     margin: 1.5rem 0;
-    color: #888;
+    color: rgb(163, 163, 163);
     font-style: italic;
 }
 
@@ -184,7 +184,7 @@
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    color: #999;
+    color: rgb(163, 163, 163);
     text-decoration: none;
     margin-bottom: 2rem;
     transition: color 0.2s;
@@ -198,7 +198,7 @@
 .loading {
     text-align: center;
     padding: 3rem;
-    color: #999;
+    color: rgb(163, 163, 163);
 }
 
 .error {
@@ -212,7 +212,7 @@
 }
 
 .error p {
-    color: #999;
+    color: rgb(163, 163, 163);
 }
 
 /* Dark mode adjustments */
@@ -230,21 +230,21 @@ body.dark-mode .post-date::before {
 }
 
 body.dark-mode .post-title {
-    color: #e0e0e0;
+    color: rgb(163, 163, 163);
 }
 
 body.dark-mode .post-content {
-    color: #b0b0b0;
+    color: rgb(163, 163, 163);
 }
 
 body.dark-mode .post-content h2,
 body.dark-mode .post-content h3 {
-    color: #e0e0e0;
+    color: rgb(163, 163, 163);
 }
 
 body.dark-mode .post-content code {
     background: #2a2a2a;
-    color: #ff6b6b;
+    color: rgb(163, 163, 163);
 }
 
 body.dark-mode .post-content pre {
@@ -252,12 +252,12 @@ body.dark-mode .post-content pre {
 }
 
 body.dark-mode .post-content pre code {
-    color: #e0e0e0;
+    color: rgb(163, 163, 163);
 }
 
 body.dark-mode .post-content blockquote {
     border-left-color: #404040;
-    color: #888;
+    color: rgb(163, 163, 163);
 }
 
 body.dark-mode .post-content hr {
@@ -265,7 +265,7 @@ body.dark-mode .post-content hr {
 }
 
 body.dark-mode .post-content a {
-    color: #6ba3ff;
+    color: rgb(163, 163, 163);
 }
 
 /* Search highlight styles */

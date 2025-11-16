@@ -12,7 +12,7 @@
 
 .blog-year {
     font-size: 0.9rem;
-    color: #8f8f8f;
+    color: rgb(163, 163, 163);
     font-weight: 400;
     text-align: center;
     font-family: 'Courier New', 'Monaco', 'Menlo', 'Consolas', monospace;
@@ -39,7 +39,7 @@
 
 .blog-tag {
     font-size: 0.9rem;
-    color: #999;
+    color: rgb(163, 163, 163);
     text-align: right;
     font-weight: 400;
 }
@@ -64,7 +64,7 @@
 
 /* Dark mode adjustments */
 body.dark-mode .blog-title a {
-    color: #e0e0e0;
+    color: rgb(163, 163, 163);
 }
 
 body.dark-mode .blog-post:hover .blog-title a {
@@ -135,7 +135,7 @@ body.dark-mode .filter-tooltip {
 }
 
 body.dark-mode .filter-tag-text {
-    color: #e0e0e0;
+    color: rgb(163, 163, 163);
 }
 
 /* Make tags clickable */

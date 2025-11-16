@@ -57,7 +57,7 @@
 /* Dark Mode Styles */
 body.dark-mode {
     background-color: #111111;
-    color: #fff;
+    color: rgb(163, 163, 163);
 }
 
 /* Text Selection - Dark Mode */
@@ -77,21 +77,21 @@ body.dark-mode .navbar {
 }
 
 body.dark-mode .navbar-title {
-    color: #fff;
+    color: rgb(163, 163, 163);
 }
 
 body.dark-mode .section-title {
-    color: #888;
+    color: rgb(163, 163, 163);
 }
 
 body.dark-mode .navbar a {
-    color: #e0e0e0;
+    color: rgb(163, 163, 163);
 }
 
 body.dark-mode .navbar a:hover {
     background-color: rgba(255, 255, 255, 0.09);
     border-radius: 10px;
-    color: #fff;
+    color: rgb(163, 163, 163);
 }
 
 body.dark-mode .navbar a.active {
@@ -105,11 +105,11 @@ body.dark-mode .main-content {
 
 body.dark-mode .content-section h1,
 body.dark-mode .content-section h2 {
-    color: #fff;
+    color: rgb(163, 163, 163);
 }
 
 body.dark-mode .content-section p {
-    color: #b0b0b0;
+    color: rgb(163, 163, 163);
 }
 
 body.dark-mode .content-card {
@@ -118,11 +118,11 @@ body.dark-mode .content-card {
 }
 
 body.dark-mode .content-card h3 {
-    color: #fff;
+    color: rgb(163, 163, 163);
 }
 
 body.dark-mode .content-card p {
-    color: #b0b0b0;
+    color: rgb(163, 163, 163);
 }
 
 body.dark-mode .toggle-track {
@@ -154,11 +154,11 @@ body.dark-mode .intro-line a:hover {
 }
 
 body.dark-mode .mail-icon {
-    color: #b0b0b0;
+    color: rgb(163, 163, 163);
 }
 
 body.dark-mode .online-link-row a {
-    color: #b0b0b0;
+    color: rgb(163, 163, 163);
 }
 
 body.dark-mode .online-link-row a:hover {
@@ -171,7 +171,7 @@ body.dark-mode .search-icon-btn:hover {
 }
 
 body.dark-mode .search-icon {
-    color: #b0b0b0;
+    color: rgb(163, 163, 163);
 }
 
 body.dark-mode .search-box {
@@ -180,7 +180,7 @@ body.dark-mode .search-box {
 }
 
 body.dark-mode .search-input {
-    color: #e0e0e0;
+    color: rgb(163, 163, 163);
 }
 
 body.dark-mode .search-input::placeholder {
@@ -192,5 +192,5 @@ body.dark-mode .search-close-btn:hover {
 }
 
 body.dark-mode .search-close-btn svg {
-    color: #b0b0b0;
+    color: rgb(163, 163, 163);
 }
