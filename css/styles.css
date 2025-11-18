@@ -266,6 +266,50 @@ body.dark-mode .intro-line {
     display: inline-block;
 }
 
+.mail-icon-link {
+    position: relative;
+    display: inline-block;
+}
+
+.mail-tooltip {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #333;
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    margin-bottom: 8px;
+}
+
+.mail-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: #333;
+}
+
+.mail-icon-link:hover .mail-tooltip {
+    opacity: 1;
+}
+
+body.dark-mode .mail-tooltip {
+    background-color: #555;
+}
+
+body.dark-mode .mail-tooltip::after {
+    border-top-color: #555;
+}
+
 .content-section h2 {
     font-size: 2rem;
     color: rgb(115, 115, 115);
