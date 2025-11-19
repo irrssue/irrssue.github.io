@@ -181,9 +181,10 @@ function clearFilter() {
 function renderPostRow(post, displayYear = null) {
     const year = displayYear !== null ? displayYear : '';
     const tagDisplay = post.tag ? `#${post.tag}` : '';
+    const yearClass = year ? 'new-year' : '';
 
     return `
-        <div class="blog-post">
+        <div class="blog-post ${yearClass}">
             <div class="blog-year">${year}</div>
             <div class="blog-title"><a href="post.html?name=${encodeURIComponent(post.filename)}">${post.title}</a></div>
             <div class="blog-tag">${tagDisplay}</div>
