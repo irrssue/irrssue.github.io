@@ -11,8 +11,19 @@
     <script>
         // Apply dark mode immediately to prevent flash
         (function() {
-            const savedTheme = localStorage.getItem('darkMode');
-            if (savedTheme === null || savedTheme === 'true') {
+            const isMobile = window.innerWidth <= 768;
+            let shouldUseDarkMode;
+
+            if (isMobile) {
+                // On mobile, use system preference
+                shouldUseDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            } else {
+                // On desktop, use localStorage
+                const savedTheme = localStorage.getItem('darkMode');
+                shouldUseDarkMode = savedTheme === null || savedTheme === 'true';
+            }
+
+            if (shouldUseDarkMode) {
                 document.documentElement.style.setProperty('--preload-dark-mode', '1');
             }
         })();
@@ -21,8 +32,19 @@
 <body>
     <script>
         // Apply dark mode class as early as possible
-        const savedTheme = localStorage.getItem('darkMode');
-        if (savedTheme === null || savedTheme === 'true') {
+        const isMobile = window.innerWidth <= 768;
+        let shouldUseDarkMode;
+
+        if (isMobile) {
+            // On mobile, use system preference
+            shouldUseDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        } else {
+            // On desktop, use localStorage
+            const savedTheme = localStorage.getItem('darkMode');
+            shouldUseDarkMode = savedTheme === null || savedTheme === 'true';
+        }
+
+        if (shouldUseDarkMode) {
             document.body.classList.add('dark-mode');
         }
     </script>
