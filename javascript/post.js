@@ -104,8 +104,13 @@ function renderPost(frontMatter, markdownContent) {
     const coverHtml = frontMatter.cover ?
         `<img src="${frontMatter.cover}" alt="${frontMatter.title}" class="post-cover-image">` : '';
 
-    // Get first tag
-    const tag = frontMatter.tags && frontMatter.tags.length > 0 ? frontMatter.tags[0] : '';
+    // Get first tag (support both 'tag' and 'tags' fields)
+    let tag = '';
+    if (frontMatter.tags && frontMatter.tags.length > 0) {
+        tag = frontMatter.tags[0];
+    } else if (frontMatter.tag) {
+        tag = frontMatter.tag;
+    }
 
     // Convert markdown to HTML and sanitize
     const htmlContent = md.render(markdownContent);
