@@ -217,9 +217,7 @@ body.dark-mode .filter-tag-text {
     }
 
     .bookmark-tag {
-        text-align: left;
-        font-size: clamp(0.8rem, 2vw + 0.4rem, 0.9rem);
-        padding-left: 0;
+        display: none;
     }
 
     .url-tooltip {
