@@ -156,9 +156,9 @@ body.dark-mode .filter-tag-text {
 @media (max-width: 768px) {
     .blog-post {
         grid-template-columns: 1fr;
-        gap: 6px;
-        padding: 6px 0;
-        margin-bottom: 12px;
+        gap: 2px;
+        padding: 1px 0;
+        margin-bottom: 2px;
     }
 
     .blog-post.new-year {
@@ -174,7 +174,7 @@ body.dark-mode .filter-tag-text {
     }
 
     .blog-title {
-        margin-bottom: 4px;
+        margin-bottom: 2px;
     }
 
     .blog-title a {
