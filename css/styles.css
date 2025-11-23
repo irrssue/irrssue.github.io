@@ -230,7 +230,7 @@ a {
 }
 
 .content-section-intro {
-    margin-top: 80px;
+    margin-top: 40px;
     text-decoration: none;
     line-height: 100px;
     letter-spacing: 0.5px;
@@ -470,7 +470,7 @@ body.dark-mode .mail-tooltip::after {
 
 /* Search Results Styles */
 .search-results-container {
-    margin-top: 80px;
+    margin-top: 40px;
 }
 
 .search-results-header {
