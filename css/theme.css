@@ -194,3 +194,10 @@ body.dark-mode .search-close-btn:hover {
 body.dark-mode .search-close-btn svg {
     color: rgb(163, 163, 163);
 }
+
+/* Hide theme toggle on mobile - system preference is used instead */
+@media (max-width: 768px) {
+    .theme-toggle-container {
+        display: none;
+    }
+}
