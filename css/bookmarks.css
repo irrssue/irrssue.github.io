@@ -191,3 +191,39 @@ body.dark-mode .filter-tag-text {
 .bookmark-tag:hover {
     opacity: 0.7;
 }
+
+/* Mobile Layout */
+@media (max-width: 768px) {
+    .bookmark-item {
+        grid-template-columns: 1fr;
+        gap: 8px;
+        padding: 12px 0;
+        margin-bottom: 20px;
+    }
+
+    .bookmark-link {
+        text-align: left;
+        font-size: clamp(0.8rem, 2vw + 0.4rem, 0.9rem);
+        margin-bottom: 4px;
+    }
+
+    .bookmark-title {
+        margin-bottom: 4px;
+    }
+
+    .bookmark-title a {
+        padding: 4px 8px;
+        font-size: clamp(0.9rem, 2.5vw + 0.5rem, 1rem);
+    }
+
+    .bookmark-tag {
+        text-align: left;
+        font-size: clamp(0.8rem, 2vw + 0.4rem, 0.9rem);
+        padding-left: 0;
+    }
+
+    .url-tooltip {
+        left: 0;
+        transform: none;
+    }
+}
