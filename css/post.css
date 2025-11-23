@@ -326,4 +326,33 @@ body.dark-mode .search-highlight {
         padding-left: 15px;
         padding-right: 15px;
     }
+
+    /* Increase font sizes for better mobile readability */
+    .post-title {
+        font-size: 1.3rem;
+    }
+
+    .post-meta {
+        font-size: 0.95rem;
+    }
+
+    .post-tag {
+        font-size: 0.95rem;
+    }
+
+    .post-content {
+        font-size: 1.05rem;
+    }
+
+    .post-content h2 {
+        font-size: 1.2rem;
+    }
+
+    .post-content h3 {
+        font-size: 1.15rem;
+    }
+
+    .back-link {
+        font-size: 0.95rem;
+    }
 }
