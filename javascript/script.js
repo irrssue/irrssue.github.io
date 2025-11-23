@@ -25,17 +25,35 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Theme toggle functionality
-    themeToggle.addEventListener('click', function() {
-        document.body.classList.toggle('dark-mode');
+    // Theme toggle functionality - only on desktop
+    const isMobile = () => window.innerWidth <= 768;
 
-        // Save theme preference to localStorage
-        const isDarkMode = document.body.classList.contains('dark-mode');
-        localStorage.setItem('darkMode', isDarkMode);
+    themeToggle.addEventListener('click', function() {
+        // Only allow manual toggle on desktop
+        if (!isMobile()) {
+            document.body.classList.toggle('dark-mode');
+
+            // Save theme preference to localStorage
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            localStorage.setItem('darkMode', isDarkMode);
+        }
     });
 
-    // Theme is already applied via inline script in HTML head
-    // This is just kept for reference and consistency
+    // Listen for system theme changes on mobile
+    if (window.matchMedia) {
+        const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+        darkModeQuery.addEventListener('change', (e) => {
+            // Only apply system preference on mobile
+            if (isMobile()) {
+                if (e.matches) {
+                    document.body.classList.add('dark-mode');
+                } else {
+                    document.body.classList.remove('dark-mode');
+                }
+            }
+        });
+    }
 
     // Search functionality
     searchIconBtn.addEventListener('click', function() {
