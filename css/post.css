@@ -317,8 +317,8 @@ body.dark-mode .search-highlight {
 /* Mobile Layout - Increase width for more text space */
 @media (max-width: 768px) {
     .main-content {
-        padding-left: 0;
-        padding-right: 0;
+        padding-left: 20;
+        padding-right: 20;
     }
 
     .post-container {

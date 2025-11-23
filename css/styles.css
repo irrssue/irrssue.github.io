@@ -754,6 +754,6 @@ body.dark-mode .mobile-nav {
 
     /* Adjust main content padding for mobile */
     .main-content {
-        padding: 50px 30px 100px 30px;
+         padding: 50px 0px 100px 0px;
     }
 }
