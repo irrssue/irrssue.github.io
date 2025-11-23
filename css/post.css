@@ -314,10 +314,11 @@ body.dark-mode .search-highlight {
     }
 }
 
-/* Mobile Layout - Match blog listing page spacing */
+/* Mobile Layout - Increase width for more text space */
 @media (max-width: 768px) {
     .post-container {
-        padding-left: 30px;
-        padding-right: 30px;
+        max-width: 98%;
+        padding-left: 15px;
+        padding-right: 15px;
     }
 }
