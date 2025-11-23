@@ -316,6 +316,11 @@ body.dark-mode .search-highlight {
 
 /* Mobile Layout - Increase width for more text space */
 @media (max-width: 768px) {
+    .main-content {
+        padding-left: 0;
+        padding-right: 0;
+    }
+
     .post-container {
         max-width: 98%;
         padding-left: 15px;
