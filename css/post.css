@@ -1,7 +1,7 @@
 /* Post Page Styles */
 
 .post-container {
-    max-width: min(90%, 1000px);
+    max-width: min(95%, 1200px);
     margin: 0 auto;
     padding: 2rem;
     padding-top: 40px;
