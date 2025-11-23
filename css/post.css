@@ -334,6 +334,8 @@ body.dark-mode .search-highlight {
 
     .post-meta {
         font-size: 0.95rem;
+        justify-content: flex-start;
+        gap: 0.5rem;
     }
 
     .post-tag {
