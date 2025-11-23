@@ -313,3 +313,11 @@ body.dark-mode .search-highlight {
         background-color: rgba(255, 193, 7, 0);
     }
 }
+
+/* Mobile Layout - Match blog listing page spacing */
+@media (max-width: 768px) {
+    .post-container {
+        padding-left: 30px;
+        padding-right: 30px;
+    }
+}
