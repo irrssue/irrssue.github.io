@@ -175,6 +175,16 @@ body.dark-mode .filter-tag-text {
 
     .blog-title {
         margin-bottom: 2px;
+        display: flex;
+        align-items: baseline;
+    }
+
+    .blog-title::before {
+        content: '•';
+        color: rgb(115, 115, 115);
+        font-size: 1.2rem;
+        margin-right: 8px;
+        flex-shrink: 0;
     }
 
     .blog-title a {
@@ -184,5 +194,9 @@ body.dark-mode .filter-tag-text {
 
     .blog-tag {
         display: none;
+    }
+
+    body.dark-mode .blog-title::before {
+        color: rgb(163, 163, 163);
     }
 }
