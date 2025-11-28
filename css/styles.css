@@ -48,65 +48,69 @@ a {
     top: 50%;
     left: 50px;
     transform: translateY(-50%);
-    width: 200px;
+    width: 70px;
     background-color: #ececec;
     border-radius: 20px;
-    padding: 30px 0;
+    padding: 20px 0;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
     z-index: 1000;
     border: 1px solid #d0d0d0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
 }
 
 .navbar-header {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 0 10px 20px 30px;
-    margin-bottom: 20px;
+    justify-content: center;
+    padding: 0;
+    margin-bottom: 15px;
     position: relative;
-    height: 56px;
+    width: 100%;
 }
 
 .navbar-title {
-    font-size: clamp(0.875rem, 1.2vw + 0.5rem, 1rem);
-    font-weight: 550;
-    color: rgb(115, 115, 115);
+    display: none;
 }
 
 .search-icon-btn {
     background: none;
     border: none;
     cursor: pointer;
-    padding: 6px;
+    padding: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 6px;
+    border-radius: 10px;
     transition: background-color 0.2s ease;
 }
 
 .search-icon-btn:hover {
-    background-color: rgba(0, 0, 0, 0.05);
+    background-color: rgba(0, 0, 0, 0.09);
 }
 
 .search-icon {
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
     color: rgb(115, 115, 115);
 }
 
 .search-box {
-    position: absolute;
-    top: 0;
-    left: 19px;
-    right: 19px;
+    position: fixed;
+    top: 50%;
+    left: 140px;
+    transform: translateY(-50%);
     display: none;
     align-items: center;
     background-color: #fff;
     border: 1.5px solid #ddd;
-    border-radius: 8px;
-    padding: 6px 12px;
+    border-radius: 12px;
+    padding: 10px 16px;
     gap: 8px;
+    min-width: 300px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
 
 .search-box.active {
@@ -152,7 +156,11 @@ a {
 }
 
 .navbar-section {
-    margin-bottom: 25px;
+    margin-bottom: 15px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .navbar-section:last-child {
@@ -160,51 +168,53 @@ a {
 }
 
 .section-title {
-    font-size: clamp(0.65rem, 1vw + 0.3rem, 0.75rem);
-    font-weight: 600;
-    color: rgb(115, 115, 115);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    padding: 0 5px 5px 30px;
+    display: none;
 }
 
 .navbar ul {
     list-style: none;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0;
+    margin: 0;
+    gap: 8px;
 }
 
 .navbar li {
-    margin: 5px;
+    margin: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
 }
 
 .navbar a {
     display: flex;
     align-items: center;
+    justify-content: center;
     color: rgb(115, 115, 115);
     text-decoration: none;
-    padding: 9px 30px;
-    font-size: clamp(0.875rem, 1.2vw + 0.5rem, 1rem);
-    font-weight: 500;
+    padding: 10px;
+    font-size: 0;
     transition: all 0.3s ease;
-    border-left: 3px solid transparent;
+    border-radius: 10px;
 }
 
 .navbar a .icon {
-    width: 18px;
-    height: 18px;
-    margin-right: 8px;
+    width: 20px;
+    height: 20px;
+    margin-right: 0;
     flex-shrink: 0;
 }
 
 .navbar a:hover {
     background-color: rgba(0, 0, 0, 0.09);
-    border-radius: 10px;
     color: rgb(115, 115, 115);
 }
 
 .navbar a.active {
     background-color: rgba(0, 0, 0, 0.09);
-    border-radius: 10px;
-    font-weight: 500;
 }
 
 /* Main Content Area */
