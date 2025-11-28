@@ -259,6 +259,10 @@ a {
     line-height: 1.2;
 }
 
+.hero-name {
+    color: rgba(26, 26, 26, 0.851);
+}
+
 body.dark-mode .hero-name {
     color: rgb(250, 250, 250);
 }
