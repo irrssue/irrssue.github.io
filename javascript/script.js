@@ -153,4 +153,83 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    // Fetch and display most recent blog post in Projects section
+    fetchRecentPost();
 });
+
+async function fetchRecentPost() {
+    const REPO_OWNER = 'irrssue';
+    const REPO_NAME = 'irrssue.github.io';
+    const BRANCH = 'main';
+    const POSTS_DIR = 'posts';
+
+    const writingDescElement = document.querySelector('.project-link[href="html/writing.html"] .project-description');
+
+    // If we're not on the homepage or element doesn't exist, skip
+    if (!writingDescElement) return;
+
+    try {
+        // Fetch list of files in posts directory
+        const response = await fetch(
+            `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${POSTS_DIR}?ref=${BRANCH}`
+        );
+
+        if (!response.ok) {
+            return; // Keep default description on error
+        }
+
+        const files = await response.json();
+
+        // Filter only .md files and exclude _template.md
+        const postFiles = files.filter(file =>
+            file.name.endsWith('.md') && file.name !== '_template.md'
+        );
+
+        if (postFiles.length === 0) {
+            return; // Keep default description if no posts
+        }
+
+        // Fetch and parse each post's front matter
+        const posts = await Promise.all(
+            postFiles.map(async (file) => {
+                try {
+                    const contentResponse = await fetch(file.download_url);
+                    const content = await contentResponse.text();
+
+                    // Parse front matter
+                    const frontMatterMatch = content.match(/^---\s*\n([\s\S]*?)\n---/);
+                    if (!frontMatterMatch) return null;
+
+                    const frontMatter = jsyaml.load(frontMatterMatch[1]);
+
+                    // Skip draft posts
+                    if (frontMatter.draft === true) return null;
+
+                    return {
+                        title: frontMatter.title || 'Untitled',
+                        date: frontMatter.date || '',
+                        dateObj: new Date(frontMatter.date || 0)
+                    };
+                } catch (error) {
+                    console.error(`Error parsing ${file.name}:`, error);
+                    return null;
+                }
+            })
+        );
+
+        // Filter out null values and sort by date (newest first)
+        const validPosts = posts
+            .filter(post => post !== null)
+            .sort((a, b) => b.dateObj - a.dateObj);
+
+        if (validPosts.length > 0) {
+            // Update with most recent post title
+            writingDescElement.textContent = validPosts[0].title;
+        }
+
+    } catch (error) {
+        console.error('Error fetching recent post:', error);
+        // Keep default description on error
+    }
+}
