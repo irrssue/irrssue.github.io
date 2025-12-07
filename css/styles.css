@@ -946,12 +946,12 @@ body.dark-mode .mobile-nav {
 .projects-heading {
     font-size: clamp(1.25rem, 2vw + 0.75rem, 1.5rem);
     font-weight: 600;
-    color: rgb(115, 115, 115);
+    color: #000000;
     margin-bottom: 12px;
 }
 
 body.dark-mode .projects-heading {
-    color: rgb(200, 200, 200);
+    color: #ffffff;
 }
 
 .projects-list {
