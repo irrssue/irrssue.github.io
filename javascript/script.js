@@ -1,7 +1,24 @@
 // Simple navigation highlighting
 document.addEventListener('DOMContentLoaded', function() {
-    const navLinks = document.querySelectorAll('.navbar a');
+    const navLinks = document.querySelectorAll('.mobile-nav a');
     const themeToggle = document.getElementById('themeToggle');
+    const sunIcon = themeToggle.querySelector('.sun-icon');
+    const moonIcon = themeToggle.querySelector('.moon-icon');
+
+    // Update theme toggle icons based on current mode
+    function updateThemeIcons() {
+        const isDarkMode = document.body.classList.contains('dark-mode');
+        if (isDarkMode) {
+            sunIcon.style.display = 'none';
+            moonIcon.style.display = 'block';
+        } else {
+            sunIcon.style.display = 'block';
+            moonIcon.style.display = 'none';
+        }
+    }
+
+    // Initialize icons on page load
+    updateThemeIcons();
 
     // Navigation functionality
     navLinks.forEach(link => {
@@ -21,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Theme toggle functionality - only on desktop
+    // Theme toggle functionality
     const isMobile = () => window.innerWidth <= 768;
 
     themeToggle.addEventListener('click', function() {
@@ -32,6 +49,9 @@ document.addEventListener('DOMContentLoaded', function() {
             // Save theme preference to localStorage
             const isDarkMode = document.body.classList.contains('dark-mode');
             localStorage.setItem('darkMode', isDarkMode);
+
+            // Update icons
+            updateThemeIcons();
         }
     });
 
@@ -47,6 +67,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 } else {
                     document.body.classList.remove('dark-mode');
                 }
+                updateThemeIcons();
             }
         });
     }
