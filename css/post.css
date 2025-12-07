@@ -127,8 +127,8 @@
 }
 
 .post-content a {
-    color: #000000;
-    text-decoration: none;
+    color: rgb(115, 115, 115);
+    text-decoration: underline;
     transition: opacity 0.2s;
 }
 
@@ -265,7 +265,7 @@ body.dark-mode .post-content hr {
 }
 
 body.dark-mode .post-content a {
-    color: #ffffff;
+    color: rgb(163, 163, 163);
 }
 
 /* Search highlight styles */
