@@ -912,7 +912,12 @@ body.dark-mode .mobile-nav {
     }
 
     .mobile-nav {
-        grid-template-columns: repeat(5, 1fr);
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    /* Hide theme toggle on mobile - uses system preference */
+    .mobile-nav .theme-toggle {
+        display: none;
     }
 
     /* Hero Section Mobile */
