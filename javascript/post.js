@@ -11,6 +11,28 @@ const md = window.markdownit({
     breaks: true
 });
 
+// Add target="_blank" and security attributes to external links
+const defaultRender = md.renderer.rules.link_open || function(tokens, idx, options, env, self) {
+    return self.renderToken(tokens, idx, options);
+};
+
+md.renderer.rules.link_open = function(tokens, idx, options, env, self) {
+    const token = tokens[idx];
+    const hrefIndex = token.attrIndex('href');
+
+    if (hrefIndex >= 0) {
+        const href = token.attrs[hrefIndex][1];
+
+        // Check if it's an external link
+        if (href.startsWith('http://') || href.startsWith('https://')) {
+            token.attrPush(['target', '_blank']);
+            token.attrPush(['rel', 'noopener noreferrer']);
+        }
+    }
+
+    return defaultRender(tokens, idx, options, env, self);
+};
+
 async function loadPost() {
     const container = document.getElementById('post-content');
 
@@ -114,7 +136,11 @@ function renderPost(frontMatter, markdownContent) {
 
     // Convert markdown to HTML and sanitize
     const htmlContent = md.render(markdownContent);
-    const sanitizedContent = DOMPurify.sanitize(htmlContent);
+    const sanitizedContent = DOMPurify.sanitize(htmlContent, {
+        ALLOWED_TAGS: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'a', 'ul', 'ol', 'li', 'blockquote', 'code', 'pre', 'strong', 'em', 'br', 'hr', 'img', 'table', 'thead', 'tbody', 'tr', 'th', 'td', 'del', 'mark', 'span', 'div'],
+        ALLOWED_ATTR: ['href', 'target', 'rel', 'src', 'alt', 'title', 'class', 'id', 'data-full-date'],
+        ALLOW_DATA_ATTR: true
+    });
 
     // Build post HTML
     container.innerHTML = `
