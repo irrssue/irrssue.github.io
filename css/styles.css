@@ -26,7 +26,7 @@ body {
 
 .grid-container {
     display: grid;
-    grid-template-columns: 200px 1fr;
+    grid-template-columns: 1fr;
     gap: 0;
     min-height: 100vh;
 }
@@ -51,23 +51,7 @@ a {
 
 /* Navbar - Grid column 1, centered */
 .navbar {
-    position: sticky;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 70px;
-    height: fit-content;
-    background-color: #ececec;
-    border-radius: 20px;
-    padding: 20px 0;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-    z-index: 1000;
-    border: 1px solid #d0d0d0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0;
-    margin: 0 auto;
-    align-self: start;
+    display: none;
 }
 
 .navbar-header {
@@ -228,8 +212,8 @@ a {
 
 /* Main Content Area */
 .main-content {
-    grid-column: 2;
-    padding: 50px 40px;
+    grid-column: 1;
+    padding: 50px 40px 100px 40px;
     max-width: 700px;
     margin-left: auto;
     margin-right: auto;
@@ -844,7 +828,7 @@ body.dark-mode .mobile-search-close svg {
 
 /* Mobile Navigation - Dynamic Island Style */
 .mobile-nav {
-    display: none;
+    display: grid;
     position: fixed;
     bottom: 14px;
     left: 50%;
@@ -858,7 +842,7 @@ body.dark-mode .mobile-search-close svg {
                 0 2px 6px rgba(0, 0, 0, 0.2),
                 inset 0 0.5px 0 rgba(255, 255, 255, 0.1);
     z-index: 9999;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     gap: 6px;
     align-items: center;
     border: 0.5px solid rgba(255, 255, 255, 0.1);
@@ -880,6 +864,8 @@ body.dark-mode .mobile-nav {
     text-decoration: none;
     position: relative;
     background-color: transparent;
+    border: none;
+    cursor: pointer;
 }
 
 .mobile-nav-item:hover {
@@ -918,25 +904,15 @@ body.dark-mode .mobile-nav {
     color: rgba(255, 255, 255, 1);
 }
 
-/* Show mobile nav only on mobile devices */
+/* Mobile adjustments */
 @media (max-width: 768px) {
-    .grid-container {
-        grid-template-columns: 1fr;
+    /* Adjust main content padding for mobile */
+    .main-content {
+        padding: 50px 20px 100px 20px;
     }
 
     .mobile-nav {
-        display: grid;
-    }
-
-    /* Hide desktop navbar on mobile */
-    .navbar {
-        display: none;
-    }
-
-    /* Adjust main content padding for mobile */
-    .main-content {
-        grid-column: 1;
-        padding: 50px 20px 100px 20px;
+        grid-template-columns: repeat(5, 1fr);
     }
 
     /* Hero Section Mobile */
