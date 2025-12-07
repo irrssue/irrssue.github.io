@@ -127,7 +127,7 @@
 }
 
 .post-content a {
-    color: rgb(115, 115, 115);
+    color: #000000;
     text-decoration: none;
     transition: opacity 0.2s;
 }
@@ -265,7 +265,7 @@ body.dark-mode .post-content hr {
 }
 
 body.dark-mode .post-content a {
-    color: rgb(163, 163, 163);
+    color: #ffffff;
 }
 
 /* Search highlight styles */
