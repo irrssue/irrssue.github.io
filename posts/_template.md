@@ -15,14 +15,3 @@ IMPORTANT TAG RULES:
 - Examples of valid tags: Web, Tech, Design, Life, Career, Travel
 -->
 
-## Context
-
-Explain why this post exists or what it's about.
-
-## Main
-
-The main body text goes here.
-Use Markdown syntax: **bold**, *italics*, lists, code blocks, etc.
-
-## Takeaways
-- Final thoughts or summary bullets.
