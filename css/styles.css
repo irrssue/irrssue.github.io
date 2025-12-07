@@ -947,7 +947,7 @@ body.dark-mode .mobile-nav {
     font-size: clamp(1.25rem, 2vw + 0.75rem, 1.5rem);
     font-weight: 600;
     color: rgb(115, 115, 115);
-    margin-bottom: 30px;
+    margin-bottom: 12px;
 }
 
 body.dark-mode .projects-heading {
@@ -960,7 +960,7 @@ body.dark-mode .projects-heading {
     margin: 0;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 4px;
 }
 
 .project-item {
@@ -993,12 +993,12 @@ body.dark-mode .project-link:hover {
 .project-name {
     font-weight: 600;
     font-size: clamp(0.9rem, 1.5vw + 0.5rem, 1.05rem);
-    color: rgb(115, 115, 115);
+    color: #ffffff;
     flex-shrink: 0;
 }
 
 body.dark-mode .project-name {
-    color: rgb(200, 200, 200);
+    color: #ffffff;
 }
 
 .project-separator {
