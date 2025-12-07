@@ -1,6 +1,6 @@
 ---
 title: "Hi"
-date: "{{Dec 7, 2025}}"
+date: "Dec 7, 2025"
 tag: "Personal"
 summary: ""
 cover: ""
