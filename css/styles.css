@@ -2,7 +2,8 @@
     --main-text-color: rgb(115, 115, 115);
 }
 
-body.dark, [data-theme="dark"] {
+body.dark,
+[data-theme="dark"] {
     --main-text-color: rgb(163, 163, 163);
 }
 
@@ -839,8 +840,8 @@ body.dark-mode .mobile-search-close svg {
     border-radius: 22px;
     padding: 8px 14px;
     box-shadow: 0 6px 24px rgba(0, 0, 0, 0.3),
-                0 2px 6px rgba(0, 0, 0, 0.2),
-                inset 0 0.5px 0 rgba(255, 255, 255, 0.1);
+        0 2px 6px rgba(0, 0, 0, 0.2),
+        inset 0 0.5px 0 rgba(255, 255, 255, 0.1);
     z-index: 9999;
     grid-template-columns: repeat(5, 1fr);
     gap: 6px;
@@ -849,9 +850,33 @@ body.dark-mode .mobile-search-close svg {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* Sliding hover pill indicator */
+.mobile-nav::before {
+    content: '';
+    position: absolute;
+    top: var(--hover-top, 0);
+    left: var(--hover-left, 0);
+    width: var(--hover-width, 0);
+    height: var(--hover-height, 0);
+    background-color: rgba(255, 255, 255, 0.15);
+    border-radius: 14px;
+    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+        width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+        top 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+        height 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+        opacity 0.2s ease;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 0;
+}
+
 body.dark-mode .mobile-nav {
     background-color: rgba(40, 40, 40, 0.95);
     border-color: rgba(255, 255, 255, 0.15);
+}
+
+.mobile-nav.nav-hover-active::before {
+    opacity: 1;
 }
 
 .mobile-nav-item {
@@ -860,17 +885,17 @@ body.dark-mode .mobile-nav {
     justify-content: center;
     padding: 10px 13px;
     border-radius: 14px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     text-decoration: none;
     position: relative;
     background-color: transparent;
     border: none;
     cursor: pointer;
+    z-index: 1;
 }
 
 .mobile-nav-item:hover {
-    background-color: rgba(255, 255, 255, 0.15);
-    transform: scale(1.1);
+    transform: scale(1.05);
 }
 
 .mobile-nav-item:active {
@@ -879,6 +904,10 @@ body.dark-mode .mobile-nav {
 
 .mobile-nav-item.active {
     background-color: rgba(255, 255, 255, 0.2);
+}
+
+.mobile-nav.nav-hover-active .mobile-nav-item.active {
+    background-color: transparent;
 }
 
 .mobile-nav-item.active::before {
@@ -906,6 +935,7 @@ body.dark-mode .mobile-nav {
 
 /* Mobile adjustments */
 @media (max-width: 768px) {
+
     /* Adjust main content padding for mobile */
     .main-content {
         padding: 50px 20px 100px 20px;
