@@ -1,5 +1,5 @@
 // Simple navigation highlighting
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const navLinks = document.querySelectorAll('.mobile-nav a');
     const themeToggle = document.getElementById('themeToggle');
     const sunIcon = themeToggle.querySelector('.sun-icon');
@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Navigation functionality
     navLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
+        link.addEventListener('click', function (e) {
             const href = this.getAttribute('href');
 
             // Only prevent default for anchor links (starting with #)
@@ -38,10 +38,47 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    // Sliding hover pill effect for mobile nav
+    const mobileNav = document.querySelector('.mobile-nav');
+    const navItems = document.querySelectorAll('.mobile-nav-item');
+
+    if (mobileNav && navItems.length > 0) {
+        navItems.forEach(item => {
+            item.addEventListener('mouseenter', function () {
+                const navRect = mobileNav.getBoundingClientRect();
+                const itemRect = this.getBoundingClientRect();
+
+                // Calculate position relative to the nav container
+                const left = itemRect.left - navRect.left;
+                const top = itemRect.top - navRect.top;
+                const width = itemRect.width;
+                const height = itemRect.height;
+
+                mobileNav.style.setProperty('--hover-left', left + 'px');
+                mobileNav.style.setProperty('--hover-top', top + 'px');
+                mobileNav.style.setProperty('--hover-width', width + 'px');
+                mobileNav.style.setProperty('--hover-height', height + 'px');
+
+                // Force reflow
+                void mobileNav.offsetWidth;
+
+                mobileNav.classList.add('nav-hover-active');
+            });
+
+            item.addEventListener('mouseleave', function () {
+                mobileNav.classList.remove('nav-hover-active');
+            });
+        });
+
+        mobileNav.addEventListener('mouseleave', function () {
+            mobileNav.classList.remove('nav-hover-active');
+        });
+    }
+
     // Theme toggle functionality
     const isMobile = () => window.innerWidth <= 768;
 
-    themeToggle.addEventListener('click', function() {
+    themeToggle.addEventListener('click', function () {
         // Only allow manual toggle on desktop
         if (!isMobile()) {
             document.body.classList.toggle('dark-mode');
