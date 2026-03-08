@@ -27,6 +27,12 @@
                 document.documentElement.style.setProperty('--preload-dark-mode', '1');
             }
 
+            // Clear intro flag on page refresh so animation replays
+            var navEntry = performance && performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
+            if (navEntry && navEntry.type === 'reload') {
+                sessionStorage.removeItem('introPlayed');
+            }
+
             // Hide content for intro animation (skip if already played this session)
             if (!sessionStorage.getItem('introPlayed')) {
                 document.documentElement.classList.add('intro-active');
@@ -61,7 +67,12 @@
     <div class="grid-container">
         <main class="main-content">
             <section class="content-section" id="home">
-                <h1 class="hero-name">Thura Zaw</h1>
+                <h1 class="hero-name" id="hero-name">Thura Zaw</h1>
+                <script>
+                    if (document.body.classList.contains('dark-mode')) {
+                        document.getElementById('hero-name').style.color = 'rgb(250, 250, 250)';
+                    }
+                </script>
                 <p class="hero-intro">
                     self-taught software engineer living in NYC, in pursuit of building things that somehow make life easier
                 </p>
@@ -269,19 +280,22 @@
                         introName.style.fontSize = heroFontSize;
                         introName.style.transform = 'translate(' + heroRect.left + 'px, ' + heroRect.top + 'px)';
 
+                        // Reveal content when the name visually lands (~50% into spring easing)
                         setTimeout(function() {
                             document.documentElement.classList.remove('intro-active');
+                        }, 1700);
 
+                        setTimeout(function() {
                             requestAnimationFrame(function() {
-                                overlay.style.transition = 'opacity 0.3s ease';
+                                overlay.style.transition = 'opacity 0.4s ease';
                                 overlay.style.opacity = '0';
 
                                 setTimeout(function() {
                                     overlay.style.display = 'none';
                                     sessionStorage.setItem('introPlayed', '1');
-                                }, 320);
+                                }, 420);
                             });
-                        }, 2200);
+                        }, 1700);
                     }
                 });
             });
