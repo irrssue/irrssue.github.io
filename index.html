@@ -17,7 +17,7 @@
             } else {
                 // On desktop, use localStorage
                 const savedTheme = localStorage.getItem('darkMode');
-                shouldUseDarkMode = savedTheme === null || savedTheme === 'true';
+                shouldUseDarkMode = savedTheme === 'true';
             }
 
             if (shouldUseDarkMode) {
@@ -43,7 +43,7 @@
         } else {
             // On desktop, use localStorage
             const savedTheme = localStorage.getItem('darkMode');
-            shouldUseDarkMode = savedTheme === null || savedTheme === 'true';
+            shouldUseDarkMode = savedTheme === 'true';
         }
 
         if (shouldUseDarkMode) {
@@ -148,7 +148,7 @@
     <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
     <script src="javascript/script.js"></script>
     <script>
-        // Intro animation sequence
+        // Intro animation — FLIP-style: shrink + translate to hero-name position
         (function() {
             if (sessionStorage.getItem('introPlayed')) return;
 
@@ -156,30 +156,77 @@
             var introName = document.getElementById('intro-name-large');
             if (!overlay || !introName) return;
 
-            // Show overlay
+            // Show overlay (it starts display:none in HTML for no-JS users)
             overlay.style.display = 'flex';
 
-            // After paint: fade overlay in, then shrink name after brief pause
+            // Two rAFs ensure the browser has painted before we start transitions
             requestAnimationFrame(function() {
                 requestAnimationFrame(function() {
                     overlay.classList.add('intro-visible');
 
-                    // Start shrink after 500ms pause
+                    // Brief pause so the big name is visible before animating
                     setTimeout(function() {
-                        introName.classList.add('intro-shrink');
-                    }, 500);
+                        var heroName = document.querySelector('.hero-name');
+                        if (!heroName) return;
 
-                    // Fade out overlay after shrink is mostly done
-                    setTimeout(function() {
-                        overlay.classList.add('intro-fade-out');
-                    }, 2700);
+                        // --- Measure target ---
+                        // getBoundingClientRect() works even when opacity:0 (layout is computed)
+                        var heroRect = heroName.getBoundingClientRect();
+                        var heroStyle = window.getComputedStyle(heroName);
+                        var heroFontSize = heroStyle.fontSize;
 
-                    // Reveal page content and clean up
-                    setTimeout(function() {
-                        document.documentElement.classList.remove('intro-active');
-                        overlay.style.display = 'none';
-                        sessionStorage.setItem('introPlayed', '1');
-                    }, 3200);
+                        // With position:absolute + translate(-50%,-50%), the element
+                        // is centered via its own dimensions. We need to animate
+                        // top/left/transform so it lands exactly on .hero-name.
+                        // Strategy: animate transform from translate(-50%,-50%) to
+                        // a value that places the top-left corner at heroRect's position,
+                        // while also animating top/left from 50%/50% to heroRect coords.
+                        //
+                        // Simpler: keep top:0, left:0 and use transform for everything.
+                        // Start: translate(centerX - halfWidth, centerY - halfHeight)
+                        // End:   translate(heroRect.left, heroRect.top)
+
+                        // Measure intro element's current size for centering calc
+                        var introRect = introName.getBoundingClientRect();
+                        var startX = (window.innerWidth - introRect.width) / 2;
+                        var startY = (window.innerHeight - introRect.height) / 2;
+
+                        // Switch to top:0/left:0 positioning with equivalent transform
+                        introName.style.transition = 'none';
+                        introName.style.top = '0';
+                        introName.style.left = '0';
+                        introName.style.transform = 'translate(' + startX + 'px, ' + startY + 'px)';
+
+                        // Flush layout
+                        void introName.offsetHeight;
+
+                        // Animate to hero-name position
+                        var easing = 'cubic-bezier(0.16, 1, 0.3, 1)';
+                        introName.style.transition = [
+                            'font-size 2.2s ' + easing,
+                            'transform 2.2s ' + easing
+                        ].join(', ');
+
+                        introName.style.fontSize = heroFontSize;
+                        introName.style.transform = 'translate(' + heroRect.left + 'px, ' + heroRect.top + 'px)';
+
+                        // When text lands on hero-name position, reveal page seamlessly:
+                        // un-hide content (still covered by overlay) then fade overlay away.
+                        setTimeout(function() {
+                            document.documentElement.classList.remove('intro-active');
+
+                            requestAnimationFrame(function() {
+                                overlay.style.transition = 'opacity 0.3s ease';
+                                overlay.style.opacity = '0';
+
+                                setTimeout(function() {
+                                    overlay.style.display = 'none';
+                                    sessionStorage.setItem('introPlayed', '1');
+                                }, 320);
+                            });
+                        }, 2200);
+
+                    }, 450); // pause before animation starts
                 });
             });
         })();
