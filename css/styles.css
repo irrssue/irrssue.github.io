@@ -2,6 +2,70 @@
     --main-text-color: rgb(115, 115, 115);
 }
 
+/* =============================================
+   Intro Animation
+   ============================================= */
+
+/* Hide page content while intro plays */
+html.intro-active .grid-container,
+html.intro-active .mobile-nav {
+    opacity: 0;
+    pointer-events: none;
+}
+
+#intro-overlay {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+    background-color: #ffffff;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+}
+
+body.dark-mode #intro-overlay {
+    background-color: #000000;
+}
+
+#intro-overlay.intro-visible {
+    opacity: 1;
+}
+
+#intro-overlay.intro-fade-out {
+    opacity: 0;
+}
+
+#intro-name-large {
+    font-size: 12vw;
+    font-weight: 800;
+    color: rgba(26, 26, 26, 0.85);
+    white-space: nowrap;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    transition: font-size 2.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+body.dark-mode #intro-name-large {
+    color: rgb(250, 250, 250);
+}
+
+#intro-name-large.intro-shrink {
+    font-size: clamp(1.4rem, 3.2vw + 0.8rem, 2rem);
+}
+
+@media (max-width: 768px) {
+    #intro-name-large {
+        font-size: min(15vw, 12vh);
+    }
+
+    #intro-name-large.intro-shrink {
+        font-size: clamp(1.2rem, 4.8vw + 0.4rem, 1.6rem);
+    }
+}
+
 body.dark,
 [data-theme="dark"] {
     --main-text-color: rgb(163, 163, 163);

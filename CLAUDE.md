@@ -18,13 +18,7 @@ Personal portfolio and writing site. Vanilla HTML/CSS/JS — no frameworks, no b
 
 ## Design Direction
 The front page should follow a minimal single-column layout inspired by https://looskie.com/:
-- Name and one-line tagline at top
-- Row of social links (GitHub, LinkedIn, etc.) as simple text links
-- "work" section: list of roles with company name (bold, linked), short description, and date range
-- "projects" section: list of projects with name (bold, linked), short description
-- No hero images, no animations, no cards — just clean typography and whitespace
-- Dark background with light text (or configurable via CSS custom properties)
-- The entire page should feel like a well-formatted text document
+- reference more to [Design_goal](Design_goal.md)
 
 ## CSS Rules
 - Use CSS custom properties (variables) for all design tokens — define them in `:root {}`

@@ -23,6 +23,11 @@
             if (shouldUseDarkMode) {
                 document.documentElement.style.setProperty('--preload-dark-mode', '1');
             }
+
+            // Hide content for intro animation (skip if already played this session)
+            if (!sessionStorage.getItem('introPlayed')) {
+                document.documentElement.classList.add('intro-active');
+            }
         })();
     </script>
 </head>
@@ -45,6 +50,11 @@
             document.body.classList.add('dark-mode');
         }
     </script>
+    <!-- Intro Animation Overlay (hidden by default, shown by JS) -->
+    <div id="intro-overlay" style="display:none" aria-hidden="true">
+        <span id="intro-name-large">Thura Zaw</span>
+    </div>
+
     <div class="grid-container">
         <main class="main-content">
             <section class="content-section" id="home">
@@ -137,5 +147,42 @@
 
     <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
     <script src="javascript/script.js"></script>
+    <script>
+        // Intro animation sequence
+        (function() {
+            if (sessionStorage.getItem('introPlayed')) return;
+
+            var overlay = document.getElementById('intro-overlay');
+            var introName = document.getElementById('intro-name-large');
+            if (!overlay || !introName) return;
+
+            // Show overlay
+            overlay.style.display = 'flex';
+
+            // After paint: fade overlay in, then shrink name after brief pause
+            requestAnimationFrame(function() {
+                requestAnimationFrame(function() {
+                    overlay.classList.add('intro-visible');
+
+                    // Start shrink after 500ms pause
+                    setTimeout(function() {
+                        introName.classList.add('intro-shrink');
+                    }, 500);
+
+                    // Fade out overlay after shrink is mostly done
+                    setTimeout(function() {
+                        overlay.classList.add('intro-fade-out');
+                    }, 2700);
+
+                    // Reveal page content and clean up
+                    setTimeout(function() {
+                        document.documentElement.classList.remove('intro-active');
+                        overlay.style.display = 'none';
+                        sessionStorage.setItem('introPlayed', '1');
+                    }, 3200);
+                });
+            });
+        })();
+    </script>
 </body>
 </html>
