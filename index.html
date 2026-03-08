@@ -6,7 +6,8 @@
     <title>Saw Thura Zaw Portfolio</title>
     <link rel="stylesheet" href="main.css">
     <!-- Preload fonts for intro cycling animation -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@300&family=Cormorant+Garamond:wght@300&family=Syne:wght@800&family=Bricolage+Grotesque:wght@700&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@300&family=Cormorant+Garamond:wght@300&family=VT323&family=Bricolage+Grotesque:wght@700&family=Playfair+Display:wght@700&family=DM+Serif+Display&family=Instrument+Serif&display=swap">
+    <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@700&display=swap">
     <script>
         // Apply dark mode immediately to prevent flash
         (function() {
@@ -152,23 +153,43 @@
     <script>
         // Intro animation — font cycling + FLIP-style shrink to hero-name
         (function() {
+            // Font definitions (shared between intro and restore)
+            var fonts = [
+                { family: "'Fraunces', serif", weight: '300', name: 'Fraunces' },
+                { family: "'Cormorant Garamond', serif", weight: '300', name: 'Cormorant Garamond' },
+                { family: "'VT323', monospace", weight: '400', name: 'VT323' },
+                { family: "'Bricolage Grotesque', sans-serif", weight: '700', name: 'Bricolage Grotesque' },
+                { family: "'Playfair Display', serif", weight: '700', name: 'Playfair Display' },
+                { family: "'DM Serif Display', serif", weight: '400', name: 'DM Serif Display' },
+                { family: "'Cabinet Grotesk', sans-serif", weight: '700', name: 'Cabinet Grotesk' },
+                { family: "'Instrument Serif', serif", weight: '400', name: 'Instrument Serif' }
+            ];
+
+            // Always apply saved font to hero-name
+            var savedFont = localStorage.getItem('heroFont');
+            if (savedFont) {
+                try {
+                    var parsed = JSON.parse(savedFont);
+                    var heroName = document.querySelector('.hero-name');
+                    if (heroName) {
+                        heroName.style.fontFamily = parsed.family;
+                        heroName.style.fontWeight = parsed.weight;
+                    }
+                } catch(e) {}
+            }
+
             if (sessionStorage.getItem('introPlayed')) return;
 
             var overlay = document.getElementById('intro-overlay');
             var introName = document.getElementById('intro-name-large');
             if (!overlay || !introName) return;
 
-            // Font definitions
-            var fonts = [
-                { family: "'Fraunces', serif", weight: '300', name: 'Fraunces' },
-                { family: "'Cormorant Garamond', serif", weight: '300', name: 'Cormorant Garamond' },
-                { family: "'Syne', sans-serif", weight: '800', name: 'Syne' },
-                { family: "'Bricolage Grotesque', sans-serif", weight: '700', name: 'Bricolage Grotesque' }
-            ];
-
             // Pick final font randomly at load time
             var finalIndex = Math.floor(Math.random() * fonts.length);
             var finalFont = fonts[finalIndex];
+
+            // Save to localStorage so it persists across refreshes
+            localStorage.setItem('heroFont', JSON.stringify({ family: finalFont.family, weight: finalFont.weight }));
 
             // Expose for external use
             window.landedFont = finalFont;
