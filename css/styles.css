@@ -330,8 +330,8 @@ body.dark-mode .hero-intro {
 }
 
 .social-icon {
-    width: 40px;
-    height: 40px;
+    width: 28px;
+    height: 28px;
     color: rgb(115, 115, 115);
     transition: color 0.3s ease, transform 0.2s ease;
     display: flex;
@@ -1024,8 +1024,8 @@ body.dark-mode .mobile-nav {
     }
 
     .social-icon {
-        width: 32px;
-        height: 32px;
+        width: 22px;
+        height: 22px;
     }
 }
 
