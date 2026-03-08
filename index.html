@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Saw Thura Zaw Portfolio</title>
     <link rel="stylesheet" href="main.css">
+    <!-- Preload fonts for intro cycling animation -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@300&family=Cormorant+Garamond:wght@300&family=Syne:wght@800&family=Bricolage+Grotesque:wght@700&display=swap">
     <script>
         // Apply dark mode immediately to prevent flash
         (function() {
@@ -148,7 +150,7 @@
     <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
     <script src="javascript/script.js"></script>
     <script>
-        // Intro animation — FLIP-style: shrink + translate to hero-name position
+        // Intro animation — font cycling + FLIP-style shrink to hero-name
         (function() {
             if (sessionStorage.getItem('introPlayed')) return;
 
@@ -156,51 +158,87 @@
             var introName = document.getElementById('intro-name-large');
             if (!overlay || !introName) return;
 
-            // Show overlay (it starts display:none in HTML for no-JS users)
+            // Font definitions
+            var fonts = [
+                { family: "'Fraunces', serif", weight: '300', name: 'Fraunces' },
+                { family: "'Cormorant Garamond', serif", weight: '300', name: 'Cormorant Garamond' },
+                { family: "'Syne', sans-serif", weight: '800', name: 'Syne' },
+                { family: "'Bricolage Grotesque', sans-serif", weight: '700', name: 'Bricolage Grotesque' }
+            ];
+
+            // Pick final font randomly at load time
+            var finalIndex = Math.floor(Math.random() * fonts.length);
+            var finalFont = fonts[finalIndex];
+
+            // Expose for external use
+            window.landedFont = finalFont;
+
+            // Show overlay
             overlay.style.display = 'flex';
 
-            // Two rAFs ensure the browser has painted before we start transitions
             requestAnimationFrame(function() {
                 requestAnimationFrame(function() {
                     overlay.classList.add('intro-visible');
 
-                    // Brief pause so the big name is visible before animating
+                    // Start font cycling after brief pause
                     setTimeout(function() {
+                        var cycleIndex = 0;
+                        var baseInterval = 120;
+                        var totalCycles = 16;
+                        var decelCycles = 6;
+                        var cycleCount = 0;
+
+                        function applyFont(f) {
+                            introName.style.fontFamily = f.family;
+                            introName.style.fontWeight = f.weight;
+                        }
+
+                        function nextCycle() {
+                            applyFont(fonts[cycleIndex % fonts.length]);
+                            cycleIndex++;
+                            cycleCount++;
+
+                            if (cycleCount < totalCycles) {
+                                setTimeout(nextCycle, baseInterval);
+                            } else if (cycleCount < totalCycles + decelCycles) {
+                                // Decelerate: progressively longer delays
+                                var progress = (cycleCount - totalCycles) / decelCycles;
+                                var delay = baseInterval + progress * 400;
+                                setTimeout(nextCycle, delay);
+                            } else {
+                                // Land on final font
+                                applyFont(finalFont);
+                                // Brief hold, then start FLIP animation
+                                setTimeout(startFLIP, 300);
+                            }
+                        }
+
+                        nextCycle();
+                    }, 200);
+
+                    function startFLIP() {
                         var heroName = document.querySelector('.hero-name');
                         if (!heroName) return;
 
-                        // --- Measure target ---
-                        // getBoundingClientRect() works even when opacity:0 (layout is computed)
+                        // Apply landed font to hero-name immediately (hidden behind overlay)
+                        heroName.style.fontFamily = finalFont.family;
+                        heroName.style.fontWeight = finalFont.weight;
+
                         var heroRect = heroName.getBoundingClientRect();
                         var heroStyle = window.getComputedStyle(heroName);
                         var heroFontSize = heroStyle.fontSize;
 
-                        // With position:absolute + translate(-50%,-50%), the element
-                        // is centered via its own dimensions. We need to animate
-                        // top/left/transform so it lands exactly on .hero-name.
-                        // Strategy: animate transform from translate(-50%,-50%) to
-                        // a value that places the top-left corner at heroRect's position,
-                        // while also animating top/left from 50%/50% to heroRect coords.
-                        //
-                        // Simpler: keep top:0, left:0 and use transform for everything.
-                        // Start: translate(centerX - halfWidth, centerY - halfHeight)
-                        // End:   translate(heroRect.left, heroRect.top)
-
-                        // Measure intro element's current size for centering calc
                         var introRect = introName.getBoundingClientRect();
                         var startX = (window.innerWidth - introRect.width) / 2;
                         var startY = (window.innerHeight - introRect.height) / 2;
 
-                        // Switch to top:0/left:0 positioning with equivalent transform
                         introName.style.transition = 'none';
                         introName.style.top = '0';
                         introName.style.left = '0';
                         introName.style.transform = 'translate(' + startX + 'px, ' + startY + 'px)';
 
-                        // Flush layout
                         void introName.offsetHeight;
 
-                        // Animate to hero-name position
                         var easing = 'cubic-bezier(0.16, 1, 0.3, 1)';
                         introName.style.transition = [
                             'font-size 2.2s ' + easing,
@@ -210,8 +248,6 @@
                         introName.style.fontSize = heroFontSize;
                         introName.style.transform = 'translate(' + heroRect.left + 'px, ' + heroRect.top + 'px)';
 
-                        // When text lands on hero-name position, reveal page seamlessly:
-                        // un-hide content (still covered by overlay) then fade overlay away.
                         setTimeout(function() {
                             document.documentElement.classList.remove('intro-active');
 
@@ -225,8 +261,7 @@
                                 }, 320);
                             });
                         }, 2200);
-
-                    }, 450); // pause before animation starts
+                    }
                 });
             });
         })();
