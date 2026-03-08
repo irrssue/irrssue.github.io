@@ -61,22 +61,22 @@
     </script>
     <!-- Intro Animation Overlay (hidden by default, shown by JS) -->
     <div id="intro-overlay" style="display:none" aria-hidden="true">
-        <span id="intro-name-large">Thura Zaw</span>
+        <span id="intro-name-large">Liam Rolert</span>
     </div>
 
     <div class="grid-container">
         <main class="main-content">
             <section class="content-section" id="home">
-                <h1 class="hero-name" id="hero-name">Thura Zaw</h1>
+                <h1 class="hero-name" id="hero-name">Liam Rolert</h1>
                 <script>
                     if (document.body.classList.contains('dark-mode')) {
                         document.getElementById('hero-name').style.color = 'rgb(250, 250, 250)';
                     }
                 </script>
                 <p class="hero-intro">
-                    self-taught software engineer living in NYC, in pursuit of building things that somehow make life easier
+                    I build cool stuffs
                 </p>
-                <div class="hero-social">
+                <div class="hero-social reveal-item">
                     <a href="https://youtube.com/@liamrolert" target="_blank" class="social-icon" aria-label="YouTube">
                         <svg viewBox="0 0 24 24" fill="currentColor">
                             <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
@@ -96,23 +96,23 @@
             </section>
 
             <section class="projects-section">
-                <h2 class="projects-heading">Projects</h2>
+                <h2 class="projects-heading reveal-item">Projects</h2>
                 <ul class="projects-list">
-                    <li class="project-item">
+                    <li class="project-item reveal-item">
                         <a href="html/writing.html" class="project-link">
                             <span class="project-name">Writing</span>
                             <span class="project-separator">—</span>
                             <span class="project-description">Notes on software and other things</span>
                         </a>
                     </li>
-                    <li class="project-item">
+                    <li class="project-item reveal-item">
                         <a href="html/bookmarks.html" class="project-link">
                             <span class="project-name">Bookmarks</span>
                             <span class="project-separator">—</span>
                             <span class="project-description">Curated collection of interesting links</span>
                         </a>
                     </li>
-                    <li class="project-item">
+                    <li class="project-item reveal-item">
                         <a href="https://github.com/irrssue?tab=repositories" class="project-link external">
                             <span class="project-name">GitHub</span>
                             <span class="project-separator">—</span>
@@ -128,7 +128,7 @@
     </div>
 
     <!-- Bottom Navigation -->
-    <nav class="mobile-nav">
+    <nav class="mobile-nav reveal-item">
         <a href="index.html" class="mobile-nav-item active">
             <svg class="mobile-nav-icon" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
@@ -160,6 +160,7 @@
     </nav>
 
     <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script src="javascript/script.js"></script>
     <script>
         // Intro animation — font cycling + FLIP-style shrink to hero-name
@@ -216,8 +217,8 @@
                     setTimeout(function() {
                         var cycleIndex = 0;
                         var baseInterval = 120;
-                        var totalCycles = 16;
-                        var decelCycles = 6;
+                        var totalCycles = 10;
+                        var decelCycles = 4;
                         var cycleCount = 0;
 
                         function applyFont(f) {
@@ -235,13 +236,13 @@
                             } else if (cycleCount < totalCycles + decelCycles) {
                                 // Decelerate: progressively longer delays
                                 var progress = (cycleCount - totalCycles) / decelCycles;
-                                var delay = baseInterval + progress * 400;
+                                var delay = baseInterval + progress * 300;
                                 setTimeout(nextCycle, delay);
                             } else {
                                 // Land on final font
                                 applyFont(finalFont);
                                 // Brief hold, then start FLIP animation
-                                setTimeout(startFLIP, 300);
+                                setTimeout(startFLIP, 150);
                             }
                         }
 
@@ -273,8 +274,8 @@
 
                         var easing = 'cubic-bezier(0.16, 1, 0.3, 1)';
                         introName.style.transition = [
-                            'font-size 2.2s ' + easing,
-                            'transform 2.2s ' + easing
+                            'font-size 1.5s ' + easing,
+                            'transform 1.5s ' + easing
                         ].join(', ');
 
                         introName.style.fontSize = heroFontSize;
@@ -283,7 +284,21 @@
                         // Reveal content when the name visually lands (~50% into spring easing)
                         setTimeout(function() {
                             document.documentElement.classList.remove('intro-active');
-                        }, 1700);
+                            document.documentElement.classList.add('page-revealing');
+
+                            var revealItems = Array.from(document.querySelectorAll('.reveal-item'));
+                            if (window.gsap && revealItems.length) {
+                                gsap.from(revealItems, {
+                                    duration: 1.32,
+                                    y: 36,
+                                    opacity: 0,
+                                    filter: 'blur(20px)',
+                                    ease: 'expo.out',
+                                    stagger: 0.09,
+                                    clearProps: 'filter,transform,opacity'
+                                });
+                            }
+                        }, 1100);
 
                         setTimeout(function() {
                             requestAnimationFrame(function() {
@@ -295,7 +310,7 @@
                                     sessionStorage.setItem('introPlayed', '1');
                                 }, 420);
                             });
-                        }, 1700);
+                        }, 1100);
                     }
                 });
             });
