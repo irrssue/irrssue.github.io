@@ -36,7 +36,7 @@ body.dark-mode #intro-overlay {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 12vw;
+    font-size: 10vw;
     font-weight: 800;
     color: rgba(26, 26, 26, 0.85);
     white-space: nowrap;
