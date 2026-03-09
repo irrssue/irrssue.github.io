@@ -1052,13 +1052,29 @@ body.dark-mode .projects-heading {
 
 .project-item {
     margin: 0;
+    position: relative;
+}
+
+.project-item::before {
+    content: '';
+    position: absolute;
+    left: -20px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background-color: rgb(115, 115, 115);
+}
+
+body.dark-mode .project-item::before {
+    background-color: rgb(163, 163, 163);
 }
 
 .project-link {
     display: flex;
     align-items: baseline;
     gap: 12px;
-    padding: 10px 16px;
     border-radius: 10px;
     transition: background-color 0.2s ease;
     text-decoration: none;
