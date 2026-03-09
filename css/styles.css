@@ -290,14 +290,10 @@ a {
 .hero-name {
     font-size: clamp(1.68rem, 3.84vw + 0.96rem, 2.4rem);
     font-weight: 800;
-    color: rgb(250, 250, 250);
+    color: rgba(26, 26, 26, 0.851);
     margin-bottom: 40px;
     margin-top: 120px;
     line-height: 1.2;
-}
-
-.hero-name {
-    color: rgba(26, 26, 26, 0.851);
 }
 
 body.dark-mode .hero-name {
