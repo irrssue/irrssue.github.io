@@ -1150,13 +1150,15 @@ body.dark-mode .external-icon {
     background: #fff;
     border: 1px solid rgba(0, 0, 0, 0.06);
     opacity: 0;
-    transform: translateY(6px);
-    transition: opacity 0.18s ease, transform 0.18s ease;
+    transform: translateY(8px);
+    filter: blur(8.4px);
+    transition: opacity 0.22s ease, transform 0.22s ease, filter 0.22s ease;
 }
 
 #link-preview.visible {
     opacity: 1;
     transform: translateY(0);
+    filter: blur(0);
 }
 
 #link-preview img {
