@@ -1,2 +1,18 @@
 # Private credentials - DO NOT COMMIT
+.env
+.env.*
+*.token
+secrets.json
+config.local.json
 
+# Admin panel (keep local only)
+admin.html
+
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Editor artifacts
+.vscode/settings.json
+*.swp
+*.swo
