@@ -1,5 +1,23 @@
 [
   {
+    "name": "Writing",
+    "url": "html/writing.html",
+    "description": "Notes on software and other things",
+    "external": false
+  },
+  {
+    "name": "Bookmarks",
+    "url": "html/bookmarks.html",
+    "description": "Curated collection of interesting links",
+    "external": false
+  },
+  {
+    "name": "Thura Zaw",
+    "url": "https://irrssue.github.io/",
+    "description": "Private playground",
+    "external": true
+  },
+  {
     "name": "IG",
     "url": "https://www.instagram.com/irrssue",
     "description": "instagram",
