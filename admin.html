@@ -368,9 +368,135 @@
         .modal .form-group { margin-bottom: 16px; }
         .modal-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 
-        /* ── Order buttons ────────────────────────────── */
-        .order-btns { display: flex; flex-direction: column; gap: 2px; }
-        .order-btns .btn-sm { padding: 2px 8px; font-size: 11px; line-height: 1.4; }
+        /* ── Drag & drop ───────────────────────────────── */
+        .drag-handle {
+            color: var(--text-muted);
+            font-size: 14px;
+            cursor: grab;
+            padding: 0 8px 0 0;
+            user-select: none;
+            flex-shrink: 0;
+        }
+        .drag-handle:active { cursor: grabbing; }
+        .item-row.drag-over { border-color: var(--accent); background: var(--surface-2); }
+        .item-row.dragging  { opacity: 0.35; }
+
+        /* ── Mobile responsive ──────────────────────────── */
+        @media (max-width: 640px) {
+            .sidebar { display: none; }
+
+            .admin-body {
+                height: auto;
+                min-height: calc(100vh - 49px);
+            }
+
+            .main-panel {
+                overflow-y: visible;
+                padding: 20px 16px 100px 16px;
+                max-width: 100%;
+            }
+
+            .admin-header { padding: 12px 16px; }
+
+            .admin-title { display: none; }
+
+            .pat-bar { width: 100%; justify-content: flex-end; }
+
+            .form-grid { grid-template-columns: 1fr; }
+
+            .form-group.full { grid-column: 1; }
+        }
+
+        /* ── Bottom nav (Dynamic Island) ────────────────── */
+        .admin-bottom-nav {
+            display: none;
+        }
+
+        @media (max-width: 640px) {
+            .admin-bottom-nav {
+                display: grid;
+                position: fixed;
+                bottom: 14px;
+                left: 50%;
+                transform: translateX(-50%);
+                background-color: rgba(20, 20, 20, 0.95);
+                backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(20px);
+                border-radius: 22px;
+                padding: 8px 14px;
+                box-shadow: 0 6px 24px rgba(0,0,0,0.4),
+                    0 2px 6px rgba(0,0,0,0.3),
+                    inset 0 0.5px 0 rgba(255,255,255,0.08);
+                z-index: 50;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 6px;
+                align-items: center;
+                border: 0.5px solid rgba(255,255,255,0.08);
+            }
+
+            .admin-bottom-nav::before {
+                content: '';
+                position: absolute;
+                top: var(--hover-top, 0);
+                left: var(--hover-left, 0);
+                width: var(--hover-width, 0);
+                height: var(--hover-height, 0);
+                background-color: rgba(255,255,255,0.12);
+                border-radius: 14px;
+                transition: left 0.3s cubic-bezier(0.4,0,0.2,1),
+                    width 0.3s cubic-bezier(0.4,0,0.2,1),
+                    top 0.3s cubic-bezier(0.4,0,0.2,1),
+                    height 0.3s cubic-bezier(0.4,0,0.2,1),
+                    opacity 0.2s ease;
+                opacity: 0;
+                pointer-events: none;
+                z-index: 0;
+            }
+
+            .admin-bottom-nav.nav-hover-active::before { opacity: 1; }
+
+            .admin-nav-item {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 10px 18px;
+                border-radius: 14px;
+                transition: transform 0.2s cubic-bezier(0.4,0,0.2,1);
+                background: none;
+                border: none;
+                cursor: pointer;
+                position: relative;
+                z-index: 1;
+            }
+
+            .admin-nav-item:hover  { transform: scale(1.05); }
+            .admin-nav-item:active { transform: scale(0.95); }
+
+            .admin-nav-item.active { background-color: rgba(255,255,255,0.15); }
+            .admin-bottom-nav.nav-hover-active .admin-nav-item.active { background-color: transparent; }
+
+            .admin-nav-item.active::after {
+                content: '';
+                position: absolute;
+                bottom: -3px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 3px;
+                height: 3px;
+                background-color: rgba(255,255,255,0.7);
+                border-radius: 50%;
+            }
+
+            .admin-nav-icon {
+                width: 17px;
+                height: 17px;
+                color: rgba(255,255,255,0.75);
+                transition: color 0.2s ease;
+            }
+
+            .admin-nav-item:hover  .admin-nav-icon { color: rgba(255,255,255,1); }
+            .admin-nav-item.active .admin-nav-icon { color: rgba(255,255,255,1); }
+        }
     </style>
 </head>
 <body>
@@ -404,9 +530,9 @@
 <div class="admin-body">
     <!-- Sidebar -->
     <nav class="sidebar">
-        <button class="tab-btn active" onclick="switchTab('projects', this)">Projects</button>
-        <button class="tab-btn" onclick="switchTab('bookmarks', this)">Bookmarks</button>
-        <button class="tab-btn" onclick="switchTab('posts', this)">Posts</button>
+        <button class="tab-btn active" data-tab="projects" onclick="switchTab('projects', this)">Projects</button>
+        <button class="tab-btn" data-tab="bookmarks" onclick="switchTab('bookmarks', this)">Bookmarks</button>
+        <button class="tab-btn" data-tab="posts" onclick="switchTab('posts', this)">Posts</button>
     </nav>
 
     <!-- Main Panel -->
@@ -546,6 +672,25 @@
 
 <div id="toast"></div>
 
+<!-- Bottom nav (mobile) -->
+<nav class="admin-bottom-nav" id="admin-bottom-nav">
+    <button class="admin-nav-item active" id="btn-nav-projects" onclick="switchTab('projects', this)" aria-label="Projects">
+        <svg class="admin-nav-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M20 6h-8l-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/>
+        </svg>
+    </button>
+    <button class="admin-nav-item" id="btn-nav-bookmarks" onclick="switchTab('bookmarks', this)" aria-label="Bookmarks">
+        <svg class="admin-nav-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z"/>
+        </svg>
+    </button>
+    <button class="admin-nav-item" id="btn-nav-posts" onclick="switchTab('posts', this)" aria-label="Posts">
+        <svg class="admin-nav-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+        </svg>
+    </button>
+</nav>
+
 <script>
     const REPO  = 'irrssue/irrssue.github.io';
     const API   = 'https://api.github.com/repos/' + REPO + '/contents';
@@ -560,6 +705,7 @@
     // In-memory data
     let projectsData  = [];
     let bookmarksData = [];
+    let postsData     = [];
 
     // Edit state
     let editingProjectIdx  = -1;
@@ -621,8 +767,13 @@
     function switchTab(name, btn) {
         document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.admin-nav-item').forEach(b => b.classList.remove('active'));
         document.getElementById('tab-' + name).classList.add('active');
-        btn.classList.add('active');
+        // Activate matching buttons in both navs
+        const sideBtn = document.querySelector('.tab-btn[data-tab="' + name + '"]');
+        const botBtn  = document.getElementById('btn-nav-' + name);
+        if (sideBtn) sideBtn.classList.add('active');
+        if (botBtn)  botBtn.classList.add('active');
         if (name === 'projects')  loadProjects();
         if (name === 'bookmarks') loadBookmarks();
         if (name === 'posts')     loadPosts();
@@ -696,6 +847,54 @@
     }
 
     // ─────────────────────────────────────────────────
+    // DRAG & DROP
+    // ─────────────────────────────────────────────────
+    let _dragIdx  = -1;
+    let _dragType = '';
+
+    function onDragStart(e, i, type) {
+        _dragIdx  = i;
+        _dragType = type;
+        e.dataTransfer.effectAllowed = 'move';
+        setTimeout(() => e.currentTarget.classList.add('dragging'), 0);
+    }
+
+    function onDragOver(e) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        e.currentTarget.classList.add('drag-over');
+    }
+
+    function onDragLeave(e) {
+        e.currentTarget.classList.remove('drag-over');
+    }
+
+    function onDragEnd(e) {
+        document.querySelectorAll('.item-row').forEach(r => r.classList.remove('drag-over', 'dragging'));
+        _dragIdx = -1;
+    }
+
+    function onDrop(e, i, type) {
+        e.preventDefault();
+        e.currentTarget.classList.remove('drag-over');
+        if (_dragIdx < 0 || _dragIdx === i || _dragType !== type) return;
+        if (type === 'project') {
+            const [item] = projectsData.splice(_dragIdx, 1);
+            projectsData.splice(i, 0, item);
+            writeProjects('Reorder projects');
+        } else if (type === 'bookmark') {
+            const [item] = bookmarksData.splice(_dragIdx, 1);
+            bookmarksData.splice(i, 0, item);
+            writeBookmarks('Reorder bookmarks');
+        } else if (type === 'post') {
+            const [item] = postsData.splice(_dragIdx, 1);
+            postsData.splice(i, 0, item);
+            renderPosts();
+        }
+        _dragIdx = -1;
+    }
+
+    // ─────────────────────────────────────────────────
     // PROJECTS
     // ─────────────────────────────────────────────────
     async function loadProjects() {
@@ -718,16 +917,18 @@
             return;
         }
         list.innerHTML = projectsData.map((p, i) => `
-            <div class="item-row">
+            <div class="item-row" draggable="true"
+                 ondragstart="onDragStart(event,${i},'project')"
+                 ondragover="onDragOver(event)"
+                 ondragleave="onDragLeave(event)"
+                 ondrop="onDrop(event,${i},'project')"
+                 ondragend="onDragEnd(event)">
+                <span class="drag-handle" title="Drag to reorder">⠿</span>
                 <div class="item-info">
                     <div class="item-name">${esc(p.name)}${p.external ? ' <span class="tag-badge">↗ external</span>' : ''}</div>
                     <div class="item-meta">${esc(p.url)} — ${esc(p.description)}</div>
                 </div>
                 <div class="item-actions">
-                    <div class="order-btns">
-                        ${i > 0 ? `<button class="btn btn-ghost btn-sm" onclick="moveProject(${i}, -1)" title="Move up">↑</button>` : '<span style="display:inline-block;width:30px"></span>'}
-                        ${i < projectsData.length - 1 ? `<button class="btn btn-ghost btn-sm" onclick="moveProject(${i}, 1)" title="Move down">↓</button>` : '<span style="display:inline-block;width:30px"></span>'}
-                    </div>
                     <button class="btn btn-ghost btn-sm" onclick="editProject(${i})">Edit</button>
                     <button class="btn btn-danger btn-sm" onclick="deleteProject(${i})">Delete</button>
                 </div>
@@ -784,12 +985,6 @@
         await writeProjects('Remove project');
     }
 
-    async function moveProject(i, dir) {
-        const j = i + dir;
-        [projectsData[i], projectsData[j]] = [projectsData[j], projectsData[i]];
-        await writeProjects('Reorder projects');
-    }
-
     async function writeProjects(message) {
         try {
             const result = await ghPut('data/projects.json', JSON.stringify(projectsData, null, 2), projectsSHA, message);
@@ -825,7 +1020,13 @@
             return;
         }
         list.innerHTML = bookmarksData.map((b, i) => `
-            <div class="item-row">
+            <div class="item-row" draggable="true"
+                 ondragstart="onDragStart(event,${i},'bookmark')"
+                 ondragover="onDragOver(event)"
+                 ondragleave="onDragLeave(event)"
+                 ondrop="onDrop(event,${i},'bookmark')"
+                 ondragend="onDragEnd(event)">
+                <span class="drag-handle" title="Drag to reorder">⠿</span>
                 <div class="item-info">
                     <div class="item-name">
                         ${esc(b.title)}
@@ -916,6 +1117,7 @@
             const mdFiles = files.filter(f => f.name.endsWith('.md') && f.name !== '_template.md');
 
             if (!mdFiles.length) {
+                postsData = [];
                 list.innerHTML = '<div class="empty-state">No posts yet.</div>';
                 return;
             }
@@ -927,26 +1129,41 @@
             }));
 
             posts.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
-
-            list.innerHTML = posts.map(p => `
-                <div class="item-row">
-                    <div class="item-info">
-                        <div class="item-name">
-                            ${esc(p.title || p.filename)}
-                            ${p.draft ? '<span class="tag-badge">draft</span>' : ''}
-                            ${p.tag ? `<span class="tag-badge">#${esc(p.tag)}</span>` : ''}
-                        </div>
-                        <div class="item-meta">${esc(p.filename)}${p.date ? ' · ' + esc(p.date) : ''}</div>
-                    </div>
-                    <div class="item-actions">
-                        <button class="btn btn-ghost btn-sm" onclick="editPost(${JSON.stringify(esc(p.filename))}, ${JSON.stringify(esc(p.sha))})">Edit</button>
-                        <button class="btn btn-danger btn-sm" onclick="deletePost(${JSON.stringify(esc(p.filename))}, ${JSON.stringify(esc(p.sha))})">Delete</button>
-                    </div>
-                </div>
-            `).join('');
+            postsData = posts;
+            renderPosts();
         } catch (e) {
-            list.innerHTML = '<div class="empty-state">Could not load — check your token.</div>';
+            document.getElementById('posts-list').innerHTML = '<div class="empty-state">Could not load — check your token.</div>';
         }
+    }
+
+    function renderPosts() {
+        const list = document.getElementById('posts-list');
+        if (!postsData.length) {
+            list.innerHTML = '<div class="empty-state">No posts yet.</div>';
+            return;
+        }
+        list.innerHTML = postsData.map((p, i) => `
+            <div class="item-row" draggable="true"
+                 ondragstart="onDragStart(event,${i},'post')"
+                 ondragover="onDragOver(event)"
+                 ondragleave="onDragLeave(event)"
+                 ondrop="onDrop(event,${i},'post')"
+                 ondragend="onDragEnd(event)">
+                <span class="drag-handle" title="Drag to reorder">⠿</span>
+                <div class="item-info">
+                    <div class="item-name">
+                        ${esc(p.title || p.filename)}
+                        ${p.draft ? '<span class="tag-badge">draft</span>' : ''}
+                        ${p.tag ? `<span class="tag-badge">#${esc(p.tag)}</span>` : ''}
+                    </div>
+                    <div class="item-meta">${esc(p.filename)}${p.date ? ' · ' + esc(p.date) : ''}</div>
+                </div>
+                <div class="item-actions">
+                    <button class="btn btn-ghost btn-sm" onclick="editPost(${JSON.stringify(p.filename)}, ${JSON.stringify(p.sha)})">Edit</button>
+                    <button class="btn btn-danger btn-sm" onclick="deletePost(${JSON.stringify(p.filename)}, ${JSON.stringify(p.sha)})">Delete</button>
+                </div>
+            </div>
+        `).join('');
     }
 
     async function editPost(filename, sha) {
@@ -1044,6 +1261,27 @@
         });
         return result;
     }
+
+    // ── Bottom nav hover pill ─────────────────────────
+    (function () {
+        const nav   = document.getElementById('admin-bottom-nav');
+        if (!nav) return;
+        const items = nav.querySelectorAll('.admin-nav-item');
+
+        function setPill(item) {
+            const nr = nav.getBoundingClientRect();
+            const ir = item.getBoundingClientRect();
+            nav.style.setProperty('--hover-left',   (ir.left   - nr.left) + 'px');
+            nav.style.setProperty('--hover-top',    (ir.top    - nr.top)  + 'px');
+            nav.style.setProperty('--hover-width',  ir.width  + 'px');
+            nav.style.setProperty('--hover-height', ir.height + 'px');
+        }
+
+        items.forEach(item => {
+            item.addEventListener('mouseenter', () => { setPill(item); nav.classList.add('nav-hover-active'); });
+        });
+        nav.addEventListener('mouseleave', () => nav.classList.remove('nav-hover-active'));
+    })();
 
     // ── Start ─────────────────────────────────────────
     init();
