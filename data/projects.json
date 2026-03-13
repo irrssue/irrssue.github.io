@@ -1,15 +1,15 @@
 [
   {
-    "name": "Writing",
-    "url": "html/writing.html",
-    "description": "Notes on software and other things",
-    "external": false
-  },
-  {
     "name": "Thura Zaw",
     "url": "https://irrssue.github.io/",
     "description": "Private playground",
     "external": true
+  },
+  {
+    "name": "Writing",
+    "url": "html/writing.html",
+    "description": "Notes on software and other things",
+    "external": false
   },
   {
     "name": "Bookmarks",
