@@ -15,7 +15,7 @@ IMPORTANT TAG RULES:
 - Examples of valid tags: Web, Tech, Design, Life, Career, Travel
 -->
 
-### 4 years of Nothingness
+### The design I end up choosing
 
 so after years of procrastinating on not building my website, im now finally settle down and give myself a few weeks to prepare a entirely new website. 
 I used to think that personal portfolio has to include like super awesome fonts and 3D styles animation and all that super eye catching stuff, but I took some heavy inspiration from [Warren Buffett](https://www.berkshirehathaway.com) company website and Vercel's CEO [Guillermo Rauch](https://rauchg.com) that simplicity and minimal view with minimal loadtime are as essential as whats differentiate a great user experiences and a bad ones.
