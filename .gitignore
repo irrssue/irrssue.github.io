@@ -5,14 +5,14 @@
 secrets.json
 config.local.json
 
-# Admin panel (keep local only)
-admin.html
+# Admin panel
+plan.md
 
 # macOS
 .DS_Store
 **/.DS_Store
 
 # Editor artifacts
-.vscode/settings.json
+.vscode/
 *.swp
 *.swo
