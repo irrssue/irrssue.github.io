@@ -1,5 +1,9 @@
 /* Post Page Styles */
 
+.post-page .main-content {
+    max-width: 735px;
+}
+
 .post-container {
     max-width: min(95%, 1600px);
     margin: 0 auto;
