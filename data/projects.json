@@ -6,15 +6,15 @@
     "external": false
   },
   {
-    "name": "Bookmarks",
-    "url": "html/bookmarks.html",
-    "description": "Curated collection of interesting links",
-    "external": false
-  },
-  {
     "name": "Thura Zaw",
     "url": "https://irrssue.github.io/",
     "description": "Private playground",
     "external": true
+  },
+  {
+    "name": "Bookmarks",
+    "url": "html/bookmarks.html",
+    "description": "Curated collection of interesting links",
+    "external": false
   }
 ]
