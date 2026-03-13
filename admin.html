@@ -1159,8 +1159,8 @@
                     <div class="item-meta">${esc(p.filename)}${p.date ? ' · ' + esc(p.date) : ''}</div>
                 </div>
                 <div class="item-actions">
-                    <button class="btn btn-ghost btn-sm" onclick="editPost(${JSON.stringify(p.filename)}, ${JSON.stringify(p.sha)})">Edit</button>
-                    <button class="btn btn-danger btn-sm" onclick="deletePost(${JSON.stringify(p.filename)}, ${JSON.stringify(p.sha)})">Delete</button>
+                    <button class="btn btn-ghost btn-sm" onclick="editPost(${esc(JSON.stringify(p.filename))}, ${esc(JSON.stringify(p.sha))})">Edit</button>
+                    <button class="btn btn-danger btn-sm" onclick="deletePost(${esc(JSON.stringify(p.filename))}, ${esc(JSON.stringify(p.sha))})">Delete</button>
                 </div>
             </div>
         `).join('');
