@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin — irrssue.github.io</title>
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --surface: #141414;
+            --surface-2: #1c1c1c;
+            --border: #272727;
+            --text: #e0e0e0;
+            --text-muted: #606060;
+            --accent: #4f9cf9;
+            --accent-hover: #74b3ff;
+            --danger: #ef4444;
+            --success: #22c55e;
+            --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            --mono: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: var(--font);
+            background: var(--bg);
+            color: var(--text);
+            font-size: 14px;
+            line-height: 1.5;
+            min-height: 100vh;
+        }
+
+        /* ── Header ───────────────────────────────────── */
+        .admin-header {
+            border-bottom: 1px solid var(--border);
+            padding: 14px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            background: var(--bg);
+            z-index: 10;
+        }
+
+        .admin-title {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 500;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
+
+        .pat-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .pat-status {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .pat-status.connected::before {
+            content: '● ';
+            color: var(--success);
+        }
+
+        /* ── Layout ───────────────────────────────────── */
+        .admin-body {
+            display: flex;
+            height: calc(100vh - 49px);
+        }
+
+        .sidebar {
+            width: 148px;
+            border-right: 1px solid var(--border);
+            padding: 12px 0;
+            flex-shrink: 0;
+            overflow-y: auto;
+        }
+
+        .tab-btn {
+            display: block;
+            width: 100%;
+            padding: 9px 18px;
+            background: none;
+            border: none;
+            border-left: 2px solid transparent;
+            color: var(--text-muted);
+            font-family: var(--font);
+            font-size: 13px;
+            text-align: left;
+            cursor: pointer;
+            transition: color 0.15s, background 0.15s, border-color 0.15s;
+        }
+
+        .tab-btn:hover { color: var(--text); background: var(--surface); }
+
+        .tab-btn.active {
+            color: var(--text);
+            background: var(--surface);
+            border-left-color: var(--accent);
+        }
+
+        .main-panel {
+            flex: 1;
+            overflow-y: auto;
+            padding: 28px 32px;
+            max-width: 800px;
+        }
+
+        /* ── Tab panels ───────────────────────────────── */
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+
+        /* ── Section titles ───────────────────────────── */
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .panel-title { font-size: 15px; font-weight: 600; }
+
+        .section-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+
+        /* ── Form card ────────────────────────────────── */
+        .form-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 28px;
+        }
+
+        .form-card-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            margin-bottom: 16px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .form-group.full { grid-column: 1 / -1; }
+
+        label {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        input[type="text"],
+        input[type="url"],
+        input[type="date"],
+        input[type="password"],
+        textarea {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            color: var(--text);
+            border-radius: 6px;
+            padding: 7px 10px;
+            font-family: var(--font);
+            font-size: 13px;
+            width: 100%;
+            outline: none;
+            transition: border-color 0.15s;
+        }
+
+        input:focus, textarea:focus { border-color: var(--accent); }
+
+        textarea {
+            resize: vertical;
+            min-height: 160px;
+            font-family: var(--mono);
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-direction: row;
+            padding-top: 4px;
+        }
+
+        .checkbox-row input { width: auto; }
+        .checkbox-row label { font-size: 13px; color: var(--text); }
+
+        .form-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        /* ── Buttons ──────────────────────────────────── */
+        .btn {
+            padding: 7px 14px;
+            border-radius: 6px;
+            border: none;
+            font-family: var(--font);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: opacity 0.15s, background 0.15s;
+            white-space: nowrap;
+        }
+
+        .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        .btn-primary { background: var(--accent); color: #fff; }
+        .btn-primary:hover:not(:disabled) { background: var(--accent-hover); }
+
+        .btn-ghost {
+            background: var(--surface-2);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+        .btn-ghost:hover:not(:disabled) { background: var(--surface); }
+
+        .btn-danger { background: transparent; color: var(--danger); border: 1px solid transparent; }
+        .btn-danger:hover:not(:disabled) { background: rgba(239,68,68,0.08); }
+
+        .btn-sm { padding: 4px 10px; font-size: 12px; }
+
+        /* ── Item list ────────────────────────────────── */
+        .items-list { display: flex; flex-direction: column; gap: 6px; }
+
+        .item-row {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .item-info { flex: 1; min-width: 0; }
+
+        .item-name {
+            font-size: 13px;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 2px;
+        }
+
+        .item-meta {
+            font-size: 11px;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .item-actions { display: flex; gap: 4px; flex-shrink: 0; }
+
+        .tag-badge {
+            display: inline-block;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 1px 6px;
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-left: 6px;
+            vertical-align: middle;
+        }
+
+        .empty-state {
+            color: var(--text-muted);
+            font-size: 13px;
+            padding: 28px 0;
+            text-align: center;
+        }
+
+        .loading-state {
+            color: var(--text-muted);
+            font-size: 13px;
+            padding: 16px 0;
+        }
+
+        /* ── Toast ────────────────────────────────────── */
+        #toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            padding: 11px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 200;
+            max-width: 340px;
+            transition: opacity 0.2s;
+        }
+
+        #toast.success { background: #14532d; color: #bbf7d0; opacity: 1; }
+        #toast.error   { background: #7f1d1d; color: #fecaca; opacity: 1; }
+        #toast.info    { background: #1e3a5f; color: #bfdbfe; opacity: 1; }
+
+        /* ── PAT Modal ────────────────────────────────── */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.75);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+
+        .modal {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 28px;
+            width: 460px;
+            max-width: 90vw;
+        }
+
+        .modal h2 { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+
+        .modal p {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            line-height: 1.65;
+        }
+
+        .modal p code {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 1px 5px;
+            font-family: var(--mono);
+            font-size: 12px;
+        }
+
+        .modal .form-group { margin-bottom: 16px; }
+        .modal-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+        /* ── Order buttons ────────────────────────────── */
+        .order-btns { display: flex; flex-direction: column; gap: 2px; }
+        .order-btns .btn-sm { padding: 2px 8px; font-size: 11px; line-height: 1.4; }
+    </style>
+</head>
+<body>
+
+<!-- PAT Modal -->
+<div id="pat-modal" class="modal-overlay">
+    <div class="modal">
+        <h2>GitHub Token Required</h2>
+        <p>Enter a Personal Access Token with <code>repo</code> scope. It's stored only in your browser's localStorage — never committed or sent anywhere except GitHub's API.</p>
+        <div class="form-group">
+            <label for="pat-input">Personal Access Token</label>
+            <input type="password" id="pat-input" placeholder="ghp_..." autocomplete="off">
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-primary" onclick="savePAT()">Save &amp; Connect</button>
+            <a href="https://github.com/settings/tokens/new?scopes=repo&description=irrssue.github.io+CMS"
+               target="_blank" class="btn btn-ghost">Generate Token ↗</a>
+        </div>
+    </div>
+</div>
+
+<!-- Header -->
+<header class="admin-header">
+    <span class="admin-title">irrssue.github.io · Admin</span>
+    <div class="pat-bar">
+        <span class="pat-status" id="pat-status">Not connected</span>
+        <button class="btn btn-ghost btn-sm" onclick="showPATModal()">Change token</button>
+    </div>
+</header>
+
+<div class="admin-body">
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <button class="tab-btn active" onclick="switchTab('projects', this)">Projects</button>
+        <button class="tab-btn" onclick="switchTab('bookmarks', this)">Bookmarks</button>
+        <button class="tab-btn" onclick="switchTab('posts', this)">Posts</button>
+    </nav>
+
+    <!-- Main Panel -->
+    <main class="main-panel">
+
+        <!-- ── Projects ─────────────────────────────── -->
+        <div id="tab-projects" class="tab-panel active">
+            <div class="panel-header">
+                <h2 class="panel-title">Projects</h2>
+                <button class="btn btn-ghost btn-sm" onclick="loadProjects()">↻ Refresh</button>
+            </div>
+
+            <div class="form-card">
+                <div class="form-card-title" id="proj-form-title">New Project</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="proj-name">Name</label>
+                        <input type="text" id="proj-name" placeholder="Project name">
+                    </div>
+                    <div class="form-group">
+                        <label for="proj-url">URL</label>
+                        <input type="text" id="proj-url" placeholder="html/page.html or https://...">
+                    </div>
+                    <div class="form-group full">
+                        <label for="proj-desc">Description</label>
+                        <input type="text" id="proj-desc" placeholder="Short one-line description">
+                    </div>
+                    <div class="form-group full">
+                        <div class="checkbox-row">
+                            <input type="checkbox" id="proj-external">
+                            <label for="proj-external">External link (opens in new tab)</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-primary" onclick="saveProject()">Save Project</button>
+                    <button class="btn btn-ghost" id="proj-cancel" onclick="resetProjectForm()" style="display:none">Cancel</button>
+                </div>
+            </div>
+
+            <div class="section-label">Current Projects</div>
+            <div id="projects-list" class="items-list">
+                <div class="loading-state">Loading...</div>
+            </div>
+        </div>
+
+        <!-- ── Bookmarks ─────────────────────────────── -->
+        <div id="tab-bookmarks" class="tab-panel">
+            <div class="panel-header">
+                <h2 class="panel-title">Bookmarks</h2>
+                <button class="btn btn-ghost btn-sm" onclick="loadBookmarks()">↻ Refresh</button>
+            </div>
+
+            <div class="form-card">
+                <div class="form-card-title" id="bm-form-title">New Bookmark</div>
+                <div class="form-grid">
+                    <div class="form-group full">
+                        <label for="bm-title">Title</label>
+                        <input type="text" id="bm-title" placeholder="Page or article title">
+                    </div>
+                    <div class="form-group full">
+                        <label for="bm-url">URL</label>
+                        <input type="url" id="bm-url" placeholder="https://example.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="bm-tag">Tag</label>
+                        <input type="text" id="bm-tag" placeholder="tech">
+                    </div>
+                    <div class="form-group">
+                        <label for="bm-date">Date</label>
+                        <input type="date" id="bm-date">
+                    </div>
+                    <div class="form-group full">
+                        <label for="bm-note">Note (optional)</label>
+                        <input type="text" id="bm-note" placeholder="Short note about this bookmark">
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-primary" onclick="saveBookmark()">Save Bookmark</button>
+                    <button class="btn btn-ghost" id="bm-cancel" onclick="resetBookmarkForm()" style="display:none">Cancel</button>
+                </div>
+            </div>
+
+            <div class="section-label">Saved Bookmarks</div>
+            <div id="bookmarks-list" class="items-list">
+                <div class="loading-state">Loading...</div>
+            </div>
+        </div>
+
+        <!-- ── Posts ─────────────────────────────────── -->
+        <div id="tab-posts" class="tab-panel">
+            <div class="panel-header">
+                <h2 class="panel-title">Posts</h2>
+                <button class="btn btn-ghost btn-sm" onclick="loadPosts()">↻ Refresh</button>
+            </div>
+
+            <div class="form-card">
+                <div class="form-card-title" id="post-form-title">New Post</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="post-title">Title</label>
+                        <input type="text" id="post-title" placeholder="Post title">
+                    </div>
+                    <div class="form-group">
+                        <label for="post-tag">Tag</label>
+                        <input type="text" id="post-tag" placeholder="Web">
+                    </div>
+                    <div class="form-group">
+                        <label for="post-date">Date</label>
+                        <input type="text" id="post-date" placeholder="Mar 10, 2026">
+                    </div>
+                    <div class="form-group">
+                        <div class="checkbox-row" style="padding-top:18px">
+                            <input type="checkbox" id="post-draft" checked>
+                            <label for="post-draft">Save as draft</label>
+                        </div>
+                    </div>
+                    <div class="form-group full">
+                        <label for="post-body">Content (Markdown)</label>
+                        <textarea id="post-body" style="min-height:220px" placeholder="# Your post content here..."></textarea>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-primary" id="post-submit-btn" onclick="submitPost()">Create Post</button>
+                    <button class="btn btn-ghost" id="post-cancel" onclick="resetPostForm()" style="display:none">Cancel</button>
+                </div>
+            </div>
+
+            <div class="section-label">Existing Posts</div>
+            <div id="posts-list" class="items-list">
+                <div class="loading-state">Loading...</div>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<div id="toast"></div>
+
+<script>
+    const REPO  = 'irrssue/irrssue.github.io';
+    const API   = 'https://api.github.com/repos/' + REPO + '/contents';
+    const BRANCH = 'main';
+
+    let pat = localStorage.getItem('cms_pat') || '';
+
+    // Tracked SHAs for JSON files (required by GitHub API for updates)
+    let projectsSHA  = null;
+    let bookmarksSHA = null;
+
+    // In-memory data
+    let projectsData  = [];
+    let bookmarksData = [];
+
+    // Edit state
+    let editingProjectIdx  = -1;
+    let editingBookmarkIdx = -1;
+    let editingPost = null; // { filename, sha }
+
+    // ── Init ─────────────────────────────────────────
+    function init() {
+        setToday('bm-date');
+        setFormattedDate('post-date');
+
+        if (pat) {
+            hidePATModal();
+            updatePATStatus(true);
+            loadProjects();
+        }
+    }
+
+    function setToday(id) {
+        document.getElementById(id).value = new Date().toISOString().split('T')[0];
+    }
+
+    function setFormattedDate(id) {
+        const d = new Date();
+        const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        document.getElementById(id).value = months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
+    }
+
+    // ── PAT ──────────────────────────────────────────
+    function savePAT() {
+        const val = document.getElementById('pat-input').value.trim();
+        if (!val) return;
+        pat = val;
+        localStorage.setItem('cms_pat', pat);
+        hidePATModal();
+        updatePATStatus(true);
+        loadProjects();
+    }
+
+    function showPATModal() {
+        document.getElementById('pat-modal').style.display = 'flex';
+    }
+
+    function hidePATModal() {
+        document.getElementById('pat-modal').style.display = 'none';
+    }
+
+    function updatePATStatus(connected) {
+        const el = document.getElementById('pat-status');
+        el.textContent = connected ? 'Connected' : 'Not connected';
+        el.className = 'pat-status' + (connected ? ' connected' : '');
+    }
+
+    document.getElementById('pat-input').addEventListener('keydown', e => {
+        if (e.key === 'Enter') savePAT();
+    });
+
+    // ── Tabs ─────────────────────────────────────────
+    function switchTab(name, btn) {
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('tab-' + name).classList.add('active');
+        btn.classList.add('active');
+        if (name === 'projects')  loadProjects();
+        if (name === 'bookmarks') loadBookmarks();
+        if (name === 'posts')     loadPosts();
+    }
+
+    // ── GitHub API helpers ────────────────────────────
+    function apiHeaders() {
+        return {
+            'Authorization': 'Bearer ' + pat,
+            'Content-Type': 'application/json'
+        };
+    }
+
+    async function ghGet(path) {
+        const res = await fetch(API + '/' + path + '?ref=' + BRANCH, { headers: apiHeaders() });
+        if (!res.ok) throw new Error('GET ' + path + ' failed: ' + res.status);
+        return res.json();
+    }
+
+    async function ghPut(path, textContent, sha, message) {
+        const encoded = b64encode(textContent);
+        const body = { message, content: encoded, branch: BRANCH };
+        if (sha) body.sha = sha;
+        const res = await fetch(API + '/' + path, {
+            method: 'PUT',
+            headers: apiHeaders(),
+            body: JSON.stringify(body)
+        });
+        if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            throw new Error(err.message || 'PUT failed: ' + res.status);
+        }
+        return res.json();
+    }
+
+    async function ghDelete(path, sha, message) {
+        const res = await fetch(API + '/' + path, {
+            method: 'DELETE',
+            headers: apiHeaders(),
+            body: JSON.stringify({ message, sha, branch: BRANCH })
+        });
+        if (!res.ok) throw new Error('DELETE failed: ' + res.status);
+        return res.json();
+    }
+
+    function b64encode(str) {
+        return btoa(unescape(encodeURIComponent(str)));
+    }
+
+    function b64decode(str) {
+        return decodeURIComponent(escape(atob(str.replace(/\n/g, ''))));
+    }
+
+    // ── Toast ─────────────────────────────────────────
+    let toastTimer;
+    function toast(msg, type = 'info') {
+        const el = document.getElementById('toast');
+        el.textContent = msg;
+        el.className = type;
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => { el.className = ''; }, 3800);
+    }
+
+    // ── HTML escape ───────────────────────────────────
+    function esc(str) {
+        return String(str || '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+    }
+
+    // ─────────────────────────────────────────────────
+    // PROJECTS
+    // ─────────────────────────────────────────────────
+    async function loadProjects() {
+        const list = document.getElementById('projects-list');
+        list.innerHTML = '<div class="loading-state">Loading...</div>';
+        try {
+            const data = await ghGet('data/projects.json');
+            projectsSHA  = data.sha;
+            projectsData = JSON.parse(b64decode(data.content));
+            renderProjects();
+        } catch (e) {
+            list.innerHTML = '<div class="empty-state">Could not load — check your token.</div>';
+        }
+    }
+
+    function renderProjects() {
+        const list = document.getElementById('projects-list');
+        if (!projectsData.length) {
+            list.innerHTML = '<div class="empty-state">No projects yet.</div>';
+            return;
+        }
+        list.innerHTML = projectsData.map((p, i) => `
+            <div class="item-row">
+                <div class="item-info">
+                    <div class="item-name">${esc(p.name)}${p.external ? ' <span class="tag-badge">↗ external</span>' : ''}</div>
+                    <div class="item-meta">${esc(p.url)} — ${esc(p.description)}</div>
+                </div>
+                <div class="item-actions">
+                    <div class="order-btns">
+                        ${i > 0 ? `<button class="btn btn-ghost btn-sm" onclick="moveProject(${i}, -1)" title="Move up">↑</button>` : '<span style="display:inline-block;width:30px"></span>'}
+                        ${i < projectsData.length - 1 ? `<button class="btn btn-ghost btn-sm" onclick="moveProject(${i}, 1)" title="Move down">↓</button>` : '<span style="display:inline-block;width:30px"></span>'}
+                    </div>
+                    <button class="btn btn-ghost btn-sm" onclick="editProject(${i})">Edit</button>
+                    <button class="btn btn-danger btn-sm" onclick="deleteProject(${i})">Delete</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function editProject(i) {
+        editingProjectIdx = i;
+        const p = projectsData[i];
+        document.getElementById('proj-name').value     = p.name;
+        document.getElementById('proj-url').value      = p.url;
+        document.getElementById('proj-desc').value     = p.description;
+        document.getElementById('proj-external').checked = !!p.external;
+        document.getElementById('proj-form-title').textContent = 'Edit Project';
+        document.getElementById('proj-cancel').style.display = '';
+        document.getElementById('proj-name').focus();
+        document.querySelector('#tab-projects').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function resetProjectForm() {
+        editingProjectIdx = -1;
+        document.getElementById('proj-name').value     = '';
+        document.getElementById('proj-url').value      = '';
+        document.getElementById('proj-desc').value     = '';
+        document.getElementById('proj-external').checked = false;
+        document.getElementById('proj-form-title').textContent = 'New Project';
+        document.getElementById('proj-cancel').style.display = 'none';
+    }
+
+    async function saveProject() {
+        const name        = document.getElementById('proj-name').value.trim();
+        const url         = document.getElementById('proj-url').value.trim();
+        const description = document.getElementById('proj-desc').value.trim();
+        const external    = document.getElementById('proj-external').checked;
+
+        if (!name || !url) return toast('Name and URL are required.', 'error');
+
+        const project = { name, url, description, external };
+
+        if (editingProjectIdx >= 0) {
+            projectsData[editingProjectIdx] = project;
+        } else {
+            projectsData.push(project);
+        }
+
+        await writeProjects(editingProjectIdx >= 0 ? `Update project: ${name}` : `Add project: ${name}`);
+        resetProjectForm();
+    }
+
+    async function deleteProject(i) {
+        if (!confirm(`Delete "${projectsData[i].name}"?`)) return;
+        projectsData.splice(i, 1);
+        await writeProjects('Remove project');
+    }
+
+    async function moveProject(i, dir) {
+        const j = i + dir;
+        [projectsData[i], projectsData[j]] = [projectsData[j], projectsData[i]];
+        await writeProjects('Reorder projects');
+    }
+
+    async function writeProjects(message) {
+        try {
+            const result = await ghPut('data/projects.json', JSON.stringify(projectsData, null, 2), projectsSHA, message);
+            projectsSHA = result.content.sha;
+            renderProjects();
+            toast(message, 'success');
+        } catch (e) {
+            toast('Error: ' + e.message, 'error');
+            loadProjects(); // Re-sync to get fresh SHA
+        }
+    }
+
+    // ─────────────────────────────────────────────────
+    // BOOKMARKS
+    // ─────────────────────────────────────────────────
+    async function loadBookmarks() {
+        const list = document.getElementById('bookmarks-list');
+        list.innerHTML = '<div class="loading-state">Loading...</div>';
+        try {
+            const data = await ghGet('data/bookmarks.json');
+            bookmarksSHA  = data.sha;
+            bookmarksData = JSON.parse(b64decode(data.content));
+            renderBookmarks();
+        } catch (e) {
+            list.innerHTML = '<div class="empty-state">Could not load — check your token.</div>';
+        }
+    }
+
+    function renderBookmarks() {
+        const list = document.getElementById('bookmarks-list');
+        if (!bookmarksData.length) {
+            list.innerHTML = '<div class="empty-state">No bookmarks yet.</div>';
+            return;
+        }
+        list.innerHTML = bookmarksData.map((b, i) => `
+            <div class="item-row">
+                <div class="item-info">
+                    <div class="item-name">
+                        ${esc(b.title)}
+                        ${b.tag ? `<span class="tag-badge">#${esc(b.tag)}</span>` : ''}
+                    </div>
+                    <div class="item-meta">${esc(b.url)}${b.date ? ' · ' + esc(b.date) : ''}</div>
+                </div>
+                <div class="item-actions">
+                    <button class="btn btn-ghost btn-sm" onclick="editBookmark(${i})">Edit</button>
+                    <button class="btn btn-danger btn-sm" onclick="deleteBookmark(${i})">Delete</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function editBookmark(i) {
+        editingBookmarkIdx = i;
+        const b = bookmarksData[i];
+        document.getElementById('bm-title').value = b.title;
+        document.getElementById('bm-url').value   = b.url;
+        document.getElementById('bm-tag').value   = b.tag  || '';
+        document.getElementById('bm-date').value  = b.date || '';
+        document.getElementById('bm-note').value  = b.note || '';
+        document.getElementById('bm-form-title').textContent = 'Edit Bookmark';
+        document.getElementById('bm-cancel').style.display = '';
+        document.getElementById('bm-title').focus();
+    }
+
+    function resetBookmarkForm() {
+        editingBookmarkIdx = -1;
+        document.getElementById('bm-title').value = '';
+        document.getElementById('bm-url').value   = '';
+        document.getElementById('bm-tag').value   = '';
+        document.getElementById('bm-note').value  = '';
+        document.getElementById('bm-form-title').textContent = 'New Bookmark';
+        document.getElementById('bm-cancel').style.display = 'none';
+        setToday('bm-date');
+    }
+
+    async function saveBookmark() {
+        const title = document.getElementById('bm-title').value.trim();
+        const url   = document.getElementById('bm-url').value.trim();
+        const tag   = document.getElementById('bm-tag').value.trim();
+        const date  = document.getElementById('bm-date').value.trim();
+        const note  = document.getElementById('bm-note').value.trim();
+
+        if (!title || !url) return toast('Title and URL are required.', 'error');
+        if (tag && tag.includes(' ')) return toast('Tag must be a single word.', 'error');
+
+        const bookmark = { title, url, tag, date, note };
+
+        if (editingBookmarkIdx >= 0) {
+            bookmarksData[editingBookmarkIdx] = bookmark;
+        } else {
+            bookmarksData.unshift(bookmark); // newest first
+        }
+
+        await writeBookmarks(editingBookmarkIdx >= 0 ? `Update bookmark: ${title}` : `Add bookmark: ${title}`);
+        resetBookmarkForm();
+    }
+
+    async function deleteBookmark(i) {
+        if (!confirm(`Delete "${bookmarksData[i].title}"?`)) return;
+        bookmarksData.splice(i, 1);
+        await writeBookmarks('Remove bookmark');
+    }
+
+    async function writeBookmarks(message) {
+        try {
+            const result = await ghPut('data/bookmarks.json', JSON.stringify(bookmarksData, null, 2), bookmarksSHA, message);
+            bookmarksSHA = result.content.sha;
+            renderBookmarks();
+            toast(message, 'success');
+        } catch (e) {
+            toast('Error: ' + e.message, 'error');
+            loadBookmarks();
+        }
+    }
+
+    // ─────────────────────────────────────────────────
+    // POSTS
+    // ─────────────────────────────────────────────────
+    async function loadPosts() {
+        const list = document.getElementById('posts-list');
+        list.innerHTML = '<div class="loading-state">Loading...</div>';
+        try {
+            const files = await ghGet('posts');
+            const mdFiles = files.filter(f => f.name.endsWith('.md') && f.name !== '_template.md');
+
+            if (!mdFiles.length) {
+                list.innerHTML = '<div class="empty-state">No posts yet.</div>';
+                return;
+            }
+
+            const posts = await Promise.all(mdFiles.map(async f => {
+                const text = await fetch(f.download_url).then(r => r.text());
+                const fm   = parseFrontMatter(text);
+                return { filename: f.name, sha: f.sha, ...fm };
+            }));
+
+            posts.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+
+            list.innerHTML = posts.map(p => `
+                <div class="item-row">
+                    <div class="item-info">
+                        <div class="item-name">
+                            ${esc(p.title || p.filename)}
+                            ${p.draft ? '<span class="tag-badge">draft</span>' : ''}
+                            ${p.tag ? `<span class="tag-badge">#${esc(p.tag)}</span>` : ''}
+                        </div>
+                        <div class="item-meta">${esc(p.filename)}${p.date ? ' · ' + esc(p.date) : ''}</div>
+                    </div>
+                    <div class="item-actions">
+                        <button class="btn btn-ghost btn-sm" onclick="editPost(${JSON.stringify(esc(p.filename))}, ${JSON.stringify(esc(p.sha))})">Edit</button>
+                        <button class="btn btn-danger btn-sm" onclick="deletePost(${JSON.stringify(esc(p.filename))}, ${JSON.stringify(esc(p.sha))})">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        } catch (e) {
+            list.innerHTML = '<div class="empty-state">Could not load — check your token.</div>';
+        }
+    }
+
+    async function editPost(filename, sha) {
+        try {
+            const data    = await ghGet('posts/' + filename);
+            const content = b64decode(data.content);
+            const fm      = parseFrontMatter(content);
+            const body    = content.replace(/^---[\s\S]*?---\n*/, '');
+
+            document.getElementById('post-title').value = fm.title || '';
+            document.getElementById('post-tag').value   = fm.tag   || '';
+            document.getElementById('post-date').value  = fm.date  || '';
+            document.getElementById('post-draft').checked = fm.draft !== false;
+            document.getElementById('post-body').value  = body;
+
+            editingPost = { filename, sha: data.sha };
+            document.getElementById('post-form-title').textContent = 'Edit Post';
+            document.getElementById('post-submit-btn').textContent = 'Update Post';
+            document.getElementById('post-cancel').style.display = '';
+            document.getElementById('post-title').focus();
+            document.querySelector('.main-panel').scrollTo({ top: 0, behavior: 'smooth' });
+            toast('Post loaded for editing.', 'info');
+        } catch (e) {
+            toast('Error loading post: ' + e.message, 'error');
+        }
+    }
+
+    function resetPostForm() {
+        editingPost = null;
+        document.getElementById('post-title').value = '';
+        document.getElementById('post-tag').value   = '';
+        document.getElementById('post-body').value  = '';
+        document.getElementById('post-draft').checked = true;
+        document.getElementById('post-form-title').textContent = 'New Post';
+        document.getElementById('post-submit-btn').textContent = 'Create Post';
+        document.getElementById('post-cancel').style.display = 'none';
+        setFormattedDate('post-date');
+    }
+
+    async function submitPost() {
+        const title = document.getElementById('post-title').value.trim();
+        const tag   = document.getElementById('post-tag').value.trim() || 'Web';
+        const date  = document.getElementById('post-date').value.trim();
+        const draft = document.getElementById('post-draft').checked;
+        const body  = document.getElementById('post-body').value;
+
+        if (!title) return toast('Title is required.', 'error');
+        if (tag.includes(' ')) return toast('Tag must be a single word.', 'error');
+
+        const content = `---\ntitle: "${title}"\ndate: "${date}"\ntag: "${tag}"\nsummary: ""\ncover: ""\ndraft: ${draft}\n---\n\n${body}`;
+
+        try {
+            if (editingPost) {
+                // Update existing file
+                await ghPut('posts/' + editingPost.filename, content, editingPost.sha, `Update post: ${title}`);
+                toast('Post updated: ' + editingPost.filename, 'success');
+            } else {
+                // Create new file
+                const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+                const filename = 'posts/' + slug + '.md';
+                await ghPut(filename, content, null, `Add post: ${title}`);
+                toast('Post created: ' + filename, 'success');
+            }
+            resetPostForm();
+            loadPosts();
+        } catch (e) {
+            toast('Error: ' + e.message, 'error');
+        }
+    }
+
+    async function deletePost(filename, sha) {
+        if (!confirm(`Delete "${filename}"?`)) return;
+        try {
+            await ghDelete('posts/' + filename, sha, 'Delete post: ' + filename);
+            toast('Post deleted.', 'success');
+            loadPosts();
+        } catch (e) {
+            toast('Error: ' + e.message, 'error');
+        }
+    }
+
+    // ── Front matter parser ───────────────────────────
+    function parseFrontMatter(content) {
+        const match = content.match(/^---\s*\n([\s\S]*?)\n---/);
+        if (!match) return {};
+        const result = {};
+        match[1].split('\n').forEach(line => {
+            const colon = line.indexOf(':');
+            if (colon < 0) return;
+            const key = line.slice(0, colon).trim();
+            const val = line.slice(colon + 1).trim().replace(/^["']|["']$/g, '');
+            if (val === 'true')       result[key] = true;
+            else if (val === 'false') result[key] = false;
+            else                      result[key] = val;
+        });
+        return result;
+    }
+
+    // ── Start ─────────────────────────────────────────
+    init();
+</script>
+</body>
+</html>
