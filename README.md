@@ -6,7 +6,7 @@ Personal portfolio and writing site — vanilla HTML, CSS, and JavaScript. Hoste
 
 | Date | Progress | What |
 |------|----------|-------|
-| 2026-03-10 | Lightweight CMS | Built a local admin panel (`admin.html`) with GitHub API integration — manage projects, bookmarks, and posts directly from the browser without touching files. Projects and bookmarks migrated to JSON files; homepage now renders projects dynamically |
+| 2026-03-10 | Lightweight CMS | Built a local admin panel (`html/admin.html`) with GitHub API integration — manage projects, bookmarks, and posts directly from the browser without touching files. Projects and bookmarks migrated to JSON files; homepage now renders projects dynamically |
 | 2026-03-10 | Rebranded to Thura Zaw | Updated all project names and hero text from Liam Rolert to Thura Zaw across the site |
 | 2026-03-09 | Social link preview cards | Hover over social links to see a preview card — with motion blur transitions and dark mode support |
 | 2026-03-08 | Intro animation overlay | Implemented a GSAP-powered intro animation sequence that plays on page load |

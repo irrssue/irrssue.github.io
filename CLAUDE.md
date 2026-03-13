@@ -18,7 +18,7 @@ Personal portfolio and writing site. Vanilla HTML/CSS/JS — no frameworks, no b
 
 ## Design Direction
 The front page should follow a minimal single-column layout inspired by https://looskie.com/:
-- reference more to [Design_goal](Design_goal.md)
+- reference more to [Design_goal](docs/Design_goal.md)
 
 ## CSS Rules
 - Use CSS custom properties (variables) for all design tokens — define them in `:root {}`
