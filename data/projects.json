@@ -20,7 +20,7 @@
   {
     "name": "conflict-map",
     "url": "https://github.com/irrssue/conflict-map",
-    "description": "An interactive map visualizing global conflicts and geopolitical events.",
+    "description": "Global conflict event map",
     "external": true
   }
 ]
