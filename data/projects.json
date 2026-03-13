@@ -16,11 +16,5 @@
     "url": "https://irrssue.github.io/",
     "description": "Private playground",
     "external": true
-  },
-  {
-    "name": "IG",
-    "url": "https://www.instagram.com/irrssue",
-    "description": "instagram",
-    "external": true
   }
 ]
