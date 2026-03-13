@@ -18,7 +18,7 @@
             } else {
                 // On desktop, use localStorage
                 const savedTheme = localStorage.getItem('darkMode');
-                shouldUseDarkMode = savedTheme === null || savedTheme === 'true';
+                shouldUseDarkMode = savedTheme === 'true';
             }
 
             if (shouldUseDarkMode) {
@@ -39,7 +39,7 @@
         } else {
             // On desktop, use localStorage
             const savedTheme = localStorage.getItem('darkMode');
-            shouldUseDarkMode = savedTheme === null || savedTheme === 'true';
+            shouldUseDarkMode = savedTheme === 'true';
         }
 
         if (shouldUseDarkMode) {
