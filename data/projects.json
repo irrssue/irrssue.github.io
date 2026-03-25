@@ -4,11 +4,5 @@
     "url": "https://irrssue.github.io/",
     "description": "Private playground",
     "external": true
-  },
-  {
-    "name": "conflict-map",
-    "url": "https://github.com/irrssue/conflict-map",
-    "description": "Global conflict event map",
-    "external": true
   }
 ]
