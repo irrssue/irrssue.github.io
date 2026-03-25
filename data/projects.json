@@ -4,5 +4,11 @@
     "url": "https://irrssue.github.io/",
     "description": "Private playground",
     "external": true
+  },
+  {
+    "name": "Baremail",
+    "url": "https://github.com/irrssue/baremail.git",
+    "description": "the minimal version of gmail",
+    "external": true
   }
 ]
