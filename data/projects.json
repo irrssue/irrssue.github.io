@@ -12,12 +12,6 @@
     "external": false
   },
   {
-    "name": "Bookmarks",
-    "url": "html/bookmarks.html",
-    "description": "Curated collection of interesting links",
-    "external": false
-  },
-  {
     "name": "conflict-map",
     "url": "https://github.com/irrssue/conflict-map",
     "description": "Global conflict event map",
