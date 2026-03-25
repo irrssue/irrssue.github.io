@@ -10,5 +10,11 @@
     "url": "https://github.com/irrssue/baremail.git",
     "description": "the minimal version of gmail",
     "external": true
+  },
+  {
+    "name": "Conflict Map",
+    "url": "https://github.com/irrssue/conflict-map.git",
+    "description": "An interactive map visualizing global conflicts and geopolitical events.",
+    "external": true
   }
 ]
