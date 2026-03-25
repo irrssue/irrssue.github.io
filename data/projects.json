@@ -6,12 +6,6 @@
     "external": true
   },
   {
-    "name": "Writing",
-    "url": "html/writing.html",
-    "description": "Notes on software and other things",
-    "external": false
-  },
-  {
     "name": "conflict-map",
     "url": "https://github.com/irrssue/conflict-map",
     "description": "Global conflict event map",
