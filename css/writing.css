@@ -1,3 +1,7 @@
+.main-content {
+    max-width: 800px;
+}
+
 .blog-section {
     margin-top: 40px;
 }
