@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Saw Thura Zaw Portfolio</title>
     <link rel="stylesheet" href="main.css">
-    <!-- Preload fonts for intro cycling animation -->
+    <!-- Fonts for hero-name cycling -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@300&family=Cormorant+Garamond:wght@300&family=VT323&family=Bricolage+Grotesque:wght@700&family=Playfair+Display:wght@700&family=DM+Serif+Display&family=Instrument+Serif&display=swap">
     <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@700&display=swap">
     <script>
@@ -25,17 +25,6 @@
 
             if (shouldUseDarkMode) {
                 document.documentElement.style.setProperty('--preload-dark-mode', '1');
-            }
-
-            // Clear intro flag on page refresh so animation replays
-            var navEntry = performance && performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
-            if (navEntry && navEntry.type === 'reload') {
-                sessionStorage.removeItem('introPlayed');
-            }
-
-            // Hide content for intro animation (skip if already played this session)
-            if (!sessionStorage.getItem('introPlayed')) {
-                document.documentElement.classList.add('intro-active');
             }
         })();
     </script>
@@ -59,11 +48,6 @@
             document.body.classList.add('dark-mode');
         }
     </script>
-    <!-- Intro Animation Overlay (hidden by default, shown by JS) -->
-    <div id="intro-overlay" style="display:none" aria-hidden="true">
-        <span id="intro-name-large">Thura Zaw</span>
-    </div>
-
     <div class="grid-container">
         <main class="main-content">
             <section class="content-section" id="home">
@@ -163,8 +147,6 @@
         </button>
     </nav>
 
-    <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script src="javascript/script.js"></script>
     <script src="javascript/projects.js"></script>
     <script src="javascript/home-writing.js"></script>
@@ -214,156 +196,48 @@
         })();
     </script>
     <script>
-        // Intro animation — font cycling + FLIP-style shrink to hero-name
+        // Hero name font cycling — switches font every 5s with a fade transition
         (function() {
-            // Font definitions (shared between intro and restore)
             var fonts = [
-                { family: "'Fraunces', serif", weight: '300', name: 'Fraunces' },
-                { family: "'Cormorant Garamond', serif", weight: '300', name: 'Cormorant Garamond' },
-                { family: "'VT323', monospace", weight: '400', name: 'VT323' },
-                { family: "'Bricolage Grotesque', sans-serif", weight: '700', name: 'Bricolage Grotesque' },
-                { family: "'Playfair Display', serif", weight: '700', name: 'Playfair Display' },
-                { family: "'DM Serif Display', serif", weight: '400', name: 'DM Serif Display' },
-                { family: "'Cabinet Grotesk', sans-serif", weight: '700', name: 'Cabinet Grotesk' },
-                { family: "'Instrument Serif', serif", weight: '400', name: 'Instrument Serif' }
+                { family: "'Fraunces', serif", weight: '300' },
+                { family: "'Cormorant Garamond', serif", weight: '300' },
+                { family: "'VT323', monospace", weight: '400' },
+                { family: "'Bricolage Grotesque', sans-serif", weight: '700' },
+                { family: "'Playfair Display', serif", weight: '700' },
+                { family: "'DM Serif Display', serif", weight: '400' },
+                { family: "'Cabinet Grotesk', sans-serif", weight: '700' },
+                { family: "'Instrument Serif', serif", weight: '400' }
             ];
 
-            // Always apply saved font to hero-name
-            var savedFont = localStorage.getItem('heroFont');
-            if (savedFont) {
-                try {
-                    var parsed = JSON.parse(savedFont);
-                    var heroName = document.querySelector('.hero-name');
-                    if (heroName) {
-                        heroName.style.fontFamily = parsed.family;
-                        heroName.style.fontWeight = parsed.weight;
-                    }
-                } catch(e) {}
+            var currentIndex = Math.floor(Math.random() * fonts.length);
+
+            function applyFont(el, font) {
+                el.style.fontFamily = font.family;
+                el.style.fontWeight = font.weight;
             }
 
-            if (sessionStorage.getItem('introPlayed')) return;
+            document.addEventListener('DOMContentLoaded', function() {
+                var heroName = document.querySelector('.hero-name');
+                if (!heroName) return;
 
-            var overlay = document.getElementById('intro-overlay');
-            var introName = document.getElementById('intro-name-large');
-            if (!overlay || !introName) return;
+                // Apply a random starting font immediately
+                applyFont(heroName, fonts[currentIndex]);
+                heroName.style.transition = 'opacity 0.35s ease';
 
-            // Pick final font randomly at load time
-            var finalIndex = Math.floor(Math.random() * fonts.length);
-            var finalFont = fonts[finalIndex];
+                // Cycle to a new random font every 5 seconds
+                setInterval(function() {
+                    var nextIndex;
+                    do {
+                        nextIndex = Math.floor(Math.random() * fonts.length);
+                    } while (nextIndex === currentIndex);
+                    currentIndex = nextIndex;
 
-            // Save to localStorage so it persists across refreshes
-            localStorage.setItem('heroFont', JSON.stringify({ family: finalFont.family, weight: finalFont.weight }));
-
-            // Expose for external use
-            window.landedFont = finalFont;
-
-            // Show overlay
-            overlay.style.display = 'flex';
-
-            requestAnimationFrame(function() {
-                requestAnimationFrame(function() {
-                    overlay.classList.add('intro-visible');
-
-                    // Start font cycling after brief pause
+                    heroName.style.opacity = '0';
                     setTimeout(function() {
-                        var cycleIndex = 0;
-                        var baseInterval = 120;
-                        var totalCycles = 10;
-                        var decelCycles = 4;
-                        var cycleCount = 0;
-
-                        function applyFont(f) {
-                            introName.style.fontFamily = f.family;
-                            introName.style.fontWeight = f.weight;
-                        }
-
-                        function nextCycle() {
-                            applyFont(fonts[cycleIndex % fonts.length]);
-                            cycleIndex++;
-                            cycleCount++;
-
-                            if (cycleCount < totalCycles) {
-                                setTimeout(nextCycle, baseInterval);
-                            } else if (cycleCount < totalCycles + decelCycles) {
-                                // Decelerate: progressively longer delays
-                                var progress = (cycleCount - totalCycles) / decelCycles;
-                                var delay = baseInterval + progress * 300;
-                                setTimeout(nextCycle, delay);
-                            } else {
-                                // Land on final font
-                                applyFont(finalFont);
-                                // Brief hold, then start FLIP animation
-                                setTimeout(startFLIP, 150);
-                            }
-                        }
-
-                        nextCycle();
-                    }, 200);
-
-                    function startFLIP() {
-                        var heroName = document.querySelector('.hero-name');
-                        if (!heroName) return;
-
-                        // Apply landed font to hero-name immediately (hidden behind overlay)
-                        heroName.style.fontFamily = finalFont.family;
-                        heroName.style.fontWeight = finalFont.weight;
-
-                        var heroRect = heroName.getBoundingClientRect();
-                        var heroStyle = window.getComputedStyle(heroName);
-                        var heroFontSize = heroStyle.fontSize;
-
-                        var introRect = introName.getBoundingClientRect();
-                        var startX = (window.innerWidth - introRect.width) / 2;
-                        var startY = (window.innerHeight - introRect.height) / 2;
-
-                        introName.style.transition = 'none';
-                        introName.style.top = '0';
-                        introName.style.left = '0';
-                        introName.style.transform = 'translate(' + startX + 'px, ' + startY + 'px)';
-
-                        void introName.offsetHeight;
-
-                        var easing = 'cubic-bezier(0.16, 1, 0.3, 1)';
-                        introName.style.transition = [
-                            'font-size 1.5s ' + easing,
-                            'transform 1.5s ' + easing
-                        ].join(', ');
-
-                        introName.style.fontSize = heroFontSize;
-                        introName.style.transform = 'translate(' + heroRect.left + 'px, ' + heroRect.top + 'px)';
-
-                        // Reveal content when the name visually lands (~50% into spring easing)
-                        setTimeout(function() {
-                            document.documentElement.classList.remove('intro-active');
-                            document.documentElement.classList.add('page-revealing');
-
-                            var revealItems = Array.from(document.querySelectorAll('.reveal-item'));
-                            if (window.gsap && revealItems.length) {
-                                gsap.from(revealItems, {
-                                    duration: 1.32,
-                                    y: 36,
-                                    opacity: 0,
-                                    filter: 'blur(20px)',
-                                    ease: 'expo.out',
-                                    stagger: 0.09,
-                                    clearProps: 'filter,transform,opacity'
-                                });
-                            }
-                        }, 1100);
-
-                        setTimeout(function() {
-                            requestAnimationFrame(function() {
-                                overlay.style.transition = 'opacity 0.4s ease';
-                                overlay.style.opacity = '0';
-
-                                setTimeout(function() {
-                                    overlay.style.display = 'none';
-                                    sessionStorage.setItem('introPlayed', '1');
-                                }, 420);
-                            });
-                        }, 1100);
-                    }
-                });
+                        applyFont(heroName, fonts[currentIndex]);
+                        heroName.style.opacity = '1';
+                    }, 350);
+                }, 5000);
             });
         })();
     </script>
