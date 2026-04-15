@@ -243,7 +243,7 @@ a {
 .hero-name {
     font-size: clamp(1.68rem, 3.84vw + 0.96rem, 2.4rem);
     font-weight: 600;
-    color: #ffffff;
+    color: #000000;
     margin-bottom: 15px;
     margin-top: 120px;
     line-height: 1.2;
