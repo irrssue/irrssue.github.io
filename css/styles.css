@@ -491,6 +491,10 @@ body.dark-mode .mail-tooltip::after {
 
 /* Responsive Design */
 @media (max-width: 768px) {
+    html {
+        font-size: 91%;
+    }
+
     .grid-container {
         grid-template-columns: 1fr;
     }
