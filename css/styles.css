@@ -263,6 +263,7 @@ a {
     100% { opacity: 0;    transform: none;                          text-shadow: none;                             filter: none;                               clip-path: none; }
 }
 
+.content-section p.hero-intro,
 .hero-intro {
     font-size: clamp(1.8rem, 6vw + 1.2rem, 4.2rem);
     font-weight: 600;
