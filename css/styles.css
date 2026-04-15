@@ -951,7 +951,7 @@ body.dark-mode .mobile-nav {
     .main-content {
         width: 100%;
         box-sizing: border-box;
-        padding: 50px 30px 100px 30px;
+        padding: 50px 20px 100px 20px;
     }
 
     .mobile-nav {
@@ -1210,7 +1210,7 @@ body.dark-mode #link-preview {
 
     .projects-heading {
         font-size: clamp(0.875rem, 2.2vw + 0.4rem, 1rem);
-        margin-bottom: 20px;
+        margin-bottom: 0;
     }
 
     .projects-list {
@@ -1222,7 +1222,7 @@ body.dark-mode #link-preview {
     }
 
     .project-link {
-        padding: 10px 12px;
+        padding: 6px 12px 6px 0;
         flex-wrap: nowrap;
     }
 
