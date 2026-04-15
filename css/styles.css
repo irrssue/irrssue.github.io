@@ -253,6 +253,19 @@ body.dark-mode .hero-name {
     color: rgb(250, 250, 250);
 }
 
+@keyframes hero-name-glitch {
+    0%   { opacity: 1; transform: none;                          text-shadow: none;                                 filter: none;                              clip-path: none; }
+    8%   { opacity: 1; transform: translateX(-6px) skewX(-8deg); text-shadow: 4px 0 #ff2020, -4px 0 #20ffff;       filter: brightness(1.8);                   clip-path: inset(10% 0 70% 0); }
+    16%  { opacity: 0.95; transform: translateX(8px) skewX(5deg);  text-shadow: -5px 0 #ff20ff, 5px 0 #20ff20;    filter: contrast(200%) hue-rotate(60deg);   clip-path: inset(0 0 0 0); }
+    24%  { opacity: 0.85; transform: translateX(-12px);             text-shadow: 6px 0 #ff2020, -6px 0 #20ffff;   filter: brightness(2.5);                    clip-path: inset(40% 0 30% 0); }
+    32%  { opacity: 0.7;  transform: translateX(6px) skewX(-6deg);  text-shadow: none;                            filter: invert(0.7) hue-rotate(120deg);     clip-path: inset(0 0 0 0); }
+    44%  { opacity: 0.45; transform: skewX(-14deg) translateX(-4px);text-shadow: 5px 0 #20ffff, -5px 0 #ff20ff;   filter: brightness(3) saturate(200%);       clip-path: inset(55% 0 10% 0); }
+    56%  { opacity: 0.2;  transform: translateX(4px) skewX(8deg);   text-shadow: none;                            filter: brightness(4) contrast(300%);       clip-path: inset(0 0 0 0); }
+    72%  { opacity: 0.05; transform: none;                          text-shadow: none;                             filter: none;                               clip-path: none; }
+    80%  { opacity: 0;    transform: none;                          text-shadow: none;                             filter: none;                               clip-path: none; }
+    100% { opacity: 0;    transform: none;                          text-shadow: none;                             filter: none;                               clip-path: none; }
+}
+
 .hero-intro {
     font-size: clamp(1.8rem, 6vw + 1.2rem, 4.2rem);
     font-weight: 600;

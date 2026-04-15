@@ -210,6 +210,7 @@
             ];
 
             var currentIndex = Math.floor(Math.random() * fonts.length);
+            var GLITCH_MS = 440;
 
             function applyFont(el, font) {
                 el.style.fontFamily = font.family;
@@ -222,9 +223,8 @@
 
                 // Apply a random starting font immediately
                 applyFont(heroName, fonts[currentIndex]);
-                heroName.style.transition = 'opacity 0.35s ease';
 
-                // Cycle to a new random font every 5 seconds
+                // Cycle every 5 seconds with a glitch transition
                 setInterval(function() {
                     var nextIndex;
                     do {
@@ -232,11 +232,23 @@
                     } while (nextIndex === currentIndex);
                     currentIndex = nextIndex;
 
-                    heroName.style.opacity = '0';
+                    // Kill any transition, fire glitch animation
+                    heroName.style.transition = 'none';
+                    heroName.style.animation = 'hero-name-glitch ' + GLITCH_MS + 'ms ease-in forwards';
+
+                    // At 80% through the glitch opacity hits 0 — swap font there
                     setTimeout(function() {
                         applyFont(heroName, fonts[currentIndex]);
-                        heroName.style.opacity = '1';
-                    }, 350);
+                        heroName.style.animation = 'none';
+                        heroName.style.opacity = '0';
+                        // Two rAFs to ensure the opacity:0 is committed before transitioning in
+                        requestAnimationFrame(function() {
+                            requestAnimationFrame(function() {
+                                heroName.style.transition = 'opacity 0.3s ease';
+                                heroName.style.opacity = '1';
+                            });
+                        });
+                    }, Math.round(GLITCH_MS * 0.8));
                 }, 5000);
             });
         })();
