@@ -242,15 +242,11 @@ a {
 /* Hero Section */
 .hero-name {
     font-size: clamp(1.68rem, 3.84vw + 0.96rem, 2.4rem);
-    font-weight: 800;
-    color: rgba(26, 26, 26, 0.851);
+    font-weight: 600;
+    color: #ffffff;
     margin-bottom: 40px;
     margin-top: 120px;
     line-height: 1.2;
-}
-
-body.dark-mode .hero-name {
-    color: rgb(250, 250, 250);
 }
 
 @keyframes hero-name-glitch {
@@ -269,15 +265,11 @@ body.dark-mode .hero-name {
 .hero-intro {
     font-size: clamp(1.8rem, 6vw + 1.2rem, 4.2rem);
     font-weight: 600;
-    color: rgb(115, 115, 115);
+    color: #ffffff;
     line-height: 1.3;
     margin-bottom: 60px;
     margin-top: 0;
     max-width: 900px;
-}
-
-body.dark-mode .hero-intro {
-    color: rgb(250, 250, 250);
 }
 
 .hero-social {
