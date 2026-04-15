@@ -244,7 +244,7 @@ a {
     font-size: clamp(1.68rem, 3.84vw + 0.96rem, 2.4rem);
     font-weight: 600;
     color: #ffffff;
-    margin-bottom: 40px;
+    margin-bottom: 15px;
     margin-top: 120px;
     line-height: 1.2;
 }
@@ -961,7 +961,7 @@ body.dark-mode .mobile-nav {
     /* Hero Section Mobile */
     .hero-name {
         font-size: clamp(1.44rem, 5.76vw + 0.48rem, 1.92rem);
-        margin-bottom: 24px;
+        margin-bottom: 15px;
         margin-top: 60px;
     }
 
