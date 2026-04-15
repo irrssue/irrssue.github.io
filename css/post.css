@@ -89,7 +89,7 @@
 
 .post-content {
     line-height: 1.7;
-    color: rgba(0, 0, 0, 0.5);
+    color: #000000;
     font-size: clamp(0.7rem, 1.2vw + 0.4rem, 0.8rem);
     overflow-wrap: break-word;
     word-break: break-word;
@@ -251,7 +251,7 @@ body.dark-mode .post-tag {
 }
 
 body.dark-mode .post-content {
-    color: rgba(255, 255, 255, 0.5);
+    color: #ffffff;
 }
 
 body.dark-mode .post-content h1,
