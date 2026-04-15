@@ -7,9 +7,6 @@ cover: ""
 draft: false
 ---
 
-# How I Replaced Google With a Homelab
-
-*April 2026*
 
 I pay Google roughly nothing for Photos and Drive. Most people do. And yet I spent a weekend replacing both of them with software I run on my own server. Why would anyone do this?
 
