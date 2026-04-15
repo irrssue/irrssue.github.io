@@ -99,6 +99,7 @@ body.dark-mode .main-content {
     background-color: #000000;
 }
 
+body.dark-mode .content-section h1.hero-name,
 body.dark-mode .hero-name {
     color: #ffffff;
 }
