@@ -103,6 +103,7 @@ body.dark-mode .hero-name {
     color: #ffffff;
 }
 
+body.dark-mode .content-section p.hero-intro,
 body.dark-mode .hero-intro {
     color: #ffffff;
 }
