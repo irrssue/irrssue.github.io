@@ -221,6 +221,7 @@ a {
     grid-column: 1;
     padding: 50px 40px 100px 40px;
     max-width: 686px;
+    min-width: 0;
     margin-left: auto;
     margin-right: auto;
     background-color: #ffffff;
