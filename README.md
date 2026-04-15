@@ -6,6 +6,13 @@ Personal portfolio and writing site — vanilla HTML, CSS, and JavaScript. Hoste
 
 | Date | Progress | What |
 |------|----------|-------|
+| 2026-04-14 | Rebrand to Saw Thura Zaw | Updated page title and hero section from "Thura Zaw" to "Saw Thura Zaw" across the site |
+| 2026-04-14 | Hero section polish | Updated intro text with links to YouTube channel and side projects; added continuous 5s font cycling with glitch animation on hero name; fixed colors for both light and dark modes |
+| 2026-04-14 | Post page typography overhaul | Tuned post content font sizes, line height (1.8), and color contrast — soft off-white (`#F2F2F2`) for dark mode body text; removed Georgia serif for cleaner system-font look |
+| 2026-04-14 | Mobile responsiveness pass | Fixed CSS grid overflow issues, reduced mobile font sizes globally, tightened padding and project spacing for a cleaner mobile layout |
+| 2026-04-14 | Writing section on homepage | Added a writing/blog section to the homepage; set 800px max-width on the writing page; bumped base font size to 130% across pages |
+| 2026-04-13 | New post | Published "How I Replaced Google With a Homelab" |
+| 2026-03-25 | Projects updated | Added Baremail and Conflict Map projects; removed older entries |
 | 2026-03-10 | Lightweight CMS | Built a local admin panel (`html/admin.html`) with GitHub API integration — manage projects, bookmarks, and posts directly from the browser without touching files. Projects and bookmarks migrated to JSON files; homepage now renders projects dynamically |
 | 2026-03-10 | Rebranded to Thura Zaw | Updated all project names and hero text from Liam Rolert to Thura Zaw across the site |
 | 2026-03-09 | Social link preview cards | Hover over social links to see a preview card — with motion blur transitions and dark mode support |
