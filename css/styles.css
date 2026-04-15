@@ -265,7 +265,7 @@ a {
 
 .content-section p.hero-intro,
 .hero-intro {
-    font-size: clamp(1.8rem, 6vw + 1.2rem, 4.2rem);
+    font-size: 25px;
     font-weight: 600;
     color: #000000;
     line-height: 1.3;
