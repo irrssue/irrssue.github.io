@@ -971,6 +971,7 @@ body.dark-mode .mobile-nav {
         margin-top: 60px;
     }
 
+    .content-section p.hero-intro,
     .hero-intro {
         font-size: clamp(1.5rem, 8.4vw + 0.6rem, 3rem);
         margin-bottom: 40px;
