@@ -103,6 +103,10 @@ body.dark-mode .hero-name {
     color: #ffffff;
 }
 
+body.dark-mode .hero-intro {
+    color: #ffffff;
+}
+
 body.dark-mode .content-section h1,
 body.dark-mode .content-section h2 {
     color: rgb(163, 163, 163);
