@@ -94,6 +94,7 @@
     line-height: 1.8;
     color: #000000;
     font-size: clamp(0.704rem, 1.2075vw + 0.4025rem, 0.805rem);
+    font-weight: 600;
     overflow-wrap: break-word;
     word-break: break-word;
 }
