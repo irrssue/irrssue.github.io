@@ -5,6 +5,8 @@
     var playing = false;
     var userWantsPlay = false;
     var shuffled = false;
+    var myPlaylist = [];
+    var myIndex = 0;
 
     function shuffle(arr) {
         var a = arr.slice();
@@ -39,6 +41,46 @@
         if (dot) dot.classList.toggle('np-dot--active', state);
     }
 
+    // Try to grab playlist IDs and build our shuffled queue.
+    // Returns true on success, false if getPlaylist() not ready yet.
+    function tryBuildPlaylist() {
+        var ids = player.getPlaylist();
+        if (!ids || !ids.length) return false;
+        shuffled = true;
+        myPlaylist = shuffle(ids);
+        myIndex = 0;
+        return true;
+    }
+
+    // Advance to the next track using our own queue so we never
+    // depend on getPlaylist() succeeding at playback time.
+    function playNext() {
+        if (!myPlaylist.length) return;
+        myIndex++;
+        if (myIndex >= myPlaylist.length) {
+            var last = myPlaylist[myPlaylist.length - 1];
+            myPlaylist = shuffle(myPlaylist);
+            // avoid repeating the last-played song at the start of the new loop
+            if (myPlaylist.length > 1 && myPlaylist[0] === last) {
+                var tmp = myPlaylist[0]; myPlaylist[0] = myPlaylist[1]; myPlaylist[1] = tmp;
+            }
+            myIndex = 0;
+        }
+        player.loadVideoById(myPlaylist[myIndex]);
+    }
+
+    // Poll until getPlaylist() is populated, then build our queue and re-cue.
+    function waitAndBuild(attempts) {
+        if (shuffled) return;
+        attempts = attempts || 0;
+        if (attempts > 20) return; // give up after ~10 s
+        if (tryBuildPlaylist()) {
+            player.cuePlaylist(myPlaylist, 0, 0);
+        } else {
+            setTimeout(function () { waitAndBuild(attempts + 1); }, 500);
+        }
+    }
+
     window.onYouTubeIframeAPIReady = function () {
         player = new YT.Player('yt-player', {
             height: '1',
@@ -54,18 +96,16 @@
             },
             events: {
                 onReady: function () {
-                    // Load the full playlist metadata; YT returns every video ID
-                    // via getPlaylist() once it's cued, so we can shuffle ourselves.
                     player.cuePlaylist({ list: PLAYLIST_ID, listType: 'playlist' });
                 },
                 onStateChange: function (e) {
-                    // First CUED event: playlist is loaded. Grab all IDs, shuffle,
-                    // re-cue as an explicit video-ID array so YT plays in our order.
                     if (e.data === YT.PlayerState.CUED && !shuffled) {
-                        var ids = player.getPlaylist();
-                        if (ids && ids.length) {
-                            shuffled = true;
-                            player.cuePlaylist(shuffle(ids), 0, 0);
+                        // getPlaylist() is sometimes null right after cuePlaylist fires CUED;
+                        // fall back to polling if so.
+                        if (tryBuildPlaylist()) {
+                            player.cuePlaylist(myPlaylist, 0, 0);
+                        } else {
+                            waitAndBuild();
                         }
                         updateDisplay();
                         return;
@@ -75,8 +115,6 @@
                         updateDisplay();
                         setPlaying(true);
                     } else if (e.data === YT.PlayerState.PAUSED) {
-                        // If YT paused us but the user still wants playback
-                        // (e.g. browser throttling a hidden iframe), resume.
                         if (userWantsPlay) {
                             setTimeout(function () {
                                 if (userWantsPlay && player && player.playVideo) {
@@ -87,29 +125,14 @@
                             setPlaying(false);
                         }
                     } else if (e.data === YT.PlayerState.ENDED) {
-                        // Advance within our shuffled queue. YT's built-in
-                        // auto-advance is unreliable for array-cued playlists,
-                        // so drive it explicitly. At the end, reshuffle + loop.
-                        var curr = player.getPlaylist();
-                        var idx  = player.getPlaylistIndex();
-                        if (!curr || !curr.length) return;
-                        if (idx < curr.length - 1) {
-                            player.playVideoAt(idx + 1);
-                        } else {
-                            var last = curr[curr.length - 1];
-                            var next = shuffle(curr);
-                            if (next.length > 1 && next[0] === last) {
-                                var tmp = next[0]; next[0] = next[1]; next[1] = tmp;
-                            }
-                            player.loadPlaylist(next, 0, 0);
-                        }
+                        playNext();
                     } else if (e.data === YT.PlayerState.CUED) {
                         updateDisplay();
                     }
                 },
                 onError: function () {
-                    // Skip unplayable/region-blocked tracks.
-                    if (player && player.nextVideo) player.nextVideo();
+                    // Skip unplayable / region-blocked tracks using our own queue.
+                    playNext();
                 }
             }
         });
@@ -125,7 +148,13 @@
                     player.pauseVideo();
                 } else {
                     userWantsPlay = true;
-                    player.playVideo();
+                    // If shuffle hasn't happened yet (getPlaylist was null earlier),
+                    // try once more before falling back to plain playVideo.
+                    if (!shuffled && tryBuildPlaylist()) {
+                        player.loadPlaylist(myPlaylist, 0, 0);
+                    } else {
+                        player.playVideo();
+                    }
                 }
             });
         }
