@@ -19,7 +19,7 @@
 }
 
 .blog-year {
-    font-size: clamp(0.54rem, 0.864vw + 0.288rem, 0.648rem);
+    font-size: clamp(0.648rem, 1.037vw + 0.346rem, 0.778rem);
     color: rgb(115, 115, 115);
     font-weight: 500;
     text-align: center;
@@ -27,11 +27,11 @@
 }
 
 .blog-title {
-    font-size: clamp(0.63rem, 1.08vw + 0.36rem, 0.72rem);
+    font-size: clamp(0.756rem, 1.296vw + 0.432rem, 0.864rem);
 }
 
 .blog-title a {
-    font-size: clamp(0.612rem, 1.008vw + 0.36rem, 0.698rem);
+    font-size: clamp(0.734rem, 1.21vw + 0.432rem, 0.838rem);
     color: #000000;
     text-decoration: none;
     font-weight: 500;
@@ -46,7 +46,7 @@
 }
 
 .blog-tag {
-    font-size: clamp(0.54rem, 0.864vw + 0.288rem, 0.648rem);
+    font-size: clamp(0.648rem, 1.037vw + 0.346rem, 0.778rem);
     color: rgb(115, 115, 115);
     text-align: right;
     font-weight: 500;
@@ -121,7 +121,7 @@ body.dark-mode .filter-container:hover {
     color: #fff;
     padding: 6px 12px;
     border-radius: 6px;
-    font-size: 0.612rem;
+    font-size: 0.734rem;
     white-space: nowrap;
     opacity: 0;
     pointer-events: none;
@@ -137,7 +137,7 @@ body.dark-mode .filter-tooltip {
 }
 
 .filter-tag-text {
-    font-size: clamp(0.63rem, 1.08vw + 0.36rem, 0.72rem);
+    font-size: clamp(0.756rem, 1.296vw + 0.432rem, 0.864rem);
     font-weight: 500;
     color: var(--main-text-color);
 }
@@ -171,7 +171,7 @@ body.dark-mode .filter-tag-text {
 
     .blog-year {
         text-align: left;
-        font-size: clamp(0.612rem, 1.44vw + 0.288rem, 0.72rem);
+        font-size: clamp(0.734rem, 1.728vw + 0.346rem, 0.864rem);
         font-weight: 600;
         margin-bottom: 4px;
         padding-left: 0;
@@ -193,7 +193,7 @@ body.dark-mode .filter-tag-text {
 
     .blog-title a {
         padding: 0;
-        font-size: clamp(0.648rem, 1.8vw + 0.36rem, 0.72rem);
+        font-size: clamp(0.778rem, 2.16vw + 0.432rem, 0.864rem);
     }
 
     .blog-tag {
