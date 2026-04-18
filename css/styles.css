@@ -241,12 +241,34 @@ a {
 }
 
 /* Hero Section */
+.hero-layout {
+    display: flex;
+    align-items: flex-start;
+    gap: 2rem;
+    margin-top: 120px;
+    margin-bottom: 0;
+}
+
+.hero-portrait {
+    width: 120px;
+    height: 120px;
+    border-radius: 12px;
+    object-fit: cover;
+    object-position: center top;
+    flex-shrink: 0;
+}
+
+.hero-text {
+    flex: 1;
+    min-width: 0;
+}
+
 .hero-name {
     font-size: clamp(1.68rem, 3.84vw + 0.96rem, 2.4rem);
     font-weight: 600;
     color: #000000;
     margin-bottom: 15px;
-    margin-top: 120px;
+    margin-top: 0;
     line-height: 1.2;
 }
 
@@ -965,10 +987,21 @@ body.dark-mode .mobile-nav {
     }
 
     /* Hero Section Mobile */
+    .hero-layout {
+        flex-direction: column;
+        gap: 1.25rem;
+        margin-top: 60px;
+    }
+
+    .hero-portrait {
+        width: 80px;
+        height: 80px;
+    }
+
     .hero-name {
         font-size: clamp(1.44rem, 5.76vw + 0.48rem, 1.92rem);
         margin-bottom: 15px;
-        margin-top: 60px;
+        margin-top: 0;
     }
 
     .content-section p.hero-intro,
