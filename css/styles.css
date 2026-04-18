@@ -1138,7 +1138,7 @@ body.dark-mode .mobile-nav {
 
     .np-controls {
         display: flex;
-        width: 100%;
+        width: 40%;
         padding: 6px 12px;
         gap: 8px;
     }
