@@ -87,10 +87,15 @@
                             setPlaying(false);
                         }
                     } else if (e.data === YT.PlayerState.ENDED) {
-                        // Last track finished — reshuffle the whole playlist
-                        // and keep playing so the loop never replays in order.
+                        // Advance within our shuffled queue. YT's built-in
+                        // auto-advance is unreliable for array-cued playlists,
+                        // so drive it explicitly. At the end, reshuffle + loop.
                         var curr = player.getPlaylist();
-                        if (curr && curr.length) {
+                        var idx  = player.getPlaylistIndex();
+                        if (!curr || !curr.length) return;
+                        if (idx < curr.length - 1) {
+                            player.playVideoAt(idx + 1);
+                        } else {
                             var last = curr[curr.length - 1];
                             var next = shuffle(curr);
                             if (next.length > 1 && next[0] === last) {
