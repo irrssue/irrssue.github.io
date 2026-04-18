@@ -33,12 +33,18 @@ md.renderer.rules.link_open = function(tokens, idx, options, env, self) {
     return defaultRender(tokens, idx, options, env, self);
 };
 
+function getPostFilename() {
+    const pathMatch = window.location.pathname.match(/^\/writing\/\d{4}\/([^\/]+)\/?$/);
+    if (pathMatch) {
+        return decodeURIComponent(pathMatch[1]) + '.md';
+    }
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get('name');
+}
+
 async function loadPost() {
     const container = document.getElementById('post-content');
-
-    // Get filename from URL parameter
-    const urlParams = new URLSearchParams(window.location.search);
-    const filename = urlParams.get('name');
+    const filename = getPostFilename();
 
     if (!filename) {
         showError('No post specified', 'Please return to the blog and select a post.');

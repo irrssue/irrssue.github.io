@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../main.css">
+    <link rel="stylesheet" href="/main.css">
     <style>
         .main-content { max-width: 45rem; }
         @media (max-width: 768px) {
@@ -29,20 +29,15 @@
     <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
     <script>
-        // Apply dark mode immediately to prevent flash
         (function() {
             const isMobile = window.innerWidth <= 768;
             let shouldUseDarkMode;
-
             if (isMobile) {
-                // On mobile, use system preference
                 shouldUseDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
             } else {
-                // On desktop, use localStorage
                 const savedTheme = localStorage.getItem('darkMode');
                 shouldUseDarkMode = savedTheme === 'true';
             }
-
             if (shouldUseDarkMode) {
                 document.documentElement.style.setProperty('--preload-dark-mode', '1');
             }
@@ -51,25 +46,19 @@
 </head>
 <body class="post-page">
     <script>
-        // Apply dark mode class as early as possible
         const isMobile = window.innerWidth <= 768;
         let shouldUseDarkMode;
-
         if (isMobile) {
-            // On mobile, use system preference
             shouldUseDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
         } else {
-            // On desktop, use localStorage
             const savedTheme = localStorage.getItem('darkMode');
             shouldUseDarkMode = savedTheme === 'true';
         }
-
         if (shouldUseDarkMode) {
             document.body.classList.add('dark-mode');
         }
     </script>
     <div class="grid-container">
-        <!-- Main Content Area -->
         <main class="main-content">
             <div class="post-container">
                 <a href="/writing" class="back-link">
@@ -78,7 +67,6 @@
                     </svg>
                     Back to writing
                 </a>
-
                 <div id="post-content">
                     <div class="loading">Loading post...</div>
                 </div>
@@ -86,7 +74,6 @@
         </main>
     </div>
 
-    <!-- Bottom Navigation -->
     <nav class="mobile-nav">
         <a href="/" class="mobile-nav-item">
             <svg class="mobile-nav-icon" viewBox="0 0 24 24" fill="currentColor">
@@ -118,7 +105,7 @@
         </button>
     </nav>
 
-    <script src="../javascript/script.js"></script>
-    <script src="../javascript/post.js"></script>
+    <script src="/javascript/script.js"></script>
+    <script src="/javascript/post.js"></script>
 </body>
 </html>
