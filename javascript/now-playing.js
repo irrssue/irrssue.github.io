@@ -17,10 +17,34 @@
         { title: "A Night To Remember",    artist: "Beabadoobee",     id: "vpX67n9zJVk" }
     ];
 
-    var current = Math.floor(Math.random() * playlist.length);
+    function shuffle(arr) {
+        var a = arr.slice();
+        for (var i = a.length - 1; i > 0; i--) {
+            var j = Math.floor(Math.random() * (i + 1));
+            var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+        }
+        return a;
+    }
+
+    var queue = shuffle(playlist);
+    var queueIndex = 0;
+    var current = playlist.indexOf(queue[queueIndex]);
     var player = null;
     var playing = false;
     var userWantsPlay = false;
+
+    function advance() {
+        queueIndex++;
+        if (queueIndex >= queue.length) {
+            // Reshuffle; avoid repeating the last-played track back-to-back
+            var last = queue[queue.length - 1];
+            do {
+                queue = shuffle(playlist);
+            } while (playlist.length > 1 && queue[0] === last);
+            queueIndex = 0;
+        }
+        current = playlist.indexOf(queue[queueIndex]);
+    }
 
     var PLAY_SVG  = '<polygon points="2,1 2,9 9,5" fill="currentColor"/>';
     var PAUSE_SVG = '<rect x="1.5" y="1" width="2.5" height="8" fill="currentColor"/>'
@@ -75,14 +99,13 @@
                             setPlaying(false);
                         }
                     } else if (e.data === YT.PlayerState.ENDED) {
-                        current = (current + 1) % playlist.length;
+                        advance();
                         updateDisplay();
                         player.loadVideoById(playlist[current].id);
                     }
                 },
                 onError: function () {
-                    // Skip to next track on error (unavailable video, etc.)
-                    current = (current + 1) % playlist.length;
+                    advance();
                     updateDisplay();
                     if (player && player.loadVideoById) {
                         player.loadVideoById(playlist[current].id);
