@@ -20,6 +20,7 @@
     var current = Math.floor(Math.random() * playlist.length);
     var player = null;
     var playing = false;
+    var userWantsPlay = false;
 
     var PLAY_SVG  = '<polygon points="2,1 2,9 9,5" fill="currentColor"/>';
     var PAUSE_SVG = '<rect x="1.5" y="1" width="2.5" height="8" fill="currentColor"/>'
@@ -62,10 +63,28 @@
                     if (e.data === YT.PlayerState.PLAYING) {
                         setPlaying(true);
                     } else if (e.data === YT.PlayerState.PAUSED) {
-                        setPlaying(false);
+                        // If YT paused us but the user still wants playback
+                        // (e.g. browser throttling a hidden iframe), resume.
+                        if (userWantsPlay) {
+                            setTimeout(function () {
+                                if (userWantsPlay && player && player.playVideo) {
+                                    player.playVideo();
+                                }
+                            }, 150);
+                        } else {
+                            setPlaying(false);
+                        }
                     } else if (e.data === YT.PlayerState.ENDED) {
                         current = (current + 1) % playlist.length;
                         updateDisplay();
+                        player.loadVideoById(playlist[current].id);
+                    }
+                },
+                onError: function () {
+                    // Skip to next track on error (unavailable video, etc.)
+                    current = (current + 1) % playlist.length;
+                    updateDisplay();
+                    if (player && player.loadVideoById) {
                         player.loadVideoById(playlist[current].id);
                     }
                 }
@@ -81,8 +100,10 @@
             btn.addEventListener('click', function () {
                 if (!player) return;
                 if (playing) {
+                    userWantsPlay = false;
                     player.pauseVideo();
                 } else {
+                    userWantsPlay = true;
                     player.playVideo();
                 }
             });
