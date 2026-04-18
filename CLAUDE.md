@@ -50,6 +50,7 @@ The front page should follow a minimal single-column layout inspired by https://
 - No build step for HTML/CSS/JS — files are served as-is
 - GitHub Actions runs for post processing only
 - Test locally with `python3 -m http.server` or Live Server before pushing
+- After every change, automatically commit and push to `main` without waiting to be asked. Write a clean, descriptive commit message.
 
 ## Important
 - Never commit .DS_Store files (already in .gitignore)
