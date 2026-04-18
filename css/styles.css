@@ -1130,14 +1130,33 @@ body.dark-mode .mobile-nav {
     }
 
     .now-playing {
-        align-items: flex-start;
+        align-items: stretch;
         width: auto;
+        flex: 1;
+        min-width: 0;
+    }
+
+    .np-controls {
+        display: flex;
+        width: 100%;
+        padding: 6px 12px;
+        gap: 8px;
+    }
+
+    .np-btn {
+        width: 22px;
+        height: 22px;
+    }
+
+    .np-btn svg {
+        width: 12px;
+        height: 12px;
     }
 
     .np-track {
         text-align: left;
         width: auto;
-        max-width: 160px;
+        max-width: 100%;
     }
 
     .hero-name {
