@@ -143,7 +143,7 @@ async function fetchRecentPost() {
     const BRANCH = 'main';
     const POSTS_DIR = 'posts';
 
-    const writingDescElement = document.querySelector('.project-link[href="html/writing.html"] .project-description');
+    const writingDescElement = document.querySelector('.project-link[href="/writing"] .project-description');
 
     // If we're not on the homepage or element doesn't exist, skip
     if (!writingDescElement) return;
