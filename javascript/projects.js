@@ -22,7 +22,6 @@
                 return '<li class="project-item reveal-item">' +
                     '<a href="' + esc(p.url) + '" class="project-link' + (p.external ? ' external' : '') + '"' + attrs + '>' +
                     '<span class="project-name">' + esc(p.name) + '</span>' +
-                    '<span class="project-separator">—</span>' +
                     '<span class="project-description">' + esc(p.description) + '</span>' +
                     (p.external ? EXTERNAL_ICON : '') +
                     '</a></li>';
