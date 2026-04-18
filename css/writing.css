@@ -14,10 +14,6 @@
     padding: 4px 0;
 }
 
-.blog-post.new-year {
-    padding-top: 25px;
-}
-
 .blog-year {
     font-size: clamp(0.648rem, 1.037vw + 0.346rem, 0.778rem);
     color: rgb(115, 115, 115);
@@ -163,10 +159,6 @@ body.dark-mode .filter-tag-text {
         gap: 2px;
         padding: 1px 0;
         margin-bottom: 2px;
-    }
-
-    .blog-post.new-year {
-        padding-top: 32px;
     }
 
     .blog-year {
