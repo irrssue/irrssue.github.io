@@ -1,21 +1,10 @@
 (function () {
-    var playlist = [
-        { title: "I'll Come Back For You", artist: "Malcolm Todd",    id: "uvVrLESLHu0" },
-        { title: "You Owe Me",             artist: "Malcolm Todd",    id: "CTZbs0GHoFg" },
-        { title: "Cico Buff",              artist: "Cocteau Twins",   id: "4x-ke1riAg0" },
-        { title: "Purpose Is Glorious",    artist: "Natalie Holt",    id: "Ud9UxjqdqhA" },
-        { title: "Last of a Dying Breed",  artist: "Joji",            id: "bU9kTNlGk0g" },
-        { title: "like i want you",        artist: "giveon",          id: "d4HmHqp1Mxg" },
-        { title: "if i ain't got you",     artist: "giveon",          id: "-9DDpOaMlbU" },
-        { title: "Thinkin Bout You",       artist: "Frank Ocean",     id: "6JHu3b-pbh8" },
-        { title: "Over & Over",            artist: "Adrian Milanio",  id: "64WTl2pxo3g" },
-        { title: "내 기타",                artist: "CHAEYOUNG",       id: "dtaXzli1aHQ" },
-        { title: "Earrings",               artist: "Malcolm Todd",    id: "BI9HQCzpDgQ" },
-        { title: "Sunday",                 artist: "54 Ultra",        id: "fZQFKkggETI" },
-        { title: "can i get a hi?",        artist: "Paw's Letter",    id: "OCSvRdgTSOQ" },
-        { title: "arne",                   artist: "haruka nakamura", id: "HXIAWmBYOGM" },
-        { title: "A Night To Remember",    artist: "Beabadoobee",     id: "vpX67n9zJVk" }
-    ];
+    var PLAYLIST_ID = 'PLacymMC6SebhlQ5lT26FS6b4nS5c5NIqR';
+
+    var player = null;
+    var playing = false;
+    var userWantsPlay = false;
+    var shuffled = false;
 
     function shuffle(arr) {
         var a = arr.slice();
@@ -26,36 +15,18 @@
         return a;
     }
 
-    var queue = shuffle(playlist);
-    var queueIndex = 0;
-    var current = playlist.indexOf(queue[queueIndex]);
-    var player = null;
-    var playing = false;
-    var userWantsPlay = false;
-
-    function advance() {
-        queueIndex++;
-        if (queueIndex >= queue.length) {
-            // Reshuffle; avoid repeating the last-played track back-to-back
-            var last = queue[queue.length - 1];
-            do {
-                queue = shuffle(playlist);
-            } while (playlist.length > 1 && queue[0] === last);
-            queueIndex = 0;
-        }
-        current = playlist.indexOf(queue[queueIndex]);
-    }
-
     var PLAY_SVG  = '<polygon points="2,1 2,9 9,5" fill="currentColor"/>';
     var PAUSE_SVG = '<rect x="1.5" y="1" width="2.5" height="8" fill="currentColor"/>'
                   + '<rect x="5.5" y="1" width="2.5" height="8" fill="currentColor"/>';
 
     function updateDisplay() {
-        var t = playlist[current];
+        if (!player || !player.getVideoData) return;
+        var data = player.getVideoData();
+        if (!data) return;
         var titleEl  = document.getElementById('npTitle');
         var artistEl = document.getElementById('npArtist');
-        if (titleEl)  titleEl.textContent  = t.title;
-        if (artistEl) artistEl.textContent = t.artist;
+        if (titleEl)  titleEl.textContent  = data.title  || '—';
+        if (artistEl) artistEl.textContent = data.author || '';
     }
 
     function setPlaying(state) {
@@ -72,7 +43,6 @@
         player = new YT.Player('yt-player', {
             height: '1',
             width:  '1',
-            videoId: playlist[current].id,
             playerVars: {
                 autoplay:        0,
                 controls:        0,
@@ -83,8 +53,26 @@
                 rel:             0
             },
             events: {
+                onReady: function () {
+                    // Load the full playlist metadata; YT returns every video ID
+                    // via getPlaylist() once it's cued, so we can shuffle ourselves.
+                    player.cuePlaylist({ list: PLAYLIST_ID, listType: 'playlist' });
+                },
                 onStateChange: function (e) {
+                    // First CUED event: playlist is loaded. Grab all IDs, shuffle,
+                    // re-cue as an explicit video-ID array so YT plays in our order.
+                    if (e.data === YT.PlayerState.CUED && !shuffled) {
+                        var ids = player.getPlaylist();
+                        if (ids && ids.length) {
+                            shuffled = true;
+                            player.cuePlaylist(shuffle(ids), 0, 0);
+                        }
+                        updateDisplay();
+                        return;
+                    }
+
                     if (e.data === YT.PlayerState.PLAYING) {
+                        updateDisplay();
                         setPlaying(true);
                     } else if (e.data === YT.PlayerState.PAUSED) {
                         // If YT paused us but the user still wants playback
@@ -99,25 +87,30 @@
                             setPlaying(false);
                         }
                     } else if (e.data === YT.PlayerState.ENDED) {
-                        advance();
+                        // Last track finished — reshuffle the whole playlist
+                        // and keep playing so the loop never replays in order.
+                        var curr = player.getPlaylist();
+                        if (curr && curr.length) {
+                            var last = curr[curr.length - 1];
+                            var next = shuffle(curr);
+                            if (next.length > 1 && next[0] === last) {
+                                var tmp = next[0]; next[0] = next[1]; next[1] = tmp;
+                            }
+                            player.loadPlaylist(next, 0, 0);
+                        }
+                    } else if (e.data === YT.PlayerState.CUED) {
                         updateDisplay();
-                        player.loadVideoById(playlist[current].id);
                     }
                 },
                 onError: function () {
-                    advance();
-                    updateDisplay();
-                    if (player && player.loadVideoById) {
-                        player.loadVideoById(playlist[current].id);
-                    }
+                    // Skip unplayable/region-blocked tracks.
+                    if (player && player.nextVideo) player.nextVideo();
                 }
             }
         });
     };
 
     document.addEventListener('DOMContentLoaded', function () {
-        updateDisplay();
-
         var btn = document.getElementById('npPlayBtn');
         if (btn) {
             btn.addEventListener('click', function () {
