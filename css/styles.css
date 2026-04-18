@@ -256,6 +256,7 @@ a {
     object-fit: cover;
     object-position: center top;
     flex-shrink: 0;
+    margin-top: 12px;
 }
 
 .hero-text {
