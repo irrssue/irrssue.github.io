@@ -150,7 +150,7 @@ function renderPost(frontMatter, markdownContent) {
                 <h1 class="post-title">${frontMatter.title || 'Untitled'}</h1>
                 <div class="post-meta">
                     <span class="post-date" data-full-date="${fullDate}">${relativeDate || ''}</span>
-                    <span class="post-tag">${tag ? `#${tag}` : ''}</span>
+                    <span class="post-tag">${tag ? `<a href="writing.html?tag=${encodeURIComponent(tag)}">#${tag}</a>` : ''}</span>
                 </div>
             </header>
             <div class="post-content">
