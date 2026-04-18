@@ -93,7 +93,8 @@
 .post-content {
     line-height: 1.8;
     color: #000000;
-    font-size: clamp(0.704rem, 1.2075vw + 0.4025rem, 0.805rem);
+    font-family: 'Roboto', sans-serif;
+    font-size: clamp(0.7744rem, 1.32825vw + 0.44275rem, 0.8855rem);
     font-weight: 600;
     overflow-wrap: break-word;
     word-break: break-word;
