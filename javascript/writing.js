@@ -60,12 +60,17 @@ async function fetchPosts() {
                         tag = tag.split(' ')[0]; // Take first word
                     }
 
+                    const dateObj = new Date(frontMatter.date || 0);
+                    const slug = file.name.replace(/\.md$/, '');
+                    const year = isNaN(dateObj) ? '' : dateObj.getFullYear();
+                    const url = year ? `/writing/${year}/${encodeURIComponent(slug)}` : `/writing?name=${encodeURIComponent(file.name)}`;
                     return {
                         filename: file.name,
                         title: frontMatter.title || 'Untitled',
                         date: frontMatter.date || '',
                         tag: tag || '',
-                        dateObj: new Date(frontMatter.date || 0)
+                        dateObj: dateObj,
+                        url: url
                     };
                 } catch (error) {
                     console.error(`Error parsing ${file.name}:`, error);
@@ -186,7 +191,7 @@ function renderPostRow(post, displayYear = null) {
     return `
         <div class="blog-post ${yearClass}">
             <div class="blog-year">${year}</div>
-            <div class="blog-title"><a href="post.html?name=${encodeURIComponent(post.filename)}">${post.title}</a></div>
+            <div class="blog-title"><a href="${post.url}">${post.title}</a></div>
         </div>
     `;
 }

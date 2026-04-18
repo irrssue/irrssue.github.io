@@ -41,7 +41,11 @@
                     .then(function (content) {
                         var fm = parseFrontMatter(content);
                         if (!fm) return null;
-                        return { title: fm.title, date: fm.date, filename: f.name, dateObj: new Date(fm.date || 0) };
+                        var d = new Date(fm.date || 0);
+                        var slug = f.name.replace(/\.md$/, '');
+                        var year = isNaN(d) ? '' : d.getFullYear();
+                        var url = year ? '/writing/' + year + '/' + encodeURIComponent(slug) : '/writing';
+                        return { title: fm.title, date: fm.date, filename: f.name, dateObj: d, url: url };
                     })
                     .catch(function () { return null; });
             }));
@@ -60,7 +64,7 @@
 
             list.innerHTML = valid.map(function (p) {
                 return '<li class="writing-post-item reveal-item">' +
-                    '<a href="html/post.html?name=' + encodeURIComponent(p.filename) + '" class="writing-post-link">' +
+                    '<a href="' + p.url + '" class="writing-post-link">' +
                     esc(p.title) +
                     '</a></li>';
             }).join('');

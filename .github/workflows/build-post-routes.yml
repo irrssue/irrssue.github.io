@@ -1,0 +1,28 @@
+name: Build post routes
+on:
+  push:
+    paths:
+      - 'posts/**'
+      - 'scripts/build_post_routes.py'
+      - 'scripts/post_template.html'
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Generate post route stubs
+        run: python3 scripts/build_post_routes.py
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@users.noreply.github.com"
+          git add writing/
+          if git diff --cached --quiet; then
+            echo "No changes"
+          else
+            git commit -m "auto: rebuild post route stubs"
+            git push
+          fi
