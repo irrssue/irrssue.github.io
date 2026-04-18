@@ -52,7 +52,22 @@
         <main class="main-content">
             <section class="content-section" id="home">
                 <div class="hero-layout">
-                    <img src="images/profile.jpg" alt="Thura Zaw" class="hero-portrait" width="120" height="120">
+                    <div class="hero-portrait-col">
+                        <img src="images/profile.jpg" alt="Thura Zaw" class="hero-portrait" width="120" height="120">
+                        <div class="now-playing">
+                            <div class="np-controls">
+                                <button class="np-btn" id="npPlayBtn" aria-label="Play">
+                                    <svg viewBox="0 0 10 10"><polygon points="2,1 2,9 9,5" fill="currentColor"/></svg>
+                                </button>
+                                <span class="np-dot"></span>
+                                <span class="np-label">now</span>
+                            </div>
+                            <div class="np-track">
+                                <b id="npTitle">—</b>
+                                <span id="npArtist"></span>
+                            </div>
+                        </div>
+                    </div>
                     <div class="hero-text">
                         <h1 class="hero-name" id="hero-name">Thura Zaw</h1>
                         <p class="hero-intro">
@@ -77,6 +92,7 @@
                         </div>
                     </div><!-- .hero-text -->
                 </div><!-- .hero-layout -->
+                <div id="yt-player" style="position:fixed;left:-9999px;width:1px;height:1px;opacity:0;pointer-events:none;" aria-hidden="true"></div>
             </section>
 
             <section class="writing-section">
@@ -149,6 +165,7 @@
         </button>
     </nav>
 
+    <script src="javascript/now-playing.js"></script>
     <script src="javascript/script.js"></script>
     <script src="javascript/projects.js"></script>
     <script src="javascript/home-writing.js"></script>

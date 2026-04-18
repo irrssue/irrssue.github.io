@@ -249,14 +249,135 @@ a {
     margin-bottom: 0;
 }
 
+.hero-portrait-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+    margin-top: 12px;
+}
+
 .hero-portrait {
     width: 120px;
     height: 120px;
     border-radius: 12px;
     object-fit: cover;
     object-position: center top;
+}
+
+/* Now Playing — Variant 3 */
+.now-playing {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    width: 120px;
+}
+
+.np-controls {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 9px 3px 3px;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.np-btn {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.08);
+    color: #444;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     flex-shrink: 0;
-    margin-top: 12px;
+    padding: 0;
+    transition: background 0.15s ease;
+}
+
+.np-btn:hover {
+    background: rgba(0, 0, 0, 0.15);
+}
+
+.np-btn svg {
+    width: 7px;
+    height: 7px;
+}
+
+@keyframes np-pulse {
+    0%, 100% { opacity: 1; box-shadow: 0 0 6px rgba(74, 222, 128, 0.5); }
+    50%       { opacity: 0.5; box-shadow: 0 0 3px rgba(74, 222, 128, 0.15); }
+}
+
+.np-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #4ade80;
+    flex-shrink: 0;
+    box-shadow: 0 0 6px rgba(74, 222, 128, 0.5);
+}
+
+.np-dot--active {
+    animation: np-pulse 2s ease-in-out infinite;
+}
+
+.np-label {
+    font-family: "JetBrains Mono", "SF Mono", "Fira Mono", monospace;
+    font-size: 9px;
+    color: #888;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+}
+
+.np-track {
+    font-size: 10.5px;
+    color: #777;
+    width: 120px;
+    text-align: center;
+    line-height: 1.35;
+}
+
+.np-track b {
+    color: #222;
+    display: block;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Dark mode */
+body.dark-mode .np-controls {
+    background: rgba(255, 255, 255, 0.07);
+    border-color: rgba(255, 255, 255, 0.12);
+}
+
+body.dark-mode .np-btn {
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+}
+
+body.dark-mode .np-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+body.dark-mode .np-label {
+    color: #737373;
+}
+
+body.dark-mode .np-track {
+    color: #a3a3a3;
+}
+
+body.dark-mode .np-track b {
+    color: #e5e5e5;
 }
 
 .hero-text {
@@ -997,6 +1118,25 @@ body.dark-mode .mobile-nav {
     .hero-portrait {
         width: 80px;
         height: 80px;
+    }
+
+    .hero-portrait-col {
+        flex-direction: row;
+        align-items: center;
+        gap: 16px;
+        margin-top: 0;
+        width: 100%;
+    }
+
+    .now-playing {
+        align-items: flex-start;
+        width: auto;
+    }
+
+    .np-track {
+        text-align: left;
+        width: auto;
+        max-width: 160px;
     }
 
     .hero-name {
