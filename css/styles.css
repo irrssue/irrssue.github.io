@@ -335,6 +335,24 @@ a {
     color: #888;
     letter-spacing: 0.8px;
     text-transform: uppercase;
+    background: none;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    cursor: default;
+    font-weight: inherit;
+}
+
+.np-label--active {
+    cursor: pointer;
+}
+
+.np-label--active:hover {
+    color: #222;
+}
+
+body.dark-mode .np-label--active:hover {
+    color: #fff;
 }
 
 .np-track {

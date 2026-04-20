@@ -50,11 +50,18 @@
     function setPlaying(state) {
         playing = state;
         var btn = document.getElementById('npPlayBtn');
-        if (!btn) return;
-        btn.querySelector('svg').innerHTML = state ? PAUSE_SVG : PLAY_SVG;
-        btn.setAttribute('aria-label', state ? 'Pause' : 'Play');
+        if (btn) {
+            btn.querySelector('svg').innerHTML = state ? PAUSE_SVG : PLAY_SVG;
+            btn.setAttribute('aria-label', state ? 'Pause' : 'Play');
+        }
         var dot = document.querySelector('.np-dot');
         if (dot) dot.classList.toggle('np-dot--active', state);
+        var label = document.getElementById('npLabelBtn');
+        if (label) {
+            label.textContent = state ? 'Skip' : 'Play';
+            label.setAttribute('aria-label', state ? 'Skip to next track' : 'Play');
+            label.classList.toggle('np-label--active', state);
+        }
     }
 
     function playNext() {
@@ -131,6 +138,14 @@
                     userWantsPlay = true;
                     player.playVideo();
                 }
+            });
+        }
+
+        var label = document.getElementById('npLabelBtn');
+        if (label) {
+            label.addEventListener('click', function () {
+                if (!player || !playing) return;
+                playNext();
             });
         }
 
