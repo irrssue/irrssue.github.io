@@ -1,10 +1,26 @@
 (function () {
-    var PLAYLIST_ID = 'PLacymMC6SebhlQ5lT26FS6b4nS5c5NIqR';
+    var VIDEO_IDS = [
+        'tGv7CUutzqU',
+        '6DcUnqZqTvI',
+        'WH_xXYYuBEc',
+        'uvVrLESLHu0',
+        '4x-ke1riAg0',
+        '5tpQaCAq6Qc',
+        'uFz30ro-vk4',
+        'Ro0vTEuSUuo',
+        'K1iwuJQ2E0E',
+        'EM1t8H_PE78',
+        '4acBBO7jDjA',
+        'IYFqc9gk4qI',
+        '6KJtcZ803W4',
+        'zoae8_0HG1Y',
+        'lAvWldoOmKs',
+        '4De_ERjvuUI'
+    ];
 
     var player = null;
     var playing = false;
     var userWantsPlay = false;
-    var shuffled = false;
     var myPlaylist = [];
     var myIndex = 0;
 
@@ -41,26 +57,12 @@
         if (dot) dot.classList.toggle('np-dot--active', state);
     }
 
-    // Try to grab playlist IDs and build our shuffled queue.
-    // Returns true on success, false if getPlaylist() not ready yet.
-    function tryBuildPlaylist() {
-        var ids = player.getPlaylist();
-        if (!ids || !ids.length) return false;
-        shuffled = true;
-        myPlaylist = shuffle(ids);
-        myIndex = 0;
-        return true;
-    }
-
-    // Advance to the next track using our own queue so we never
-    // depend on getPlaylist() succeeding at playback time.
     function playNext() {
         if (!myPlaylist.length) return;
         myIndex++;
         if (myIndex >= myPlaylist.length) {
             var last = myPlaylist[myPlaylist.length - 1];
             myPlaylist = shuffle(myPlaylist);
-            // avoid repeating the last-played song at the start of the new loop
             if (myPlaylist.length > 1 && myPlaylist[0] === last) {
                 var tmp = myPlaylist[0]; myPlaylist[0] = myPlaylist[1]; myPlaylist[1] = tmp;
             }
@@ -69,22 +71,14 @@
         player.loadVideoById(myPlaylist[myIndex]);
     }
 
-    // Poll until getPlaylist() is populated, then build our queue and re-cue.
-    function waitAndBuild(attempts) {
-        if (shuffled) return;
-        attempts = attempts || 0;
-        if (attempts > 20) return; // give up after ~10 s
-        if (tryBuildPlaylist()) {
-            player.cuePlaylist(myPlaylist, 0, 0);
-        } else {
-            setTimeout(function () { waitAndBuild(attempts + 1); }, 500);
-        }
-    }
-
     window.onYouTubeIframeAPIReady = function () {
+        myPlaylist = shuffle(VIDEO_IDS);
+        myIndex = 0;
+
         player = new YT.Player('yt-player', {
             height: '1',
             width:  '1',
+            videoId: myPlaylist[0],
             playerVars: {
                 autoplay:        0,
                 controls:        0,
@@ -96,21 +90,9 @@
             },
             events: {
                 onReady: function () {
-                    player.cuePlaylist({ list: PLAYLIST_ID, listType: 'playlist' });
+                    player.cueVideoById(myPlaylist[0]);
                 },
                 onStateChange: function (e) {
-                    if (e.data === YT.PlayerState.CUED && !shuffled) {
-                        // getPlaylist() is sometimes null right after cuePlaylist fires CUED;
-                        // fall back to polling if so.
-                        if (tryBuildPlaylist()) {
-                            player.cuePlaylist(myPlaylist, 0, 0);
-                        } else {
-                            waitAndBuild();
-                        }
-                        updateDisplay();
-                        return;
-                    }
-
                     if (e.data === YT.PlayerState.PLAYING) {
                         updateDisplay();
                         setPlaying(true);
@@ -131,7 +113,6 @@
                     }
                 },
                 onError: function () {
-                    // Skip unplayable / region-blocked tracks using our own queue.
                     playNext();
                 }
             }
@@ -148,13 +129,7 @@
                     player.pauseVideo();
                 } else {
                     userWantsPlay = true;
-                    // If shuffle hasn't happened yet (getPlaylist was null earlier),
-                    // try once more before falling back to plain playVideo.
-                    if (!shuffled && tryBuildPlaylist()) {
-                        player.loadPlaylist(myPlaylist, 0, 0);
-                    } else {
-                        player.playVideo();
-                    }
+                    player.playVideo();
                 }
             });
         }
