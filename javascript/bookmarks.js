@@ -207,10 +207,11 @@ function renderItem(b) {
     titleDiv.appendChild(link);
     body.appendChild(titleDiv);
 
-    if (b.description) {
+    const noteText = b.note || b.description;
+    if (noteText) {
         const desc = document.createElement('div');
         desc.className = 'bk-item-desc';
-        desc.textContent = b.description;
+        desc.textContent = noteText;
         body.appendChild(desc);
     }
 
