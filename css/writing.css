@@ -142,7 +142,7 @@
 
 .archive-row {
     display: grid;
-    grid-template-columns: 56px 1fr 110px 52px;
+    grid-template-columns: 56px 1fr 110px;
     gap: 16px;
     padding: 13px 0;
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
@@ -199,13 +199,6 @@
     opacity: 0.6;
 }
 
-.archive-read {
-    font-family: 'Courier New', Monaco, Menlo, Consolas, monospace;
-    font-size: 0.52rem;
-    color: rgb(140, 140, 140);
-    text-align: right;
-    padding-top: 3px;
-}
 
 /* ── Filter container ── */
 .filter-container {
@@ -326,8 +319,7 @@ body.dark-mode .filter-tag-text {
         gap: 10px;
     }
 
-    .archive-tag,
-    .archive-read {
+    .archive-tag {
         display: none;
     }
 

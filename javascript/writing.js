@@ -69,10 +69,6 @@ async function fetchPosts() {
                     const excerpt = frontMatter.summary ||
                         (rawExcerpt.length > 160 ? rawExcerpt.slice(0, 157) + '…' : rawExcerpt);
 
-                    // Read time (~200 wpm)
-                    const wordCount = body.split(/\s+/).filter(Boolean).length;
-                    const readTime = Math.max(1, Math.round(wordCount / 200));
-
                     const dateObj = new Date(frontMatter.date || 0);
                     const slug = file.name.replace(/\.md$/, '');
                     const year = isNaN(dateObj) ? '' : dateObj.getFullYear();
@@ -87,8 +83,7 @@ async function fetchPosts() {
                         tag: tag || '',
                         dateObj,
                         url,
-                        excerpt,
-                        readTime
+                        excerpt
                     };
                 } catch (error) {
                     console.error(`Error parsing ${file.name}:`, error);
@@ -179,8 +174,7 @@ function buildFeaturedPost(post) {
     const dateStr = post.dateObj && !isNaN(post.dateObj)
         ? `${MONTHS_UPPER[post.dateObj.getMonth()]} ${post.dateObj.getDate()}, ${post.dateObj.getFullYear()}`
         : '';
-    const readStr = `${post.readTime} MIN READ`;
-    const kickerParts = ['LATEST', dateStr, readStr].filter(Boolean).join(' · ');
+    const kickerParts = ['LATEST', dateStr].filter(Boolean).join(' · ');
 
     const wrap = document.createElement('div');
     wrap.className = 'featured-post';
@@ -269,12 +263,6 @@ function buildArchiveRow(post) {
         tagEl.addEventListener('click', makeTagHandler(post.tag));
     }
     row.appendChild(tagEl);
-
-    // Read time
-    const readEl = document.createElement('span');
-    readEl.className = 'archive-read';
-    readEl.textContent = `${post.readTime} min`;
-    row.appendChild(readEl);
 
     return row;
 }
