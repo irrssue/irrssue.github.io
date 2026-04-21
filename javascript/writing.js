@@ -217,9 +217,6 @@ function buildFeaturedPost(post) {
         tagEl.addEventListener('click', makeTagHandler(post.tag));
         foot.appendChild(tagEl);
     }
-    const readEl = document.createElement('span');
-    readEl.textContent = readStr.toLowerCase();
-    foot.appendChild(readEl);
     wrap.appendChild(foot);
 
     return wrap;
