@@ -299,26 +299,114 @@ body.dark-mode .filter-tag-text {
     color: #e5e5e5;
 }
 
-/* ── Mobile ── */
+/* ── Mobile — Design A: Editorial ── */
 @media (max-width: 768px) {
     .main-content {
-        padding: 0 16px;
+        padding: 0 20px;
     }
 
-    .featured-excerpt {
-        display: none;
+    /* Header */
+    .w-header {
+        margin-top: 26px;
+        margin-bottom: 22px;
+        padding-bottom: 18px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     }
 
-    .archive-row {
-        grid-template-columns: 48px 1fr;
+    .w-heading {
+        font-size: 2.75rem;
+        letter-spacing: -0.05em;
+        line-height: 0.95;
+    }
+
+    .w-counts {
+        margin-top: 14px;
         gap: 10px;
     }
 
+    /* Featured — restore excerpt */
+    .featured-post {
+        padding: 22px 0 26px;
+        border-bottom: none;
+        margin-bottom: 0;
+    }
+
+    .featured-title {
+        font-family: Georgia, 'Times New Roman', serif;
+        font-size: 2rem;
+        letter-spacing: -0.03em;
+    }
+
+    .featured-excerpt {
+        display: block;
+        font-family: Georgia, 'Times New Roman', serif;
+        font-style: italic;
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
+
+    /* Archive year — no dashed border */
+    .archive-year {
+        font-size: 0.62rem;
+        letter-spacing: 0.14em;
+        margin-top: 28px;
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: none;
+    }
+
+    /* Archive row — meta line (date | tag) then full-width title+excerpt */
+    .archive-row {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        grid-template-areas:
+            "date tag"
+            "block block";
+        gap: 5px 0;
+        padding: 14px 0;
+        border-bottom: none;
+        align-items: start;
+    }
+
+    .archive-date {
+        grid-area: date;
+        font-size: 0.6rem;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        padding-top: 0;
+    }
+
     .archive-tag {
-        display: none;
+        display: block;
+        grid-area: tag;
+        font-size: 0.6rem;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        padding-top: 0;
+    }
+
+    .archive-title-block {
+        grid-area: block;
+    }
+
+    .archive-title-block a {
+        font-family: Georgia, 'Times New Roman', serif;
+        font-size: 1.1rem;
+        line-height: 1.2;
     }
 
     .archive-excerpt {
-        display: none;
+        display: block;
+        font-family: Georgia, 'Times New Roman', serif;
+        font-style: italic;
+        font-size: 0.82rem;
+        line-height: 1.45;
+        margin-top: 5px;
+    }
+}
+
+@media (max-width: 768px) {
+    body.dark-mode .w-header {
+        border-bottom-color: rgba(255, 255, 255, 0.1);
     }
 }
