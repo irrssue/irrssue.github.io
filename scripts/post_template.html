@@ -36,7 +36,7 @@
                 shouldUseDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
             } else {
                 const savedTheme = localStorage.getItem('darkMode');
-                shouldUseDarkMode = savedTheme === 'true';
+                shouldUseDarkMode = savedTheme !== 'false';
             }
             if (shouldUseDarkMode) {
                 document.documentElement.style.setProperty('--preload-dark-mode', '1');
@@ -52,7 +52,7 @@
             shouldUseDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
         } else {
             const savedTheme = localStorage.getItem('darkMode');
-            shouldUseDarkMode = savedTheme === 'true';
+            shouldUseDarkMode = savedTheme !== 'false';
         }
         if (shouldUseDarkMode) {
             document.body.classList.add('dark-mode');
