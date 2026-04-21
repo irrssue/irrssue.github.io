@@ -3,74 +3,92 @@ const REPO_NAME = 'irrssue.github.io';
 const BRANCH = 'main';
 const POSTS_DIR = 'posts';
 
-let allPosts = []; // Store all posts for filtering
-let currentFilter = null; // Track current filter
+let allPosts = [];
+let currentFilter = null;
+
+const MONTHS_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const MONTHS_UPPER = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
 
 async function fetchPosts() {
     const container = document.getElementById('posts-container');
 
     try {
-        // Fetch list of files in posts directory
         const response = await fetch(
             `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${POSTS_DIR}?ref=${BRANCH}`
         );
 
-        if (!response.ok) {
-            throw new Error('Failed to fetch posts');
-        }
+        if (!response.ok) throw new Error('Failed to fetch posts');
 
         const files = await response.json();
-
-        // Filter only .md files and exclude _template.md
         const postFiles = files.filter(file =>
             file.name.endsWith('.md') && file.name !== '_template.md'
         );
 
         if (postFiles.length === 0) {
-            container.innerHTML = '<div class="no-posts">No posts yet. Check back soon!</div>';
+            container.textContent = '';
+            container.appendChild(Object.assign(document.createElement('div'), { className: 'no-posts', textContent: 'No posts yet. Check back soon!' }));
             return;
         }
 
-        // Fetch and parse each post
         const posts = await Promise.all(
             postFiles.map(async (file) => {
                 try {
                     const contentResponse = await fetch(file.download_url);
                     const content = await contentResponse.text();
 
-                    // Parse front matter
                     const frontMatterMatch = content.match(/^---\s*\n([\s\S]*?)\n---/);
                     if (!frontMatterMatch) return null;
 
                     const frontMatter = jsyaml.load(frontMatterMatch[1]);
-
-                    // Skip draft posts
                     if (frontMatter.draft === true) return null;
 
-                    // Get tag - support both 'tag' and 'tags' (legacy)
+                    // Tag — supports both 'tag' and legacy 'tags'
                     let tag = frontMatter.tag || '';
                     if (!tag && frontMatter.tags) {
-                        // Legacy support: if tags is array, take first element
                         tag = Array.isArray(frontMatter.tags) ? frontMatter.tags[0] : frontMatter.tags;
                     }
-
-                    // Validate tag - must be single word
                     if (tag && tag.includes(' ')) {
-                        console.warn(`Post ${file.name} has invalid tag: "${tag}" - must be a single word`);
-                        tag = tag.split(' ')[0]; // Take first word
+                        console.warn(`Post ${file.name} has invalid tag: "${tag}"`);
+                        tag = tag.split(' ')[0];
                     }
+
+                    // Excerpt: prefer frontmatter summary, else first prose paragraph
+                    const fmEnd = content.indexOf('---', 3);
+                    const body = fmEnd >= 0 ? content.slice(fmEnd + 3).trim() : '';
+                    let rawExcerpt = '';
+                    for (const line of body.split('\n')) {
+                        const t = line.trim();
+                        if (t && !t.startsWith('#') && !t.startsWith('!') &&
+                            !t.startsWith('```') && !t.startsWith('---') && !t.startsWith('>')) {
+                            rawExcerpt = t
+                                .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+                                .replace(/[*_`]/g, '');
+                            break;
+                        }
+                    }
+                    const excerpt = frontMatter.summary ||
+                        (rawExcerpt.length > 160 ? rawExcerpt.slice(0, 157) + '…' : rawExcerpt);
+
+                    // Read time (~200 wpm)
+                    const wordCount = body.split(/\s+/).filter(Boolean).length;
+                    const readTime = Math.max(1, Math.round(wordCount / 200));
 
                     const dateObj = new Date(frontMatter.date || 0);
                     const slug = file.name.replace(/\.md$/, '');
                     const year = isNaN(dateObj) ? '' : dateObj.getFullYear();
-                    const url = year ? `/writing/${year}/${encodeURIComponent(slug)}` : `/writing?name=${encodeURIComponent(file.name)}`;
+                    const url = year
+                        ? `/writing/${year}/${encodeURIComponent(slug)}`
+                        : `/writing?name=${encodeURIComponent(file.name)}`;
+
                     return {
                         filename: file.name,
                         title: frontMatter.title || 'Untitled',
                         date: frontMatter.date || '',
                         tag: tag || '',
-                        dateObj: dateObj,
-                        url: url
+                        dateObj,
+                        url,
+                        excerpt,
+                        readTime
                     };
                 } catch (error) {
                     console.error(`Error parsing ${file.name}:`, error);
@@ -79,17 +97,36 @@ async function fetchPosts() {
             })
         );
 
-        // Filter out null values and sort by date (newest first)
         allPosts = posts
             .filter(post => post !== null)
             .sort((a, b) => b.dateObj - a.dateObj);
 
         if (allPosts.length === 0) {
-            container.innerHTML = '<div class="no-posts">No published posts yet. Check back soon!</div>';
+            container.textContent = '';
+            container.appendChild(Object.assign(document.createElement('div'), { className: 'no-posts', textContent: 'No published posts yet. Check back soon!' }));
             return;
         }
 
-        // Check for tag filter in URL
+        // Populate writing meta (count, since date, updated date)
+        const metaEl = document.getElementById('writing-meta');
+        if (metaEl && allPosts.length > 0) {
+            const oldest = allPosts[allPosts.length - 1];
+            const newest = allPosts[0];
+            const count = allPosts.length;
+            const sinceStr = `${MONTHS_SHORT[oldest.dateObj.getMonth()]} ${oldest.dateObj.getFullYear()}`;
+            const updatedStr = `${MONTHS_SHORT[newest.dateObj.getMonth()]} ${newest.dateObj.getDate()}`;
+            metaEl.textContent = '';
+            [
+                `${count} ${count === 1 ? 'essay' : 'essays'}`,
+                `since ${sinceStr}`,
+                `updated ${updatedStr}`
+            ].forEach(text => {
+                const span = document.createElement('span');
+                span.textContent = text;
+                metaEl.appendChild(span);
+            });
+        }
+
         const urlParams = new URLSearchParams(window.location.search);
         const tagFilter = urlParams.get('tag');
         if (tagFilter) {
@@ -100,106 +137,193 @@ async function fetchPosts() {
 
     } catch (error) {
         console.error('Error fetching posts:', error);
-        container.innerHTML = '<div class="error">Failed to load posts. Please try again later.</div>';
+        const container = document.getElementById('posts-container');
+        container.textContent = '';
+        container.appendChild(Object.assign(document.createElement('div'), { className: 'error', textContent: 'Failed to load posts. Please try again later.' }));
     }
 }
 
 function renderPosts(posts) {
     const container = document.getElementById('posts-container');
+    container.textContent = '';
 
     if (posts.length === 0) {
-        container.innerHTML = '<div class="no-posts">No posts found with this tag.</div>';
+        container.appendChild(Object.assign(document.createElement('div'), { className: 'no-posts', textContent: 'No posts found with this tag.' }));
         return;
     }
 
-    // Track displayed years to show only once
-    let lastDisplayedYear = null;
+    const [featured, ...archivePosts] = posts;
+    container.appendChild(buildFeaturedPost(featured));
 
-    container.innerHTML = posts.map(post => {
-        const currentYear = post.date ? new Date(post.date).getFullYear() : '';
-        const shouldDisplayYear = currentYear && currentYear !== lastDisplayedYear;
+    if (archivePosts.length > 0) {
+        const archiveSection = document.createElement('div');
+        archiveSection.className = 'archive-section';
 
-        if (shouldDisplayYear) {
-            lastDisplayedYear = currentYear;
+        let lastYear = null;
+        for (const post of archivePosts) {
+            const year = post.dateObj.getFullYear();
+            if (year !== lastYear) {
+                const yearEl = document.createElement('div');
+                yearEl.className = 'archive-year';
+                yearEl.textContent = String(year);
+                archiveSection.appendChild(yearEl);
+                lastYear = year;
+            }
+            archiveSection.appendChild(buildArchiveRow(post));
         }
 
-        return renderPostRow(post, shouldDisplayYear ? currentYear : '');
-    }).join('');
+        container.appendChild(archiveSection);
+    }
+}
 
-    // Add click handlers to tags
-    document.querySelectorAll('.blog-tag').forEach(tagElement => {
-        tagElement.style.cursor = 'pointer';
-        tagElement.addEventListener('click', function(e) {
-            e.preventDefault();
-            const tagText = this.textContent.replace('#', '').trim();
-            if (tagText) {
-                // Toggle filter: clear if clicking the same tag
-                if (currentFilter && currentFilter.toLowerCase() === tagText.toLowerCase()) {
-                    clearFilter();
-                } else {
-                    filterByTag(tagText);
-                }
-            }
-        });
-    });
+function buildFeaturedPost(post) {
+    const dateStr = post.dateObj && !isNaN(post.dateObj)
+        ? `${MONTHS_UPPER[post.dateObj.getMonth()]} ${post.dateObj.getDate()}, ${post.dateObj.getFullYear()}`
+        : '';
+    const readStr = `${post.readTime} MIN READ`;
+    const kickerParts = ['LATEST', dateStr, readStr].filter(Boolean).join(' · ');
+
+    const wrap = document.createElement('div');
+    wrap.className = 'featured-post';
+
+    // Kicker
+    const kicker = document.createElement('div');
+    kicker.className = 'featured-kicker';
+    const dot = document.createElement('span');
+    dot.className = 'kicker-dot';
+    dot.textContent = '●';
+    kicker.appendChild(dot);
+    kicker.appendChild(document.createTextNode(kickerParts));
+    wrap.appendChild(kicker);
+
+    // Title
+    const titleEl = document.createElement('h2');
+    titleEl.className = 'featured-title';
+    const titleLink = document.createElement('a');
+    titleLink.href = post.url;
+    titleLink.textContent = post.title;
+    titleEl.appendChild(titleLink);
+    wrap.appendChild(titleEl);
+
+    // Excerpt
+    if (post.excerpt) {
+        const excerptEl = document.createElement('p');
+        excerptEl.className = 'featured-excerpt';
+        excerptEl.textContent = post.excerpt;
+        wrap.appendChild(excerptEl);
+    }
+
+    // Footer
+    const foot = document.createElement('div');
+    foot.className = 'featured-foot';
+    if (post.tag) {
+        const tagEl = document.createElement('span');
+        tagEl.className = 'featured-tag';
+        tagEl.dataset.tag = post.tag;
+        tagEl.textContent = `#${post.tag}`;
+        tagEl.addEventListener('click', makeTagHandler(post.tag));
+        foot.appendChild(tagEl);
+    }
+    const readEl = document.createElement('span');
+    readEl.textContent = readStr.toLowerCase();
+    foot.appendChild(readEl);
+    wrap.appendChild(foot);
+
+    return wrap;
+}
+
+function buildArchiveRow(post) {
+    const dateStr = post.dateObj && !isNaN(post.dateObj)
+        ? `${MONTHS_SHORT[post.dateObj.getMonth()]} ${post.dateObj.getDate()}`
+        : '';
+
+    const row = document.createElement('div');
+    row.className = 'archive-row';
+
+    // Date
+    const dateEl = document.createElement('span');
+    dateEl.className = 'archive-date';
+    dateEl.textContent = dateStr;
+    row.appendChild(dateEl);
+
+    // Title + excerpt
+    const titleBlock = document.createElement('div');
+    titleBlock.className = 'archive-title-block';
+    const link = document.createElement('a');
+    link.href = post.url;
+    link.textContent = post.title;
+    titleBlock.appendChild(link);
+    if (post.excerpt) {
+        const excerptEl = document.createElement('div');
+        excerptEl.className = 'archive-excerpt';
+        excerptEl.textContent = post.excerpt;
+        titleBlock.appendChild(excerptEl);
+    }
+    row.appendChild(titleBlock);
+
+    // Tag
+    const tagEl = document.createElement('span');
+    tagEl.className = 'archive-tag';
+    if (post.tag) {
+        tagEl.dataset.tag = post.tag;
+        tagEl.textContent = `#${post.tag}`;
+        tagEl.addEventListener('click', makeTagHandler(post.tag));
+    }
+    row.appendChild(tagEl);
+
+    // Read time
+    const readEl = document.createElement('span');
+    readEl.className = 'archive-read';
+    readEl.textContent = `${post.readTime} min`;
+    row.appendChild(readEl);
+
+    return row;
+}
+
+function makeTagHandler(tag) {
+    return function(e) {
+        e.preventDefault();
+        if (currentFilter && currentFilter.toLowerCase() === tag.toLowerCase()) {
+            clearFilter();
+        } else {
+            filterByTag(tag);
+        }
+    };
 }
 
 function filterByTag(tag) {
     currentFilter = tag;
 
-    // Show filter UI
     const filterContainer = document.getElementById('filter-container');
     const filterTagText = document.getElementById('filter-tag');
     filterContainer.style.display = 'flex';
     filterTagText.textContent = '#' + tag;
 
-    // Filter posts
     const filteredPosts = allPosts.filter(post =>
         post.tag && post.tag.toLowerCase() === tag.toLowerCase()
     );
 
-    // Update URL without reload
     const url = new URL(window.location);
     url.searchParams.set('tag', tag);
     window.history.pushState({}, '', url);
 
-    // Render filtered posts
     renderPosts(filteredPosts);
 }
 
 function clearFilter() {
     currentFilter = null;
 
-    // Hide filter UI
     const filterContainer = document.getElementById('filter-container');
     filterContainer.style.display = 'none';
 
-    // Update URL without reload
     const url = new URL(window.location);
     url.searchParams.delete('tag');
     window.history.pushState({}, '', url);
 
-    // Render all posts
     renderPosts(allPosts);
 }
 
-function renderPostRow(post, displayYear = null) {
-    const year = displayYear !== null ? displayYear : '';
-    const tagDisplay = post.tag ? `#${post.tag}` : '';
-    const yearClass = year ? 'new-year' : '';
-
-    return `
-        <div class="blog-post ${yearClass}">
-            <div class="blog-year">${year}</div>
-            <div class="blog-title"><a href="${post.url}">${post.title}</a></div>
-        </div>
-    `;
-}
-
-// Load posts when page loads
 document.addEventListener('DOMContentLoaded', function() {
     fetchPosts();
-
-    // Add click handler to filter container to clear filter
     document.getElementById('filter-container').addEventListener('click', clearFilter);
 });
