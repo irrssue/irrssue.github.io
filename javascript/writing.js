@@ -107,18 +107,15 @@ async function fetchPosts() {
             return;
         }
 
-        // Populate writing counts (count, since date, updated date)
+        // Populate writing counts (count, since date)
         const countsEl = document.getElementById('writing-counts');
         if (countsEl && allPosts.length > 0) {
             const oldest = allPosts[allPosts.length - 1];
-            const newest = allPosts[0];
             const count = allPosts.length;
             const sinceStr = `${MONTHS_SHORT[oldest.dateObj.getMonth()]} ${oldest.dateObj.getFullYear()}`;
-            const updatedStr = `${MONTHS_SHORT[newest.dateObj.getMonth()]} ${newest.dateObj.getDate()}`;
             [
                 [String(count), ` ${count === 1 ? 'essay' : 'essays'}`],
-                ['since', ` ${sinceStr}`],
-                ['updated', ` ${updatedStr}`]
+                ['since', ` ${sinceStr}`]
             ].forEach(([bold, rest]) => {
                 const span = document.createElement('span');
                 const b = document.createElement('b');
