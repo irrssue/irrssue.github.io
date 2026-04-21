@@ -372,6 +372,13 @@ body.dark-mode .np-label--active:hover {
     text-overflow: ellipsis;
 }
 
+#npArtist {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 /* Dark mode */
 body.dark-mode .np-controls {
     background: rgba(255, 255, 255, 0.07);
