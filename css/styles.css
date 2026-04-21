@@ -1201,7 +1201,7 @@ body.dark-mode .mobile-nav {
 
 /* Writing Section (homepage) */
 .writing-section {
-    margin-top: 100px;
+    margin-top: 60px;
     margin-bottom: 60px;
 }
 
@@ -1280,7 +1280,7 @@ body.dark-mode .writing-post-link:hover {
 
 /* Projects Section */
 .projects-section {
-    margin-top: 100px;
+    margin-top: 60px;
     margin-bottom: 60px;
 }
 
