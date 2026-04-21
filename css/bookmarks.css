@@ -235,6 +235,14 @@ body.dark-mode .bk-item-tag:hover {
 
 /* ── Mobile ─────────────────────────────────────── */
 @media (max-width: 768px) {
+    .main-content {
+        padding: 0 20px;
+    }
+
+    .bookmarks-section {
+        margin-top: 26px;
+    }
+
     .bk-item {
         grid-template-columns: 1fr;
         gap: 3px;
