@@ -1248,12 +1248,12 @@ body.dark-mode .writing-heading-link {
 }
 
 .writing-post-link {
-    display: inline-block;
+    display: block;
     font-size: clamp(0.9rem, 1.5vw + 0.5rem, 1.05rem);
     font-weight: 500;
     color: rgba(26, 26, 26, 0.85);
     text-decoration: none;
-    padding: 5px 12px;
+    padding: 2px 12px;
     border-radius: 8px;
     margin-left: -12px;
     transition: background-color 0.2s ease;
