@@ -60,27 +60,36 @@
     function updateDisplay() {
         var song = myPlaylist[myIndex];
         if (!song) return;
-        var titleEl  = document.getElementById('npTitle');
-        var artistEl = document.getElementById('npArtist');
-        if (titleEl)  titleEl.textContent  = song.title;
-        if (artistEl) artistEl.textContent = song.artist;
+        ['npTitle', 'npTitlePersist'].forEach(function (id) {
+            var el = document.getElementById(id);
+            if (el) el.textContent = song.title;
+        });
+        ['npArtist', 'npArtistPersist'].forEach(function (id) {
+            var el = document.getElementById(id);
+            if (el) el.textContent = song.artist;
+        });
     }
 
     function setPlaying(state) {
         playing = state;
-        var btn = document.getElementById('npPlayBtn');
-        if (btn) {
-            setSvgIcon(btn, state);
-            btn.setAttribute('aria-label', state ? 'Pause' : 'Play');
-        }
-        var dot = document.querySelector('.np-dot');
-        if (dot) dot.classList.toggle('np-dot--active', state);
-        var label = document.getElementById('npLabelBtn');
-        if (label) {
-            label.textContent = state ? 'Skip' : 'Play';
-            label.setAttribute('aria-label', state ? 'Skip to next track' : 'Play');
-            label.classList.toggle('np-label--active', state);
-        }
+        ['npPlayBtn', 'npPlayBtnPersist'].forEach(function (id) {
+            var btn = document.getElementById(id);
+            if (btn) {
+                setSvgIcon(btn, state);
+                btn.setAttribute('aria-label', state ? 'Pause' : 'Play');
+            }
+        });
+        document.querySelectorAll('.np-dot').forEach(function (dot) {
+            dot.classList.toggle('np-dot--active', state);
+        });
+        ['npLabelBtn', 'npLabelBtnPersist'].forEach(function (id) {
+            var label = document.getElementById(id);
+            if (label) {
+                label.textContent = state ? 'Skip' : 'Play';
+                label.setAttribute('aria-label', state ? 'Skip to next track' : 'Play');
+                label.classList.toggle('np-label--active', state);
+            }
+        });
     }
 
     function playNext() {
@@ -144,29 +153,32 @@
         });
     };
 
+    function attachControls() {
+        ['npPlayBtn', 'npPlayBtnPersist'].forEach(function (id) {
+            var btn = document.getElementById(id);
+            if (btn && !btn._npBound) {
+                btn._npBound = true;
+                btn.addEventListener('click', function () {
+                    if (!player) return;
+                    if (playing) { userWantsPlay = false; player.pauseVideo(); }
+                    else { userWantsPlay = true; player.playVideo(); }
+                });
+            }
+        });
+        ['npLabelBtn', 'npLabelBtnPersist'].forEach(function (id) {
+            var label = document.getElementById(id);
+            if (label && !label._npBound) {
+                label._npBound = true;
+                label.addEventListener('click', function () {
+                    if (!player || !playing) return;
+                    playNext();
+                });
+            }
+        });
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
-        var btn = document.getElementById('npPlayBtn');
-        if (btn) {
-            btn.addEventListener('click', function () {
-                if (!player) return;
-                if (playing) {
-                    userWantsPlay = false;
-                    player.pauseVideo();
-                } else {
-                    userWantsPlay = true;
-                    player.playVideo();
-                }
-            });
-        }
-
-        var label = document.getElementById('npLabelBtn');
-        if (label) {
-            label.addEventListener('click', function () {
-                if (!player || !playing) return;
-                playNext();
-            });
-        }
-
+        attachControls();
         var tag = document.createElement('script');
         tag.src = 'https://www.youtube.com/iframe_api';
         document.head.appendChild(tag);

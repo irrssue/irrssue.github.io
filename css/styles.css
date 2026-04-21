@@ -1460,3 +1460,45 @@ body.dark-mode #link-preview {
         height: 14px;
     }
 }
+
+/* Persistent now-playing bar (shown on non-home pages via SPA nav) */
+.np-persistent {
+    display: none;
+    position: fixed;
+    bottom: calc(var(--mobile-nav-height, 56px) + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px 6px 10px;
+    border-radius: 999px;
+    background: var(--bg);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+    z-index: 200;
+    max-width: calc(100vw - 32px);
+    white-space: nowrap;
+}
+
+.np-persistent--visible {
+    display: flex;
+}
+
+body.dark-mode .np-persistent {
+    border-color: rgba(255, 255, 255, 0.12);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+}
+
+.np-persistent .np-track {
+    width: auto;
+    max-width: 160px;
+    text-align: left;
+}
+
+.np-persistent .np-track b,
+.np-persistent #npArtistPersist {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
+}

@@ -92,7 +92,6 @@
                         </div>
                     </div><!-- .hero-text -->
                 </div><!-- .hero-layout -->
-                <div id="yt-player" style="position:fixed;bottom:0;right:0;width:2px;height:2px;opacity:0.01;pointer-events:none;z-index:-1;" aria-hidden="true"></div>
             </section>
 
             <section class="writing-section">
@@ -165,6 +164,21 @@
         </button>
     </nav>
 
+    <div id="yt-player" style="position:fixed;bottom:0;right:0;width:2px;height:2px;opacity:0.01;pointer-events:none;z-index:-1;" aria-hidden="true"></div>
+
+    <!-- Persistent mini now-playing bar (shown on non-home pages) -->
+    <div id="np-persistent" class="np-persistent" aria-hidden="true">
+        <button class="np-btn" id="npPlayBtnPersist" aria-label="Play">
+            <svg viewBox="0 0 10 10"><polygon points="2,1 2,9 9,5" fill="currentColor"/></svg>
+        </button>
+        <span class="np-dot" id="npDotPersist"></span>
+        <div class="np-track">
+            <b id="npTitlePersist">—</b>
+            <span id="npArtistPersist"></span>
+        </div>
+        <button type="button" class="np-label" id="npLabelBtnPersist" aria-label="Play">Play</button>
+    </div>
+
     <script src="javascript/now-playing.js"></script>
     <script src="javascript/script.js"></script>
     <script src="javascript/projects.js"></script>
@@ -214,6 +228,7 @@
             });
         })();
     </script>
+    <script src="javascript/spa-nav.js"></script>
     <script>
         // Hero name font cycling — switches font every 5s with a fade transition
         (function() {

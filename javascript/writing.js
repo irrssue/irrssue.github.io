@@ -307,7 +307,14 @@ function clearFilter() {
     renderPosts(allPosts);
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+function initWriting() {
     fetchPosts();
-    document.getElementById('filter-container').addEventListener('click', clearFilter);
-});
+    var fc = document.getElementById('filter-container');
+    if (fc) fc.addEventListener('click', clearFilter);
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initWriting);
+} else {
+    initWriting();
+}

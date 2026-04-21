@@ -258,4 +258,8 @@ function clearFilter() {
     window.history.pushState({}, '', url);
 }
 
-document.addEventListener('DOMContentLoaded', fetchBookmarks);
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', fetchBookmarks);
+} else {
+    fetchBookmarks();
+}
