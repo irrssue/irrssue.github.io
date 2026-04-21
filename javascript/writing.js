@@ -107,23 +107,25 @@ async function fetchPosts() {
             return;
         }
 
-        // Populate writing meta (count, since date, updated date)
-        const metaEl = document.getElementById('writing-meta');
-        if (metaEl && allPosts.length > 0) {
+        // Populate writing counts (count, since date, updated date)
+        const countsEl = document.getElementById('writing-counts');
+        if (countsEl && allPosts.length > 0) {
             const oldest = allPosts[allPosts.length - 1];
             const newest = allPosts[0];
             const count = allPosts.length;
             const sinceStr = `${MONTHS_SHORT[oldest.dateObj.getMonth()]} ${oldest.dateObj.getFullYear()}`;
             const updatedStr = `${MONTHS_SHORT[newest.dateObj.getMonth()]} ${newest.dateObj.getDate()}`;
-            metaEl.textContent = '';
             [
-                `${count} ${count === 1 ? 'essay' : 'essays'}`,
-                `since ${sinceStr}`,
-                `updated ${updatedStr}`
-            ].forEach(text => {
+                [String(count), ` ${count === 1 ? 'essay' : 'essays'}`],
+                ['since', ` ${sinceStr}`],
+                ['updated', ` ${updatedStr}`]
+            ].forEach(([bold, rest]) => {
                 const span = document.createElement('span');
-                span.textContent = text;
-                metaEl.appendChild(span);
+                const b = document.createElement('b');
+                b.textContent = bold;
+                span.appendChild(b);
+                span.appendChild(document.createTextNode(rest));
+                countsEl.appendChild(span);
             });
         }
 
