@@ -1,21 +1,21 @@
 (function () {
-    var VIDEO_IDS = [
-        'tGv7CUutzqU',
-        '6DcUnqZqTvI',
-        'WH_xXYYuBEc',
-        'uvVrLESLHu0',
-        '4x-ke1riAg0',
-        '5tpQaCAq6Qc',
-        'uFz30ro-vk4',
-        'Ro0vTEuSUuo',
-        'K1iwuJQ2E0E',
-        'EM1t8H_PE78',
-        '4acBBO7jDjA',
-        'IYFqc9gk4qI',
-        '6KJtcZ803W4',
-        'zoae8_0HG1Y',
-        'lAvWldoOmKs',
-        '4De_ERjvuUI'
+    var SONGS = [
+        { id: 'tGv7CUutzqU', title: 'About You',                 artist: 'The 1975'              },
+        { id: '6DcUnqZqTvI', title: 'UNDERSTAND',                 artist: 'keshi'                 },
+        { id: 'WH_xXYYuBEc', title: 'One Last Time',              artist: 'Summer Salt'           },
+        { id: 'uvVrLESLHu0', title: "I'll Come Back For You",     artist: 'Malcolm Todd'          },
+        { id: '4x-ke1riAg0', title: 'Cico Buff',                  artist: 'Cocteau Twins'         },
+        { id: '5tpQaCAq6Qc', title: 'Loving Machine',             artist: 'TV Girl'               },
+        { id: 'uFz30ro-vk4', title: 'Mrs Magic',                  artist: 'Strawberry Guy'        },
+        { id: 'Ro0vTEuSUuo', title: 'Beanie',                     artist: 'Chezile'               },
+        { id: 'K1iwuJQ2E0E', title: 'hold me, never let go',      artist: 'Rocco'                 },
+        { id: 'EM1t8H_PE78', title: 'Scott Street',               artist: 'Phoebe Bridgers'       },
+        { id: '4acBBO7jDjA', title: 'Middle Of Nowhere',          artist: 'Vancouver Sleep Clinic' },
+        { id: 'IYFqc9gk4qI', title: 'Leave The Door Open',       artist: 'Bruno Mars'            },
+        { id: '6KJtcZ803W4', title: 'Dance, Baby!',               artist: 'boy pablo'             },
+        { id: 'zoae8_0HG1Y', title: 'Was It Something I Said',    artist: 'Mykey'                 },
+        { id: 'lAvWldoOmKs', title: 'Hold On Tight',              artist: 'Jesse Barrera'         },
+        { id: '4De_ERjvuUI', title: 'SLOW DANCING IN THE DARK',   artist: 'Joji'                  }
     ];
 
     var player = null;
@@ -33,25 +33,44 @@
         return a;
     }
 
-    var PLAY_SVG  = '<polygon points="2,1 2,9 9,5" fill="currentColor"/>';
-    var PAUSE_SVG = '<rect x="1.5" y="1" width="2.5" height="8" fill="currentColor"/>'
-                  + '<rect x="5.5" y="1" width="2.5" height="8" fill="currentColor"/>';
+    var SVG_NS = 'http://www.w3.org/2000/svg';
+
+    function setSvgIcon(btn, isPaused) {
+        var svg = btn.querySelector('svg');
+        while (svg.firstChild) svg.removeChild(svg.firstChild);
+        if (isPaused) {
+            var r1 = document.createElementNS(SVG_NS, 'rect');
+            r1.setAttribute('x', '1.5'); r1.setAttribute('y', '1');
+            r1.setAttribute('width', '2.5'); r1.setAttribute('height', '8');
+            r1.setAttribute('fill', 'currentColor');
+            var r2 = document.createElementNS(SVG_NS, 'rect');
+            r2.setAttribute('x', '5.5'); r2.setAttribute('y', '1');
+            r2.setAttribute('width', '2.5'); r2.setAttribute('height', '8');
+            r2.setAttribute('fill', 'currentColor');
+            svg.appendChild(r1);
+            svg.appendChild(r2);
+        } else {
+            var poly = document.createElementNS(SVG_NS, 'polygon');
+            poly.setAttribute('points', '2,1 2,9 9,5');
+            poly.setAttribute('fill', 'currentColor');
+            svg.appendChild(poly);
+        }
+    }
 
     function updateDisplay() {
-        if (!player || !player.getVideoData) return;
-        var data = player.getVideoData();
-        if (!data) return;
+        var song = myPlaylist[myIndex];
+        if (!song) return;
         var titleEl  = document.getElementById('npTitle');
         var artistEl = document.getElementById('npArtist');
-        if (titleEl)  titleEl.textContent  = data.title  || '—';
-        if (artistEl) artistEl.textContent = data.author || '';
+        if (titleEl)  titleEl.textContent  = song.title;
+        if (artistEl) artistEl.textContent = song.artist;
     }
 
     function setPlaying(state) {
         playing = state;
         var btn = document.getElementById('npPlayBtn');
         if (btn) {
-            btn.querySelector('svg').innerHTML = state ? PAUSE_SVG : PLAY_SVG;
+            setSvgIcon(btn, state);
             btn.setAttribute('aria-label', state ? 'Pause' : 'Play');
         }
         var dot = document.querySelector('.np-dot');
@@ -75,17 +94,19 @@
             }
             myIndex = 0;
         }
-        player.loadVideoById(myPlaylist[myIndex]);
+        updateDisplay();
+        player.loadVideoById(myPlaylist[myIndex].id);
     }
 
     window.onYouTubeIframeAPIReady = function () {
-        myPlaylist = shuffle(VIDEO_IDS);
+        myPlaylist = shuffle(SONGS);
         myIndex = 0;
+        updateDisplay();
 
         player = new YT.Player('yt-player', {
             height: '1',
             width:  '1',
-            videoId: myPlaylist[0],
+            videoId: myPlaylist[0].id,
             playerVars: {
                 autoplay:        0,
                 controls:        0,
@@ -97,11 +118,10 @@
             },
             events: {
                 onReady: function () {
-                    player.cueVideoById(myPlaylist[0]);
+                    player.cueVideoById(myPlaylist[0].id);
                 },
                 onStateChange: function (e) {
                     if (e.data === YT.PlayerState.PLAYING) {
-                        updateDisplay();
                         setPlaying(true);
                     } else if (e.data === YT.PlayerState.PAUSED) {
                         if (userWantsPlay) {
@@ -115,8 +135,6 @@
                         }
                     } else if (e.data === YT.PlayerState.ENDED) {
                         playNext();
-                    } else if (e.data === YT.PlayerState.CUED) {
-                        updateDisplay();
                     }
                 },
                 onError: function () {
