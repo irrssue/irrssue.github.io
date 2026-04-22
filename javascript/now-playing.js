@@ -114,7 +114,8 @@
                 fs:              0,
                 iv_load_policy:  3,
                 modestbranding:  1,
-                rel:             0
+                rel:             0,
+                playsinline:     1
             },
             events: {
                 onReady: function () {
