@@ -16,5 +16,11 @@
     "url": "https://github.com/irrssue/conflict-map.git",
     "description": "interactive conflict map",
     "external": true
+  },
+  {
+    "name": "Mood Receipt",
+    "url": "https://irrssue.com/mood-receipt/",
+    "description": "shareable what's up in receipt format",
+    "external": true
   }
 ]
