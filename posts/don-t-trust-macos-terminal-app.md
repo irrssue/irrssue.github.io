@@ -4,7 +4,7 @@ date: "Apr 28, 2026"
 tag: "MacOS"
 summary: ""
 cover: ""
-draft: true
+draft: false
 ---
 
 I lost an hour today to a bug that wasn't a bug. Or rather — it was a bug, just not the one I was looking for.
