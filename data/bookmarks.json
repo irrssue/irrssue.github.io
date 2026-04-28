@@ -1,5 +1,12 @@
 [
   {
+    "title": "High Performance Git",
+    "url": "https://gitperf.com/",
+    "tag": "",
+    "date": "2026-04-28",
+    "note": "Wow this is exactly the tutorial in depth I needed"
+  },
+  {
     "title": "Lessons from building multiplayer browsers",
     "url": "https://www.alejandro.pe/writing/sail-muddy-lessons",
     "tag": "",
