@@ -1224,6 +1224,10 @@
                 // Create new file
                 const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
                 const filename = 'posts/' + slug + '.md';
+                try {
+                    await ghGet(filename);
+                    return toast(`Post "${slug}.md" already exists. Use Edit instead.`, 'error');
+                } catch (_) { /* 404 = ok to create */ }
                 await ghPut(filename, content, null, `Add post: ${title}`);
                 toast('Post created: ' + filename, 'success');
             }
