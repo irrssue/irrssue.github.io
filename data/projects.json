@@ -22,5 +22,11 @@
     "url": "https://irrssue.com/mood-receipt/",
     "description": "shareable what's up in receipt format",
     "external": true
+  },
+  {
+    "name": "Minimal HackerNews",
+    "url": "https://news.irrssue.com",
+    "description": "Hackernews reimagined",
+    "external": true
   }
 ]
