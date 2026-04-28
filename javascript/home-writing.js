@@ -19,8 +19,10 @@
         // Minimal YAML parse: extract title, date, draft
         var block = match[1];
         var get = function (key) {
-            var m = block.match(new RegExp('^' + key + ':\\s*["\']?([^"\'\\n]+)["\']?', 'm'));
-            return m ? m[1].trim() : '';
+            var re = new RegExp('^' + key + ':\\s*(?:"((?:[^"\\\\]|\\\\.)*)"|\'((?:[^\'\\\\]|\\\\.)*)\'|([^\\n]+))', 'm');
+            var m = block.match(re);
+            if (!m) return '';
+            return (m[1] !== undefined ? m[1] : m[2] !== undefined ? m[2] : m[3]).trim();
         };
         if (get('draft') === 'true') return null;
         return { title: get('title'), date: get('date') };
