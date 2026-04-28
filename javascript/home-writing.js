@@ -3,7 +3,7 @@
     var REPO_NAME  = 'irrssue.github.io';
     var BRANCH     = 'main';
     var POSTS_DIR  = 'posts';
-    var MAX_POSTS  = 4;
+    var MAX_POSTS  = 3;
 
     function esc(str) {
         return String(str || '')
