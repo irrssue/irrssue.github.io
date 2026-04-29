@@ -28,5 +28,11 @@
     "url": "https://irrssue.com/mood-receipt/",
     "description": "shareable what's up in receipt format",
     "external": true
+  },
+  {
+    "name": "Homelab",
+    "url": "https://github.com/irrssue/homelab",
+    "description": "The start of my hobby into self hosting",
+    "external": true
   }
 ]
