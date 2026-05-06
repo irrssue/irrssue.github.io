@@ -1,7 +1,7 @@
 ---
 title: "4 hour of CI rabbit hole"
 date: "May 5, 2026"
-tag: "Web"
+tag: "MacOS"
 summary: ""
 cover: ""
 draft: false
