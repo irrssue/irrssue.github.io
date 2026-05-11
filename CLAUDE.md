@@ -50,7 +50,14 @@ The front page should follow a minimal single-column layout inspired by https://
 - No build step for HTML/CSS/JS — files are served as-is
 - GitHub Actions runs for post processing only
 - Test locally with `python3 -m http.server` or Live Server before pushing
-- After every change, automatically commit and push to `main` without waiting to be asked. Write a clean, descriptive commit message.
+
+## STRICT: Commit & Push After Every Change
+**This is mandatory and non-negotiable.** After every file change — no matter how small — you MUST:
+1. `git add` the changed files
+2. `git commit` with a clean, descriptive message
+3. `git push origin main`
+
+Never finish a task without committing and pushing. Do not wait to be asked. Do not batch changes across multiple tasks. Each task = its own commit = pushed immediately.
 
 ## Important
 - Never commit .DS_Store files (already in .gitignore)
