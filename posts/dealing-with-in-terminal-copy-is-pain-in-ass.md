@@ -1,5 +1,5 @@
 ---
-title: "Dealing with "In Terminal" copy is pain in ass"
+title: "Dealing with \"In Terminal\" copy is pain in ass"
 date: "May 5, 2026"
 tag: "MacOS"
 summary: ""
