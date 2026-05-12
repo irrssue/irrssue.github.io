@@ -15,7 +15,8 @@
         { id: '6KJtcZ803W4', title: 'Dance, Baby!',               artist: 'boy pablo'             },
         { id: 'zoae8_0HG1Y', title: 'Was It Something I Said',    artist: 'Mykey'                 },
         { id: 'lAvWldoOmKs', title: 'Hold On Tight',              artist: 'Jesse Barrera'         },
-        { id: '4De_ERjvuUI', title: 'SLOW DANCING IN THE DARK',   artist: 'Joji'                  }
+        { id: '4De_ERjvuUI', title: 'SLOW DANCING IN THE DARK',   artist: 'Joji'                  },
+        { id: 'NLphEFOyoqM', title: 'Let You Break My Heart Again', artist: 'Laufey'              }
     ];
 
     var player = null;
