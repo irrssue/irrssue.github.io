@@ -16,7 +16,8 @@
         { id: 'zoae8_0HG1Y', title: 'Was It Something I Said',    artist: 'Mykey'                 },
         { id: 'lAvWldoOmKs', title: 'Hold On Tight',              artist: 'Jesse Barrera'         },
         { id: '4De_ERjvuUI', title: 'SLOW DANCING IN THE DARK',   artist: 'Joji'                  },
-        { id: 'NLphEFOyoqM', title: 'Let You Break My Heart Again', artist: 'Laufey'              }
+        { id: 'NLphEFOyoqM', title: 'Let You Break My Heart Again', artist: 'Laufey'              },
+        { id: '0bZ_TK6Q4bs', title: 'summer nights',              artist: 'The Millennial Club'   }
     ];
 
     var player = null;
