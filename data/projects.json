@@ -34,5 +34,11 @@
     "url": "https://irrssue.com/mood-receipt/",
     "description": "shareable what's up in receipt format",
     "external": true
+  },
+  {
+    "name": "Thadar.com",
+    "url": "https://github.com/irrssue/thadar-com",
+    "description": "(Currently developing) A minimal Student management platform",
+    "external": true
   }
 ]
