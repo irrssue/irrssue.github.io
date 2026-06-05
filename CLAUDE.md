@@ -54,7 +54,7 @@ The front page should follow a minimal single-column layout inspired by https://
 ## STRICT: Commit & Push After Every Change
 **This is mandatory and non-negotiable.** After every file change — no matter how small — you MUST:
 1. `git add` the changed files
-2. `git commit` with a clean, descriptive message
+2. `git commit` with a readable, descriptive message — describe the change in plain English (what behaviour/layout/fix shipped), not the file touched
 3. `git push origin main`
 
 Never finish a task without committing and pushing. Do not wait to be asked. Do not batch changes across multiple tasks. Each task = its own commit = pushed immediately.
