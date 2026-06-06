@@ -19,7 +19,7 @@
   },
   {
     "name": "Baremail",
-    "url": "https://github.com/irrssue/baremail.git",
+    "url": "https://mail.irrssue.com/",
     "description": "the minimal version of gmail",
     "external": true
   },
