@@ -46,5 +46,11 @@
     "url": "https://irrssue.com/drawsomething/",
     "description": "Idk, just draw something, that it.",
     "external": true
+  },
+  {
+    "name": "How Git Works",
+    "url": "https://irrssue.com/howgitworks/",
+    "description": "like really how it works tho?",
+    "external": true
   }
 ]
