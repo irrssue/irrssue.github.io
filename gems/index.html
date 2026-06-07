@@ -261,9 +261,11 @@ function mediaEl(g){
     vid.controls = true;
     vid.preload = "metadata";
     vid.playsInline = true;
-    // Cloudinary auto-generates a poster: swap the video extension for .jpg.
-    const poster = g.src.replace(/\.(mp4|webm|mov|m4v)(\?.*)?$/i, ".jpg");
-    if(poster !== g.src) vid.poster = poster;
+    // Uploadcare poster: for a ucarecdn.com video URL, derive a first-frame JPG via the
+    // video-thumbnail transform. If the add-on isn't enabled the poster 404s and the
+    // browser falls back to showing frame 1 (preload=metadata), so this degrades cleanly.
+    const m = g.src.match(/^(https:\/\/ucarecdn\.com\/[0-9a-f-]+)\//i);
+    if(m) vid.poster = m[1] + "/-/video/-/thumbs~1/0/-/format/jpg/";
     frame.appendChild(vid);
   } else if(g.type === "video"){
     // Video gem with no src yet — keep the styled placeholder.
