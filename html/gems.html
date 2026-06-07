@@ -141,7 +141,9 @@
   .meta .mv{ font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.3px; color:#d7d0c5; }
 
   /* ---------- map ---------- */
-  .map{ position:relative; overflow:hidden; border:1px solid var(--line); background:#0d0c0a; }
+  .map{ position:relative; overflow:hidden; border:1px solid var(--line); background:#0d0c0a; display:block; }
+  a.map{ cursor:pointer; transition:border-color .2s ease, transform .2s ease; }
+  a.map:hover{ border-color:var(--accent); transform:translateY(-2px); }
   .map canvas{ position:absolute; inset:0; width:100%; height:100%; display:block; }
   .map .pin{
     position:absolute; left:50%; top:48%; width:11px; height:11px; transform:translate(-50%,-50%);
@@ -203,6 +205,11 @@
   .info-foot .mapwrap{ display:flex; flex-direction:column; gap:10px; align-items:center; }
   .info-foot .place{ font-family:'JetBrains Mono',monospace; font-size:9.5px; letter-spacing:1.5px; text-transform:uppercase; color:var(--dim); text-align:center; }
 
+  .empty-page{
+    font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:2px;
+    text-transform:uppercase; color:var(--faint);
+  }
+
   /* ---------- mobile ---------- */
   @media (max-width:768px){
     .gem{ padding:92px 8vw 72px; }
@@ -224,46 +231,14 @@
 
 <script>
 /* ----------------------------------------------------------
-   Gem data — add an entry here as you shoot.
-   type:   'photo' | 'video'
-   orient: 'landscape' | 'portrait' | 'square'
-   src:    path to the image (optional). When absent, a labelled
-           placeholder frame is shown instead.
+   Gems are managed from /html/admin.html and stored in
+   /data/gems.json. Each entry:
+     id, type ('photo'|'video'), orient ('landscape'|'portrait'|'square'),
+     src (image/video url or repo path), title, desc,
+     place, coords, maps (Google Maps link),
+     camera, lens, iso, aperture, shutter
 ---------------------------------------------------------- */
-const GEMS = [
-  {
-    id:"dune-light", type:"photo", orient:"landscape", src:"",
-    title:"First light, north ridge",
-    desc:"Twenty minutes before the wind picked up. The whole face went the colour of a struck match, then it was gone.",
-    place:"Erg Chebbi, Morocco", coords:"31.10° N, 4.01° W",
-    camera:"Fujifilm X-T5", lens:"XF 23mm f/1.4",
-    iso:"125", aperture:"f/8", shutter:"1/400"
-  },
-  {
-    id:"alley-rain", type:"photo", orient:"portrait", src:"",
-    title:"Wet neon, Golden Gai",
-    desc:"Six square metres of bar, a man who would not be photographed, and one perfect reflection in the gutter.",
-    place:"Shinjuku, Tokyo", coords:"35.69° N, 139.70° E",
-    camera:"Leica Q2", lens:"Summilux 28mm f/1.7",
-    iso:"1600", aperture:"f/1.7", shutter:"1/125"
-  },
-  {
-    id:"tide-pool", type:"video", orient:"landscape", src:"",
-    title:"The tide deciding",
-    desc:"Forty seconds of water making up its mind. I left the tripod and just watched after the first take.",
-    place:"Yaquina Head, Oregon", coords:"44.67° N, 124.07° W",
-    camera:"Sony a7 IV", lens:"FE 16–35mm f/2.8",
-    iso:"200", aperture:"f/11", shutter:"1/15"
-  },
-  {
-    id:"market-hands", type:"photo", orient:"square", src:"",
-    title:"Counting figs",
-    desc:"She let me take exactly one frame, then waved me off to buy something. Fair trade.",
-    place:"Marrakech medina", coords:"31.63° N, 7.99° W",
-    camera:"Ricoh GR III", lens:"18.3mm f/2.8",
-    iso:"400", aperture:"f/4", shutter:"1/250"
-  }
-];
+let GEMS = [];
 
 const ORIENT = {
   landscape:{ w:"min(60vw, 760px)", ar:"3 / 2" },
@@ -272,7 +247,6 @@ const ORIENT = {
 };
 
 const pad = n => String(n+1).padStart(2,"0");
-document.getElementById("tot").textContent = String(GEMS.length).padStart(2,"0");
 
 function mediaEl(g){
   const o = ORIENT[g.orient] || ORIENT.landscape;
@@ -305,10 +279,17 @@ function mediaEl(g){
 }
 
 function mapEl(g){
-  const m = document.createElement("div");
+  // A link when a Google Maps URL is present, otherwise a plain div.
+  const m = document.createElement(g.maps ? "a" : "div");
   m.className = "map reveal d3";
+  if(g.maps){
+    m.href = g.maps;
+    m.target = "_blank";
+    m.rel = "noreferrer";
+    m.setAttribute("aria-label", "Open " + (g.place || "location") + " in Google Maps");
+  }
   m.innerHTML = `<canvas></canvas><span class="pin"></span>
-    <div class="plabel"><div class="pl">${g.place}</div><div class="pc">${g.coords}</div></div>`;
+    <div class="plabel"><div class="pl">${g.place||""}</div><div class="pc">${g.coords||""}</div></div>`;
   return m;
 }
 
@@ -357,7 +338,6 @@ function buildGem(g, i){
 }
 
 const scroller = document.getElementById("scroller");
-GEMS.forEach((g,i)=> scroller.appendChild(buildGem(g,i)));
 
 /* ---- draw the dark static maps ---- */
 function drawMap(canvas, seed){
@@ -389,33 +369,53 @@ function paintMaps(){
     const c = m.querySelector("canvas"); if(c) drawMap(c, hash(GEMS[i%GEMS.length].id)+i*97);
   });
 }
-window.addEventListener("load", paintMaps);
 window.addEventListener("resize", ()=>{ clearTimeout(window.__rz); window.__rz=setTimeout(paintMaps,150); });
 
-/* ---- active gem tracking + counter ---- */
-const ratios = new Map();
-const allGems = [...document.querySelectorAll(".gem")];
-function applyActive(){
-  let best=allGems[0], bv=-1;
-  allGems.forEach(g=>{ const r=ratios.get(g)||0; if(r>bv){bv=r;best=g;} });
-  allGems.forEach(g=> g.toggleAttribute("data-active", g===best));
-  if(best) document.getElementById("cur").textContent = pad(+best.dataset.index);
-}
-const io = new IntersectionObserver((entries)=>{
-  entries.forEach(e=> ratios.set(e.target, e.intersectionRatio));
-  applyActive();
-},{threshold:[0,0.25,0.5,0.75,1]});
-allGems.forEach(s=> io.observe(s));
-applyActive();
+/* ---- render once gems are loaded ---- */
+function render(){
+  document.getElementById("tot").textContent = String(GEMS.length).padStart(2,"0");
 
-/* ---- keyboard nav ---- */
-const secs = [...document.querySelectorAll(".gem")];
-function goTo(n){ const t=secs[Math.max(0,Math.min(n,secs.length-1))]; if(t) scroller.scrollTo({top:t.offsetTop, behavior:"smooth"}); }
-addEventListener("keydown",(e)=>{
-  const i = secs.findIndex(s=>s.hasAttribute("data-active"));
-  if(e.key==="ArrowDown"||e.key==="PageDown"){ e.preventDefault(); goTo(i+1); }
-  if(e.key==="ArrowUp"||e.key==="PageUp"){ e.preventDefault(); goTo(i-1); }
-});
+  if(!GEMS.length){
+    scroller.innerHTML =
+      `<section class="gem"><div class="empty-page">No gems yet.</div></section>`;
+    document.getElementById("cur").textContent = "00";
+    return;
+  }
+
+  GEMS.forEach((g,i)=> scroller.appendChild(buildGem(g,i)));
+  paintMaps();
+
+  // active gem tracking + counter
+  const ratios = new Map();
+  const allGems = [...document.querySelectorAll(".gem")];
+  function applyActive(){
+    let best=allGems[0], bv=-1;
+    allGems.forEach(g=>{ const r=ratios.get(g)||0; if(r>bv){bv=r;best=g;} });
+    allGems.forEach(g=> g.toggleAttribute("data-active", g===best));
+    if(best) document.getElementById("cur").textContent = pad(+best.dataset.index);
+  }
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=> ratios.set(e.target, e.intersectionRatio));
+    applyActive();
+  },{threshold:[0,0.25,0.5,0.75,1]});
+  allGems.forEach(s=> io.observe(s));
+  applyActive();
+
+  // keyboard nav
+  const secs = allGems;
+  function goTo(n){ const t=secs[Math.max(0,Math.min(n,secs.length-1))]; if(t) scroller.scrollTo({top:t.offsetTop, behavior:"smooth"}); }
+  addEventListener("keydown",(e)=>{
+    const i = secs.findIndex(s=>s.hasAttribute("data-active"));
+    if(e.key==="ArrowDown"||e.key==="PageDown"){ e.preventDefault(); goTo(i+1); }
+    if(e.key==="ArrowUp"||e.key==="PageUp"){ e.preventDefault(); goTo(i-1); }
+  });
+}
+
+/* ---- load gems from the CMS data file ---- */
+fetch("../data/gems.json")
+  .then(r => r.ok ? r.json() : [])
+  .then(data => { GEMS = Array.isArray(data) ? data : []; render(); })
+  .catch(() => { GEMS = []; render(); });
 </script>
 </body>
 </html>
