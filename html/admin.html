@@ -499,10 +499,14 @@
             .admin-nav-item.active .admin-nav-icon { color: rgba(255,255,255,1); }
         }
     </style>
-    <!-- Cloudinary upload widget. SRI-pinned: if Cloudinary updates v2.0 in place the
-         browser will block this script (upload button stops working) — recompute the hash:
-         curl -fsSL https://widget.cloudinary.com/v2.0/global/all.js | openssl dgst -sha384 -binary | openssl base64 -A -->
-    <script src="https://widget.cloudinary.com/v2.0/global/all.js"
+    <!-- Cloudinary upload widget. MUST use the fully-versioned URL: the rolling
+         /v2.0/ and /global/ URLs return 302/301 redirects, and a browser refuses to
+         apply SRI across a redirect (it silently blocks the script, upload button dies).
+         The versioned URL below returns 200 with no redirect, so SRI works.
+         When bumping to a newer widget version, fetch the FINAL url with no redirect
+         and recompute the hash:
+         curl -fsS https://upload-widget.cloudinary.com/<version>/global/all.js | openssl dgst -sha384 -binary | openssl base64 -A -->
+    <script src="https://upload-widget.cloudinary.com/2.72.8/global/all.js"
             integrity="sha384-+jYldOn3s8OXfKhjnVmQct/hh331yv2JyxxIiE6SQGt/uoZd2AuiVA6XkUZ8x9hB"
             crossorigin="anonymous" async></script>
 </head>
