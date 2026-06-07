@@ -379,11 +379,6 @@
             flex-shrink: 0;
         }
         .drag-handle:active { cursor: grabbing; }
-
-        /* Uploadcare: hide the inline uploader trigger — we open the dialog from our own
-           button via initFlow(). The modal dialog itself is portalled to <body>, so this
-           only hides the inline drop area, not the upload UI. */
-        uc-file-uploader-regular { display: none; }
         .item-row.drag-over { border-color: var(--accent); background: var(--surface-2); }
         .item-row.dragging  { opacity: 0.35; }
 
@@ -504,20 +499,6 @@
             .admin-nav-item.active .admin-nav-icon { color: rgba(255,255,255,1); }
         }
     </style>
-    <!-- Uploadcare File Uploader (blocks). The public key is safe to embed — it only
-         authorises uploads, it is not a secret. Loaded as an ES module from the pinned
-         versioned CDN URL (no redirect, so SRI applies cleanly). To bump the version,
-         change the version in BOTH the JS import and the CSS href, and recompute the
-         JS hash:
-         curl -fsS https://cdn.jsdelivr.net/npm/@uploadcare/file-uploader@<ver>/web/uc-file-uploader-regular.min.css | ...
-         (CSS SRI is optional; the JS module is the one that matters.) -->
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/@uploadcare/file-uploader@v1/web/uc-file-uploader-regular.min.css">
-    <script type="module">
-        import * as UC from 'https://cdn.jsdelivr.net/npm/@uploadcare/file-uploader@v1/web/file-uploader.min.js';
-        UC.defineComponents(UC);
-        window.UC = UC;   // load-ready flag for openMediaUpload()
-    </script>
 </head>
 <body>
 
@@ -717,25 +698,9 @@
                             <option value="square">Square</option>
                         </select>
                     </div>
-                    <div class="form-group full">
+                    <div class="form-group">
                         <label for="gem-src">Media URL / path</label>
                         <input type="text" id="gem-src" placeholder="assets/dune.jpg or https://...">
-                        <button type="button" class="btn btn-ghost btn-sm" style="margin-top:6px" onclick="openMediaUpload()">⬆ Upload / drag-drop photo or video</button>
-                        <div id="gem-upload-status" style="margin-top:6px;font-size:0.85em;color:var(--text-muted)"></div>
-
-                        <!-- Uploadcare file uploader. Headless: the regular uploader UI lives in a
-                             dialog opened by openMediaUpload(); the ctx-provider fires the upload
-                             events we listen to. ctx-name ties the three elements together. -->
-                        <uc-config
-                            ctx-name="gem-uploader"
-                            pubkey="719851561b6f705f1958"
-                            multiple="false"
-                            img-only="false"
-                            source-list="local, url, camera, dropbox"
-                            use-cloud-image-editor="false">
-                        </uc-config>
-                        <uc-file-uploader-regular ctx-name="gem-uploader" class="uc-light"></uc-file-uploader-regular>
-                        <uc-upload-ctx-provider ctx-name="gem-uploader" id="gem-uc-ctx"></uc-upload-ctx-provider>
                     </div>
                     <div class="form-group full">
                         <label for="gem-desc">Description</label>
@@ -1315,61 +1280,6 @@
 
     function slugify(str) {
         return String(str || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-    }
-
-    // ── Uploadcare media upload ──────────────────────
-    // The <uc-upload-ctx-provider> emits lifecycle events. We open its dialog
-    // programmatically from the existing button, then read the finished file's
-    // CDN URL + MIME type on the "done" event and fill the gem form.
-    let _ucWired = false;
-
-    function ucCtx() { return document.getElementById('gem-uc-ctx'); }
-
-    function wireUploadcare() {
-        const ctx = ucCtx();
-        if (!ctx) return;
-
-        // Dispatched when the upload flow finishes successfully. e.detail is the
-        // OutputCollectionState; successEntries holds the finished OutputFileEntry items.
-        ctx.addEventListener('common-upload-success', (e) => {
-            const entries = (e.detail && e.detail.successEntries) || [];
-            const file = entries[0];
-            if (!file) return;
-
-            const url      = file.cdnUrl;                  // https://ucarecdn.com/<uuid>/
-            const mime     = file.mimeType || '';
-            const bytes    = file.size || 0;
-            const isVideo  = mime.startsWith('video/');
-
-            document.getElementById('gem-src').value = url;
-            document.getElementById('gem-type').value = isVideo ? 'video' : 'photo';
-            document.getElementById('gem-upload-status').textContent =
-                '✓ Uploaded ' + (isVideo ? 'video' : 'photo') + ' (' + Math.round(bytes / 1024) + ' KB)';
-
-            // Clear the uploader so the next gem starts clean.
-            const api = ctx.getAPI && ctx.getAPI();
-            if (api) { api.removeAllFiles(); api.doneFlow && api.doneFlow(); }
-        });
-
-        ctx.addEventListener('common-upload-failed', (e) => {
-            const err = e.detail && e.detail.error;
-            toast('Upload failed: ' + (err && err.message || 'unknown error'), 'error');
-        });
-
-        _ucWired = true;
-    }
-
-    function openMediaUpload() {
-        const ctx = ucCtx();
-        if (!ctx || !window.UC) {
-            return toast('Upload widget still loading — try again in a moment.', 'error');
-        }
-        if (!_ucWired) wireUploadcare();
-        const api = ctx.getAPI && ctx.getAPI();
-        if (!api) {
-            return toast('Upload widget still loading — try again in a moment.', 'error');
-        }
-        api.initFlow();   // opens the Uploadcare dialog
     }
 
     async function saveGem() {
