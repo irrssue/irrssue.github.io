@@ -177,6 +177,7 @@
         input[type="url"],
         input[type="date"],
         input[type="password"],
+        select,
         textarea {
             background: var(--surface-2);
             border: 1px solid var(--border);
@@ -190,7 +191,7 @@
             transition: border-color 0.15s;
         }
 
-        input:focus, textarea:focus { border-color: var(--accent); }
+        input:focus, select:focus, textarea:focus { border-color: var(--accent); }
 
         textarea {
             resize: vertical;
@@ -428,7 +429,7 @@
                     0 2px 6px rgba(0,0,0,0.3),
                     inset 0 0.5px 0 rgba(255,255,255,0.08);
                 z-index: 50;
-                grid-template-columns: repeat(3, 1fr);
+                grid-template-columns: repeat(4, 1fr);
                 gap: 6px;
                 align-items: center;
                 border: 0.5px solid rgba(255,255,255,0.08);
@@ -533,6 +534,7 @@
         <button class="tab-btn active" data-tab="projects" onclick="switchTab('projects', this)">Projects</button>
         <button class="tab-btn" data-tab="bookmarks" onclick="switchTab('bookmarks', this)">Bookmarks</button>
         <button class="tab-btn" data-tab="posts" onclick="switchTab('posts', this)">Posts</button>
+        <button class="tab-btn" data-tab="gems" onclick="switchTab('gems', this)">Gems</button>
     </nav>
 
     <!-- Main Panel -->
@@ -667,6 +669,90 @@
             </div>
         </div>
 
+        <!-- ── Gems ──────────────────────────────────── -->
+        <div id="tab-gems" class="tab-panel">
+            <div class="panel-header">
+                <h2 class="panel-title">Gems</h2>
+                <button class="btn btn-ghost btn-sm" onclick="loadGems()">↻ Refresh</button>
+            </div>
+
+            <div class="form-card">
+                <div class="form-card-title" id="gem-form-title">New Gem</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="gem-title">Title</label>
+                        <input type="text" id="gem-title" placeholder="First light, north ridge">
+                    </div>
+                    <div class="form-group">
+                        <label for="gem-type">Type</label>
+                        <select id="gem-type">
+                            <option value="photo">Photo</option>
+                            <option value="video">Video</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="gem-orient">Orientation</label>
+                        <select id="gem-orient">
+                            <option value="landscape">Landscape</option>
+                            <option value="portrait">Portrait</option>
+                            <option value="square">Square</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="gem-src">Media URL / path</label>
+                        <input type="text" id="gem-src" placeholder="assets/dune.jpg or https://...">
+                    </div>
+                    <div class="form-group full">
+                        <label for="gem-desc">Description</label>
+                        <input type="text" id="gem-desc" placeholder="A line or two about the shot">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="gem-place">Place</label>
+                        <input type="text" id="gem-place" placeholder="Erg Chebbi, Morocco">
+                    </div>
+                    <div class="form-group">
+                        <label for="gem-coords">Coordinates</label>
+                        <input type="text" id="gem-coords" placeholder="31.10° N, 4.01° W">
+                    </div>
+                    <div class="form-group full">
+                        <label for="gem-maps">Google Maps link</label>
+                        <input type="url" id="gem-maps" placeholder="https://maps.app.goo.gl/...">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="gem-camera">Camera</label>
+                        <input type="text" id="gem-camera" placeholder="Fujifilm X-T5">
+                    </div>
+                    <div class="form-group">
+                        <label for="gem-lens">Lens</label>
+                        <input type="text" id="gem-lens" placeholder="XF 23mm f/1.4">
+                    </div>
+                    <div class="form-group">
+                        <label for="gem-iso">ISO</label>
+                        <input type="text" id="gem-iso" placeholder="125">
+                    </div>
+                    <div class="form-group">
+                        <label for="gem-aperture">Aperture</label>
+                        <input type="text" id="gem-aperture" placeholder="f/8">
+                    </div>
+                    <div class="form-group">
+                        <label for="gem-shutter">Shutter</label>
+                        <input type="text" id="gem-shutter" placeholder="1/400">
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-primary" onclick="saveGem()">Save Gem</button>
+                    <button class="btn btn-ghost" id="gem-cancel" onclick="resetGemForm()" style="display:none">Cancel</button>
+                </div>
+            </div>
+
+            <div class="section-label">Current Gems</div>
+            <div id="gems-list" class="items-list">
+                <div class="loading-state">Loading...</div>
+            </div>
+        </div>
+
     </main>
 </div>
 
@@ -689,6 +775,11 @@
             <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
         </svg>
     </button>
+    <button class="admin-nav-item" id="btn-nav-gems" onclick="switchTab('gems', this)" aria-label="Gems">
+        <svg class="admin-nav-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2L2 8.5 12 22l10-13.5L12 2zm0 2.8L18.9 9 12 18.3 5.1 9 12 4.8z"/>
+        </svg>
+    </button>
 </nav>
 
 <script>
@@ -701,15 +792,18 @@
     // Tracked SHAs for JSON files (required by GitHub API for updates)
     let projectsSHA  = null;
     let bookmarksSHA = null;
+    let gemsSHA      = null;
 
     // In-memory data
     let projectsData  = [];
     let bookmarksData = [];
     let postsData     = [];
+    let gemsData      = [];
 
     // Edit state
     let editingProjectIdx  = -1;
     let editingBookmarkIdx = -1;
+    let editingGemIdx      = -1;
     let editingPost = null; // { filename, sha }
 
     // ── Init ─────────────────────────────────────────
@@ -777,6 +871,7 @@
         if (name === 'projects')  loadProjects();
         if (name === 'bookmarks') loadBookmarks();
         if (name === 'posts')     loadPosts();
+        if (name === 'gems')      loadGems();
     }
 
     // ── GitHub API helpers ────────────────────────────
@@ -890,6 +985,10 @@
             const [item] = postsData.splice(_dragIdx, 1);
             postsData.splice(i, 0, item);
             renderPosts();
+        } else if (type === 'gem') {
+            const [item] = gemsData.splice(_dragIdx, 1);
+            gemsData.splice(i, 0, item);
+            writeGems('Reorder gems');
         }
         _dragIdx = -1;
     }
@@ -1103,6 +1202,127 @@
         } catch (e) {
             toast('Error: ' + e.message, 'error');
             loadBookmarks();
+        }
+    }
+
+    // ─────────────────────────────────────────────────
+    // GEMS
+    // ─────────────────────────────────────────────────
+    const GEM_FIELDS = ['title','type','orient','src','desc','place','coords','maps','camera','lens','iso','aperture','shutter'];
+
+    async function loadGems() {
+        const list = document.getElementById('gems-list');
+        list.innerHTML = '<div class="loading-state">Loading...</div>';
+        try {
+            const data = await ghGet('data/gems.json');
+            gemsSHA  = data.sha;
+            gemsData = JSON.parse(b64decode(data.content));
+            renderGems();
+        } catch (e) {
+            list.innerHTML = '<div class="empty-state">Could not load — check your token.</div>';
+        }
+    }
+
+    function renderGems() {
+        const list = document.getElementById('gems-list');
+        if (!gemsData.length) {
+            list.innerHTML = '<div class="empty-state">No gems yet.</div>';
+            return;
+        }
+        list.innerHTML = gemsData.map((g, i) => `
+            <div class="item-row" draggable="true"
+                 ondragstart="onDragStart(event,${i},'gem')"
+                 ondragover="onDragOver(event)"
+                 ondragleave="onDragLeave(event)"
+                 ondrop="onDrop(event,${i},'gem')"
+                 ondragend="onDragEnd(event)">
+                <span class="drag-handle" title="Drag to reorder">⠿</span>
+                <div class="item-info">
+                    <div class="item-name">
+                        ${esc(g.title || '(untitled)')}
+                        <span class="tag-badge">${esc(g.type || 'photo')}</span>
+                    </div>
+                    <div class="item-meta">${esc(g.place || '')}${g.src ? ' · ' + esc(g.src) : ' · no media'}</div>
+                </div>
+                <div class="item-actions">
+                    <button class="btn btn-ghost btn-sm" onclick="editGem(${i})">Edit</button>
+                    <button class="btn btn-danger btn-sm" onclick="deleteGem(${i})">Delete</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function editGem(i) {
+        editingGemIdx = i;
+        const g = gemsData[i];
+        GEM_FIELDS.forEach(f => {
+            const el = document.getElementById('gem-' + f);
+            if (el) el.value = g[f] != null ? g[f] : '';
+        });
+        document.getElementById('gem-form-title').textContent = 'Edit Gem';
+        document.getElementById('gem-cancel').style.display = '';
+        document.getElementById('gem-title').focus();
+        document.querySelector('#tab-gems').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function resetGemForm() {
+        editingGemIdx = -1;
+        GEM_FIELDS.forEach(f => {
+            const el = document.getElementById('gem-' + f);
+            if (!el) return;
+            if (f === 'type')   el.value = 'photo';
+            else if (f === 'orient') el.value = 'landscape';
+            else el.value = '';
+        });
+        document.getElementById('gem-form-title').textContent = 'New Gem';
+        document.getElementById('gem-cancel').style.display = 'none';
+    }
+
+    function slugify(str) {
+        return String(str || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    }
+
+    async function saveGem() {
+        const gem = {};
+        GEM_FIELDS.forEach(f => { gem[f] = document.getElementById('gem-' + f).value.trim(); });
+
+        if (!gem.title) return toast('Title is required.', 'error');
+
+        // Stable id: keep existing on edit, otherwise derive from title.
+        if (editingGemIdx >= 0 && gemsData[editingGemIdx].id) {
+            gem.id = gemsData[editingGemIdx].id;
+        } else {
+            let base = slugify(gem.title) || 'gem';
+            let id = base, n = 2;
+            while (gemsData.some((x, idx) => x.id === id && idx !== editingGemIdx)) id = base + '-' + (n++);
+            gem.id = id;
+        }
+
+        if (editingGemIdx >= 0) {
+            gemsData[editingGemIdx] = gem;
+        } else {
+            gemsData.push(gem);
+        }
+
+        await writeGems(editingGemIdx >= 0 ? `Update gem: ${gem.title}` : `Add gem: ${gem.title}`);
+        resetGemForm();
+    }
+
+    async function deleteGem(i) {
+        if (!confirm(`Delete "${gemsData[i].title}"?`)) return;
+        gemsData.splice(i, 1);
+        await writeGems('Remove gem');
+    }
+
+    async function writeGems(message) {
+        try {
+            const result = await ghPut('data/gems.json', JSON.stringify(gemsData, null, 2), gemsSHA, message);
+            gemsSHA = result.content.sha;
+            renderGems();
+            toast(message, 'success');
+        } catch (e) {
+            toast('Error: ' + e.message, 'error');
+            loadGems(); // Re-sync to get fresh SHA
         }
     }
 
