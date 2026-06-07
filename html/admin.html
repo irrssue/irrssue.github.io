@@ -499,6 +499,12 @@
             .admin-nav-item.active .admin-nav-icon { color: rgba(255,255,255,1); }
         }
     </style>
+    <!-- Cloudinary upload widget. SRI-pinned: if Cloudinary updates v2.0 in place the
+         browser will block this script (upload button stops working) — recompute the hash:
+         curl -fsSL https://widget.cloudinary.com/v2.0/global/all.js | openssl dgst -sha384 -binary | openssl base64 -A -->
+    <script src="https://widget.cloudinary.com/v2.0/global/all.js"
+            integrity="sha384-+jYldOn3s8OXfKhjnVmQct/hh331yv2JyxxIiE6SQGt/uoZd2AuiVA6XkUZ8x9hB"
+            crossorigin="anonymous" async></script>
 </head>
 <body>
 
@@ -698,9 +704,11 @@
                             <option value="square">Square</option>
                         </select>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group full">
                         <label for="gem-src">Media URL / path</label>
                         <input type="text" id="gem-src" placeholder="assets/dune.jpg or https://...">
+                        <button type="button" class="btn btn-ghost btn-sm" style="margin-top:6px" onclick="openMediaUpload()">⬆ Upload / drag-drop photo or video</button>
+                        <div id="gem-upload-status" style="margin-top:6px;font-size:0.85em;color:var(--dim)"></div>
                     </div>
                     <div class="form-group full">
                         <label for="gem-desc">Description</label>
@@ -1280,6 +1288,42 @@
 
     function slugify(str) {
         return String(str || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    }
+
+    // ── Cloudinary media upload ──────────────────────
+    const CLOUDINARY_CLOUD  = 'dzcir3j2u';
+    const CLOUDINARY_PRESET = 'irrssue.com';
+    let cloudinaryWidget = null;
+
+    function openMediaUpload() {
+        if (typeof cloudinary === 'undefined') {
+            return toast('Upload widget still loading — try again in a moment.', 'error');
+        }
+        if (!cloudinaryWidget) {
+            cloudinaryWidget = cloudinary.createUploadWidget({
+                cloudName:    CLOUDINARY_CLOUD,
+                uploadPreset: CLOUDINARY_PRESET,
+                sources:      ['local', 'url', 'camera'],
+                multiple:     false,
+                resourceType: 'auto',          // photo or video
+                clientAllowedFormats: ['image', 'video'],
+            }, (error, result) => {
+                if (error) {
+                    toast('Upload failed: ' + (error.message || error.statusText || 'unknown'), 'error');
+                    return;
+                }
+                if (result && result.event === 'success') {
+                    const info = result.info;
+                    document.getElementById('gem-src').value = info.secure_url;
+                    // Auto-set type from what Cloudinary detected.
+                    if (info.resource_type === 'video') document.getElementById('gem-type').value = 'video';
+                    else if (info.resource_type === 'image') document.getElementById('gem-type').value = 'photo';
+                    document.getElementById('gem-upload-status').textContent =
+                        '✓ Uploaded ' + info.resource_type + ' (' + Math.round(info.bytes / 1024) + ' KB)';
+                }
+            });
+        }
+        cloudinaryWidget.open();
     }
 
     async function saveGem() {
