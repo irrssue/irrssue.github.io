@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gems — irrssue.com</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500&family=JetBrains+Mono:wght@400;500&family=EB+Garamond:ital,wght@0,400;1,400&display=swap">
+<style>
+  :root{
+    --bg:#0b0a09;
+    --bg2:#100e0c;
+    --fg:#f3efe8;
+    --dim:#8b847a;
+    --faint:#5c574e;
+    --line:rgba(243,239,232,0.11);
+    --line2:rgba(243,239,232,0.06);
+    --accent:oklch(0.74 0.125 58);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  html{background:var(--bg);}
+  body{
+    background:var(--bg);
+    color:var(--fg);
+    font-family:'JetBrains Mono',monospace;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+  }
+
+  /* ---------- scroll engine ---------- */
+  .scroller{
+    height:100dvh;
+    overflow-y:scroll;
+    scroll-snap-type:y mandatory;
+    scroll-behavior:smooth;
+    scrollbar-width:none;
+  }
+  .scroller::-webkit-scrollbar{display:none;}
+
+  .gem{
+    height:100dvh;
+    scroll-snap-align:start;
+    scroll-snap-stop:always;
+    display:grid;
+    place-items:center;
+    padding:104px 7vw 84px;
+    position:relative;
+  }
+
+  /* ---------- fixed chrome ---------- */
+  .topbar{
+    position:fixed; inset:0 0 auto 0; z-index:40;
+    display:grid; grid-template-columns:1fr auto 1fr; align-items:center;
+    padding:26px 7vw;
+    pointer-events:none;
+    background:linear-gradient(to bottom, var(--bg) 12%, rgba(11,10,9,0.6) 60%, transparent);
+  }
+  .topbar .mark{
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:3px;
+    text-transform:uppercase; color:var(--faint);
+  }
+  .topbar h1{
+    grid-column:2;
+    font-family:'Fraunces',serif; font-weight:400; font-size:23px;
+    letter-spacing:0.5px; margin:0; color:var(--fg);
+  }
+  .topbar .count{
+    grid-column:3; justify-self:end;
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:2px; color:var(--faint);
+  }
+  .topbar .count b{ color:var(--fg); font-weight:500; }
+
+  /* ---------- shared media frame ---------- */
+  .media{
+    position:relative;
+    border:1px solid var(--line);
+    background:var(--bg2);
+    overflow:hidden;
+    max-height:64dvh;
+    box-shadow:0 30px 80px -40px rgba(0,0,0,0.9);
+  }
+  .media img{ display:block; width:100%; height:100%; object-fit:cover; }
+  .media .empty{
+    position:absolute; inset:0; display:grid; place-items:center;
+    background:
+      repeating-linear-gradient(135deg, rgba(243,239,232,0.035) 0 2px, transparent 2px 11px),
+      var(--bg2);
+    font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:2px;
+    text-transform:uppercase; color:var(--faint); text-align:center; padding:12px;
+  }
+  .media .vid{
+    position:absolute; inset:0; display:grid; place-items:center;
+    background:
+      repeating-linear-gradient(135deg, rgba(243,239,232,0.035) 0 2px, transparent 2px 11px),
+      var(--bg2);
+  }
+  .media .vid .ph{
+    font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:2px;
+    text-transform:uppercase; color:var(--faint); position:absolute; top:16px; left:18px;
+  }
+  .playbtn{
+    width:74px; height:74px; border-radius:50%;
+    border:1px solid rgba(243,239,232,0.4); background:rgba(11,10,9,0.35);
+    backdrop-filter:blur(3px); display:grid; place-items:center; cursor:pointer;
+    transition:transform .25s ease, border-color .25s ease, background .25s ease;
+  }
+  .playbtn:hover{ transform:scale(1.06); border-color:var(--fg); background:rgba(11,10,9,0.55); }
+  .playbtn .tri{
+    width:0;height:0; border-style:solid;
+    border-width:11px 0 11px 18px; border-color:transparent transparent transparent var(--fg);
+    margin-left:4px;
+  }
+  .vbar{
+    position:absolute; left:0; right:0; bottom:0; height:42px;
+    display:flex; align-items:center; gap:12px; padding:0 16px;
+    background:linear-gradient(to top, rgba(0,0,0,0.6), transparent);
+    font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--dim); letter-spacing:1px;
+  }
+  .vbar .track{ flex:1; height:2px; background:rgba(243,239,232,0.2); position:relative; }
+  .vbar .track i{ position:absolute; left:0; top:0; bottom:0; width:22%; background:var(--accent); }
+
+  /* ---------- text bits ---------- */
+  .eyebrow{
+    display:flex; align-items:center; gap:12px;
+    font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:2.5px;
+    text-transform:uppercase; color:var(--faint);
+  }
+  .eyebrow .idx{ color:var(--accent); }
+  .eyebrow .type{ color:var(--dim); }
+  .title{
+    font-family:'Fraunces',serif; font-weight:400; letter-spacing:-0.5px;
+    color:var(--fg); margin:0; line-height:1.02;
+  }
+  .desc{
+    font-family:'EB Garamond',serif; font-style:italic; color:#cfc7ba;
+    line-height:1.5; margin:0;
+  }
+  .meta{ display:grid; gap:9px; }
+  .meta .mrow{ display:grid; grid-template-columns:64px 1fr; gap:14px; align-items:baseline; }
+  .meta .ml{ font-family:'JetBrains Mono',monospace; font-size:9.5px; letter-spacing:1.5px; text-transform:uppercase; color:var(--faint); }
+  .meta .mv{ font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.3px; color:#d7d0c5; }
+
+  /* ---------- map ---------- */
+  .map{ position:relative; overflow:hidden; border:1px solid var(--line); background:#0d0c0a; }
+  .map canvas{ position:absolute; inset:0; width:100%; height:100%; display:block; }
+  .map .pin{
+    position:absolute; left:50%; top:48%; width:11px; height:11px; transform:translate(-50%,-50%);
+    border-radius:50%; background:var(--accent); box-shadow:0 0 0 4px rgba(217,154,108,0.18);
+  }
+  .map .pin::after{
+    content:""; position:absolute; inset:-9px; border-radius:50%;
+    border:1px solid var(--accent); opacity:0.5; animation:ping 2.8s ease-out infinite;
+  }
+  @keyframes ping{ 0%{transform:scale(.5);opacity:.6;} 70%,100%{transform:scale(1.9);opacity:0;} }
+  .map .plabel{
+    position:absolute; left:0; right:0; bottom:0; padding:10px 12px;
+    background:linear-gradient(to top, rgba(7,6,5,0.92), transparent);
+    font-family:'JetBrains Mono',monospace;
+  }
+  .map .plabel .pl{ font-size:10.5px; letter-spacing:1.2px; text-transform:uppercase; color:var(--fg); }
+  .map .plabel .pc{ font-size:9px; letter-spacing:0.8px; color:var(--faint); margin-top:3px; }
+
+  /* ---------- scroll cue ---------- */
+  .cue{
+    position:absolute; left:50%; bottom:30px; transform:translateX(-50%);
+    display:flex; flex-direction:column; align-items:center; gap:8px;
+    color:var(--faint); pointer-events:none; transition:opacity .5s ease;
+  }
+  .cue .lbl{ font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:3px; text-transform:uppercase; }
+  .cue .arrow{ width:13px; height:13px; border-right:1.5px solid var(--dim); border-bottom:1.5px solid var(--dim); transform:rotate(45deg); animation:bob 2s ease-in-out infinite; }
+  @keyframes bob{ 0%,100%{transform:rotate(45deg) translate(0,0);opacity:.4;} 50%{transform:rotate(45deg) translate(3px,3px);opacity:1;} }
+  .gem:last-child .cue{ opacity:0; }
+
+  /* ---------- entrance ---------- */
+  .reveal{ opacity:0; transform:translateY(22px); transition:opacity .9s cubic-bezier(.16,1,.3,1), transform .9s cubic-bezier(.16,1,.3,1); }
+  .media.reveal{ transform:translateY(26px) scale(0.985); }
+  .gem[data-active] .reveal{ opacity:1; transform:none; }
+  .gem[data-active] .reveal.d1{ transition-delay:.06s; }
+  .gem[data-active] .reveal.d2{ transition-delay:.13s; }
+  .gem[data-active] .reveal.d3{ transition-delay:.2s; }
+  .gem[data-active] .reveal.d4{ transition-delay:.27s; }
+  @media (prefers-reduced-motion:reduce){
+    .scroller{scroll-behavior:auto;}
+    .reveal{opacity:1 !important;transform:none !important;transition:none;}
+    .map .pin::after{animation:none;}
+    .cue .arrow{animation:none;}
+  }
+
+  /* =====================================================
+     LAYOUT · SPLIT — photo left, info + SQUARE map right
+     (Direction A layout; square map borrowed from C)
+     ===================================================== */
+  .gem .stage{
+    display:grid; grid-template-columns:1.34fr 1fr; gap:6.5vw; align-items:center;
+    width:100%; max-width:1320px;
+  }
+  .info{ display:flex; flex-direction:column; gap:20px; max-width:440px; }
+  .title{ font-size:clamp(28px,3.2vw,44px); }
+  .desc{ font-size:17px; max-width:400px; }
+  .info-foot{ display:flex; gap:30px; align-items:flex-start; }
+  .map{ width:138px; height:138px; border-radius:10px; flex:none; }
+  .map .plabel{ display:none; }
+  .info-foot .mapwrap{ display:flex; flex-direction:column; gap:10px; align-items:center; }
+  .info-foot .place{ font-family:'JetBrains Mono',monospace; font-size:9.5px; letter-spacing:1.5px; text-transform:uppercase; color:var(--dim); text-align:center; }
+
+  /* ---------- mobile ---------- */
+  @media (max-width:768px){
+    .gem{ padding:92px 8vw 72px; }
+    .gem .stage{ grid-template-columns:1fr; gap:28px; max-width:520px; }
+    .info{ max-width:none; }
+    .desc{ max-width:none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <span class="mark">irrssue.com</span>
+  <h1>Gems</h1>
+  <span class="count"><b id="cur">01</b> / <span id="tot">04</span></span>
+</header>
+
+<main class="scroller" id="scroller"></main>
+
+<script>
+/* ----------------------------------------------------------
+   Gem data — add an entry here as you shoot.
+   type:   'photo' | 'video'
+   orient: 'landscape' | 'portrait' | 'square'
+   src:    path to the image (optional). When absent, a labelled
+           placeholder frame is shown instead.
+---------------------------------------------------------- */
+const GEMS = [
+  {
+    id:"dune-light", type:"photo", orient:"landscape", src:"",
+    title:"First light, north ridge",
+    desc:"Twenty minutes before the wind picked up. The whole face went the colour of a struck match, then it was gone.",
+    place:"Erg Chebbi, Morocco", coords:"31.10° N, 4.01° W",
+    camera:"Fujifilm X-T5", lens:"XF 23mm f/1.4",
+    iso:"125", aperture:"f/8", shutter:"1/400"
+  },
+  {
+    id:"alley-rain", type:"photo", orient:"portrait", src:"",
+    title:"Wet neon, Golden Gai",
+    desc:"Six square metres of bar, a man who would not be photographed, and one perfect reflection in the gutter.",
+    place:"Shinjuku, Tokyo", coords:"35.69° N, 139.70° E",
+    camera:"Leica Q2", lens:"Summilux 28mm f/1.7",
+    iso:"1600", aperture:"f/1.7", shutter:"1/125"
+  },
+  {
+    id:"tide-pool", type:"video", orient:"landscape", src:"",
+    title:"The tide deciding",
+    desc:"Forty seconds of water making up its mind. I left the tripod and just watched after the first take.",
+    place:"Yaquina Head, Oregon", coords:"44.67° N, 124.07° W",
+    camera:"Sony a7 IV", lens:"FE 16–35mm f/2.8",
+    iso:"200", aperture:"f/11", shutter:"1/15"
+  },
+  {
+    id:"market-hands", type:"photo", orient:"square", src:"",
+    title:"Counting figs",
+    desc:"She let me take exactly one frame, then waved me off to buy something. Fair trade.",
+    place:"Marrakech medina", coords:"31.63° N, 7.99° W",
+    camera:"Ricoh GR III", lens:"18.3mm f/2.8",
+    iso:"400", aperture:"f/4", shutter:"1/250"
+  }
+];
+
+const ORIENT = {
+  landscape:{ w:"min(60vw, 760px)", ar:"3 / 2" },
+  portrait :{ w:"min(34vw, 430px)", ar:"4 / 5" },
+  square   :{ w:"min(44vw, 560px)", ar:"1 / 1" }
+};
+
+const pad = n => String(n+1).padStart(2,"0");
+document.getElementById("tot").textContent = String(GEMS.length).padStart(2,"0");
+
+function mediaEl(g){
+  const o = ORIENT[g.orient] || ORIENT.landscape;
+  const frame = document.createElement("div");
+  frame.className = "media reveal d2";
+  frame.style.width = o.w;
+  frame.style.aspectRatio = o.ar;
+  if(g.type === "video"){
+    frame.innerHTML = `
+      <div class="vid">
+        <span class="ph">video · click to play</span>
+        <div class="playbtn" role="button" aria-label="Play"><span class="tri"></span></div>
+        <div class="vbar"><span>0:00</span><div class="track"><i></i></div><span>0:41</span></div>
+      </div>`;
+    const btn = frame.querySelector(".playbtn");
+    btn.addEventListener("click", ()=> btn.style.opacity = btn.style.opacity==="0"?"1":"0");
+  } else if(g.src){
+    const img = document.createElement("img");
+    img.src = g.src;
+    img.alt = g.title;
+    img.loading = "lazy";
+    frame.appendChild(img);
+  } else {
+    const empty = document.createElement("div");
+    empty.className = "empty";
+    empty.textContent = g.orient + " photo";
+    frame.appendChild(empty);
+  }
+  return frame;
+}
+
+function mapEl(g){
+  const m = document.createElement("div");
+  m.className = "map reveal d3";
+  m.innerHTML = `<canvas></canvas><span class="pin"></span>
+    <div class="plabel"><div class="pl">${g.place}</div><div class="pc">${g.coords}</div></div>`;
+  return m;
+}
+
+function metaEl(g){
+  const m = document.createElement("div");
+  m.className = "meta reveal d3";
+  m.innerHTML = `
+    <div class="mrow"><span class="ml">Camera</span><span class="mv">${g.camera}</span></div>
+    <div class="mrow"><span class="ml">Lens</span><span class="mv">${g.lens}</span></div>
+    <div class="mrow"><span class="ml">Exposure</span><span class="mv">ISO ${g.iso} · ${g.aperture} · ${g.shutter}s</span></div>`;
+  return m;
+}
+
+function infoBlock(g, i){
+  const info = document.createElement("div");
+  info.className = "info";
+  info.innerHTML =
+    `<div class="eyebrow reveal d1"><span class="idx">${pad(i)}</span><span class="type">${g.type}</span></div>
+     <h2 class="title reveal d1">${g.title}</h2>
+     <p class="desc reveal d2">${g.desc}</p>`;
+  info.appendChild(metaEl(g));
+  const foot = document.createElement("div");
+  foot.className = "info-foot reveal d3";
+  const wrap = document.createElement("div"); wrap.className = "mapwrap";
+  wrap.appendChild(mapEl(g));
+  wrap.insertAdjacentHTML("beforeend", `<span class="place">${g.place}</span>`);
+  foot.appendChild(wrap);
+  info.appendChild(foot);
+  return info;
+}
+
+function buildGem(g, i){
+  const sec = document.createElement("section");
+  sec.className = "gem";
+  sec.dataset.index = i;
+
+  const stage = document.createElement("div");
+  stage.className = "stage";
+  stage.appendChild(mediaEl(g));
+  stage.appendChild(infoBlock(g, i));
+
+  sec.appendChild(stage);
+  sec.insertAdjacentHTML("beforeend",
+    `<div class="cue"><span class="lbl">scroll</span><span class="arrow"></span></div>`);
+  return sec;
+}
+
+const scroller = document.getElementById("scroller");
+GEMS.forEach((g,i)=> scroller.appendChild(buildGem(g,i)));
+
+/* ---- draw the dark static maps ---- */
+function drawMap(canvas, seed){
+  const dpr = Math.min(window.devicePixelRatio||1, 2);
+  const r = canvas.getBoundingClientRect();
+  const W = canvas.width = Math.max(2, r.width*dpr);
+  const H = canvas.height = Math.max(2, r.height*dpr);
+  const ctx = canvas.getContext("2d");
+  ctx.scale(dpr,dpr); const w=r.width, h=r.height;
+  // seeded rng
+  let s = seed>>>0; const rnd = ()=> (s = (s*1664525+1013904223)>>>0)/4294967296;
+  ctx.fillStyle = "#0d0c0a"; ctx.fillRect(0,0,w,h);
+  // subtle blocks
+  ctx.fillStyle = "rgba(243,239,232,0.025)";
+  for(let k=0;k<7;k++){ const bx=rnd()*w, by=rnd()*h, bw=12+rnd()*40, bh=12+rnd()*40; ctx.fillRect(bx,by,bw,bh); }
+  // minor street grid (jittered)
+  ctx.lineWidth = 1; ctx.strokeStyle = "rgba(243,239,232,0.07)";
+  const gap = 22 + rnd()*10; const ox = rnd()*gap, oy = rnd()*gap;
+  for(let x=ox-gap; x<w+gap; x+=gap){ const j=(rnd()-0.5)*6; ctx.beginPath(); ctx.moveTo(x+j,0); ctx.lineTo(x-j,h); ctx.stroke(); }
+  for(let y=oy-gap; y<h+gap; y+=gap){ const j=(rnd()-0.5)*6; ctx.beginPath(); ctx.moveTo(0,y+j); ctx.lineTo(w,y-j); ctx.stroke(); }
+  // two main roads through the pin
+  ctx.lineWidth = 2; ctx.strokeStyle = "rgba(243,239,232,0.16)";
+  const cx=w/2, cy=h*0.48;
+  for(let k=0;k<2;k++){ const a=rnd()*Math.PI; ctx.beginPath(); ctx.moveTo(cx-Math.cos(a)*w, cy-Math.sin(a)*w); ctx.lineTo(cx+Math.cos(a)*w, cy+Math.sin(a)*w); ctx.stroke(); }
+}
+function hash(str){ let h=2166136261; for(let i=0;i<str.length;i++){ h^=str.charCodeAt(i); h=Math.imul(h,16777619);} return h>>>0; }
+function paintMaps(){
+  document.querySelectorAll(".map").forEach((m,i)=>{
+    const c = m.querySelector("canvas"); if(c) drawMap(c, hash(GEMS[i%GEMS.length].id)+i*97);
+  });
+}
+window.addEventListener("load", paintMaps);
+window.addEventListener("resize", ()=>{ clearTimeout(window.__rz); window.__rz=setTimeout(paintMaps,150); });
+
+/* ---- active gem tracking + counter ---- */
+const ratios = new Map();
+const allGems = [...document.querySelectorAll(".gem")];
+function applyActive(){
+  let best=allGems[0], bv=-1;
+  allGems.forEach(g=>{ const r=ratios.get(g)||0; if(r>bv){bv=r;best=g;} });
+  allGems.forEach(g=> g.toggleAttribute("data-active", g===best));
+  if(best) document.getElementById("cur").textContent = pad(+best.dataset.index);
+}
+const io = new IntersectionObserver((entries)=>{
+  entries.forEach(e=> ratios.set(e.target, e.intersectionRatio));
+  applyActive();
+},{threshold:[0,0.25,0.5,0.75,1]});
+allGems.forEach(s=> io.observe(s));
+applyActive();
+
+/* ---- keyboard nav ---- */
+const secs = [...document.querySelectorAll(".gem")];
+function goTo(n){ const t=secs[Math.max(0,Math.min(n,secs.length-1))]; if(t) scroller.scrollTo({top:t.offsetTop, behavior:"smooth"}); }
+addEventListener("keydown",(e)=>{
+  const i = secs.findIndex(s=>s.hasAttribute("data-active"));
+  if(e.key==="ArrowDown"||e.key==="PageDown"){ e.preventDefault(); goTo(i+1); }
+  if(e.key==="ArrowUp"||e.key==="PageUp"){ e.preventDefault(); goTo(i-1); }
+});
+</script>
+</body>
+</html>
