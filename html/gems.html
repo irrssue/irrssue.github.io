@@ -278,14 +278,21 @@ function mediaEl(g){
   return frame;
 }
 
+// Only http(s) links are allowed through — blocks javascript:/data: URIs.
+function safeUrl(raw){
+  try{ const u = new URL(raw, location.href); return (u.protocol==="http:"||u.protocol==="https:") ? u.href : null; }
+  catch(_){ return null; }
+}
+
 function mapEl(g){
-  // A link when a Google Maps URL is present, otherwise a plain div.
-  const m = document.createElement(g.maps ? "a" : "div");
+  // A link when a valid Google Maps URL is present, otherwise a plain div.
+  const maps = g.maps ? safeUrl(g.maps) : null;
+  const m = document.createElement(maps ? "a" : "div");
   m.className = "map reveal d3";
-  if(g.maps){
-    m.href = g.maps;
+  if(maps){
+    m.href = maps;
     m.target = "_blank";
-    m.rel = "noreferrer";
+    m.rel = "noopener noreferrer";
     m.setAttribute("aria-label", "Open " + (g.place || "location") + " in Google Maps");
   }
   m.innerHTML = `<canvas></canvas><span class="pin"></span>

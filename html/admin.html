@@ -1288,6 +1288,13 @@
 
         if (!gem.title) return toast('Title is required.', 'error');
 
+        // Only allow http(s) map links — blocks javascript:/data: URIs.
+        if (gem.maps) {
+            let ok = false;
+            try { const u = new URL(gem.maps); ok = (u.protocol === 'http:' || u.protocol === 'https:'); } catch (_) {}
+            if (!ok) return toast('Google Maps link must be a valid http(s) URL.', 'error');
+        }
+
         // Stable id: keep existing on edit, otherwise derive from title.
         if (editingGemIdx >= 0 && gemsData[editingGemIdx].id) {
             gem.id = gemsData[editingGemIdx].id;
