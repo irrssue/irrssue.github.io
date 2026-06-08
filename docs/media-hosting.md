@@ -7,10 +7,13 @@ internet over **Tailscale Funnel** with a real HTTPS cert. Only the URL is store
 
 ## The public URL
 ```
-https://homelab.tailc7db4b.ts.net/<filename>      # serves a media file
-https://homelab.tailc7db4b.ts.net/upload          # drag-drop upload page (token-gated)
+https://upload.irrssue.com/<filename>      # serves a media file
+https://upload.irrssue.com/upload          # drag-drop upload page (token-gated)
 ```
-GitHub Pages is HTTPS, so embedded media MUST be HTTPS too — Funnel provides that.
+GitHub Pages is HTTPS, so embedded media MUST be HTTPS too — Cloudflare provides that.
+
+`irrssue.com/html/upload.html` is a tiny static redirect on the main site that forwards
+to `upload.irrssue.com/upload`, kept as a memorable entry point.
 
 ## How to publish a new gem image/video
 1. Open the upload page above, enter the upload token (see "Secrets" below).
@@ -27,7 +30,16 @@ GitHub Pages is HTTPS, so embedded media MUST be HTTPS too — Funnel provides t
 
 ## Architecture
 - `media-server.py` is a small Python (stdlib only) HTTP server bound to `127.0.0.1:8088`.
-- Tailscale Funnel proxies public HTTPS `:443` → `localhost:8088`.
+- **Cloudflare Tunnel** (`cloudflared`, existing `homelab` tunnel, system service at
+  `/etc/cloudflared/config.yml`) serves `upload.irrssue.com` with a valid cert and proxies
+  it to `localhost:8088`. The ingress rule sits just above the `http_status:404` catch-all,
+  which MUST stay last. After editing that config: `sudo cloudflared tunnel ingress validate`
+  then `sudo systemctl restart cloudflared`. Edit it with a tool that preserves 2-space
+  indentation (a stray indent = `did not find expected key` and the tunnel won't start,
+  taking ALL subdomains down — restore from `~/.cloudflared/config.yml.bak-*` if that happens).
+- Tailscale Funnel ALSO still proxies `:443 → :8088` for `homelab.tailc7db4b.ts.net`. It is
+  now redundant with the Cloudflare path; either is fine, Cloudflare gives the clean domain.
+  To drop Funnel: `sudo tailscale funnel --https=443 off`.
 - It does three things:
   - **Serve** `/var/www/media/*` with CORS (`Access-Control-Allow-Origin: https://irrssue.github.io`),
     immutable caching, and **HTTP Range / 206** (required for `<video>` seeking + Safari playback).
