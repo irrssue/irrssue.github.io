@@ -1,0 +1,11 @@
+[Unit]
+Description=Static media server for public gallery (port 8088, behind Cloudflare Tunnel)
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/python3 %h/.local/bin/media-server.py
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=default.target
