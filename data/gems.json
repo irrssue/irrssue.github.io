@@ -30,5 +30,21 @@
     "aperture": "F/5",
     "shutter": "1/125",
     "id": "sunset-view-from-n-train"
+  },
+  {
+    "title": "View from my apartment",
+    "type": "photo",
+    "orient": "portrait",
+    "src": "https://upload.irrssue.com/IMG_2917.jpeg",
+    "desc": "This photo was taken back in Cupertino, in my first apartment, first time living alone in US.",
+    "place": "City Gate at Cupertino Apartments",
+    "coords": "",
+    "maps": "https://maps.app.goo.gl/nYFgxMLdcRFBeKow8?g_st=ic",
+    "camera": "Iphone 15 pro",
+    "lens": "Main Camera 35mm",
+    "iso": "64",
+    "aperture": "F/1.78",
+    "shutter": "1/181",
+    "id": "view-from-my-apartment"
   }
 ]
