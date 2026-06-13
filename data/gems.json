@@ -14,5 +14,21 @@
     "aperture": "F/11",
     "shutter": "1/50s",
     "id": "her"
+  },
+  {
+    "title": "Sunset view from N train",
+    "type": "photo",
+    "orient": "landscape",
+    "src": "https://upload.irrssue.com/DSC01597.jpeg",
+    "desc": "Saw this scene from N train window and captures it, suddenly \"About You by The 1975\" started playing.",
+    "place": "Manhattan Bridge",
+    "coords": "",
+    "maps": "https://www.google.com/maps/place/Manhattan+Bridge/@40.7052136,-73.9916213,16.21z/data=!4m6!3m5!1s0x89c25a2e3b75514b:0x7be54ad37a019fcf!8m2!3d40.7074959!4d-73.9907742!16zL20vMDIyMTdm?entry=ttu&g_ep=EgoyMDI2MDYxMC4wIKXMDSoASAFQAw%3D%3D",
+    "camera": "SONY ZV-E10",
+    "lens": "Kit Lens 16-50mm",
+    "iso": "100",
+    "aperture": "F/5",
+    "shutter": "1/125",
+    "id": "sunset-view-from-n-train"
   }
 ]
