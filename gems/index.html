@@ -34,6 +34,11 @@
     --accent:oklch(0.74 0.125 58);
   }
   *{box-sizing:border-box;}
+  /* hide scrollbars everywhere on this page */
+  html{scrollbar-width:none;-ms-overflow-style:none;}
+  html::-webkit-scrollbar{display:none;}
+  body{scrollbar-width:none;-ms-overflow-style:none;}
+  body::-webkit-scrollbar{display:none;}
   html,body{margin:0;padding:0;}
   html{background:var(--bg);}
   body{
