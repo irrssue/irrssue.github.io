@@ -240,13 +240,18 @@
 
     /* Photo/video: full-bleed (breaks out past the 10px padding) and shown true to
        size — natural aspect ratio, never cropped. */
+    /* Transparent frame + no shadow so portrait photos (which get letterboxed
+       by max-height) blend into the page instead of showing the lighter --bg2
+       bars and the box-shadow outline around the image. */
     .gem .media{
       grid-area:media;
       width:calc(100% + 20px) !important;
       margin:0 -10px;
       aspect-ratio:auto !important;
       max-height:none;
-      border-left:none; border-right:none; border-radius:0;
+      background:transparent;
+      box-shadow:none;
+      border:none; border-radius:0;
     }
     .gem .media img{ height:auto; max-height:60dvh; object-fit:contain; }
 
