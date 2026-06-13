@@ -211,7 +211,11 @@
 
   /* ---------- mobile ---------- */
   @media (max-width:768px){
-    .gem{ padding:70px 0 56px; }
+    /* Stretch (not center) so the single gem row is definite and the stage's
+       height:100% resolves — that's what lets minmax(0,1fr) actually cap the
+       photo. Bottom padding clears the floating nav so the specs + map row
+       below the photo stays visible. */
+    .gem{ padding:58px 0 84px; place-items:stretch; grid-template-rows:1fr; }
 
     /* The whole gem is one grid. .info uses display:contents so its children
        (title, eyebrow, desc, meta, map) become items of this grid alongside the
