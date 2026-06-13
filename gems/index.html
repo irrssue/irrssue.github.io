@@ -60,32 +60,9 @@
     scroll-snap-stop:always;
     display:grid;
     place-items:center;
-    padding:104px 7vw 84px;
+    padding:84px 7vw 84px;
     position:relative;
   }
-
-  /* ---------- fixed chrome ---------- */
-  .topbar{
-    position:fixed; inset:0 0 auto 0; z-index:40;
-    display:grid; grid-template-columns:1fr auto 1fr; align-items:center;
-    padding:26px 7vw;
-    pointer-events:none;
-    background:var(--bg);
-  }
-  .topbar .mark{
-    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:3px;
-    text-transform:uppercase; color:var(--faint);
-  }
-  .topbar h1{
-    grid-column:2;
-    font-family:'Fraunces',serif; font-weight:400; font-size:23px;
-    letter-spacing:0.5px; margin:0; color:var(--fg);
-  }
-  .topbar .count{
-    grid-column:3; justify-self:end;
-    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:2px; color:var(--faint);
-  }
-  .topbar .count b{ color:var(--fg); font-weight:500; }
 
   /* ---------- shared media frame ---------- */
   .media{
@@ -270,12 +247,6 @@
   })();
 </script>
 
-<header class="topbar">
-  <span class="mark">irrssue.com</span>
-  <h1>Gems</h1>
-  <span class="count"><b id="cur">01</b> / <span id="tot">04</span></span>
-</header>
-
 <main class="scroller" id="scroller"></main>
 
 <script>
@@ -436,12 +407,9 @@ window.addEventListener("resize", ()=>{ clearTimeout(window.__rz); window.__rz=s
 
 /* ---- render once gems are loaded ---- */
 function render(){
-  document.getElementById("tot").textContent = String(GEMS.length).padStart(2,"0");
-
   if(!GEMS.length){
     scroller.innerHTML =
       `<section class="gem"><div class="empty-page">No gems yet.</div></section>`;
-    document.getElementById("cur").textContent = "00";
     return;
   }
 
@@ -455,7 +423,6 @@ function render(){
     let best=allGems[0], bv=-1;
     allGems.forEach(g=>{ const r=ratios.get(g)||0; if(r>bv){bv=r;best=g;} });
     allGems.forEach(g=> g.toggleAttribute("data-active", g===best));
-    if(best) document.getElementById("cur").textContent = pad(+best.dataset.index);
   }
   const io = new IntersectionObserver((entries)=>{
     entries.forEach(e=> ratios.set(e.target, e.intersectionRatio));
