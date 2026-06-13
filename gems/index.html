@@ -211,29 +211,48 @@
 
   /* ---------- mobile ---------- */
   @media (max-width:768px){
-    .gem{ padding:84px 0 64px; }
-    .gem .stage{ grid-template-columns:1fr; gap:22px; max-width:none; width:100%; }
-    /* Media goes full-bleed: span the whole viewport width, drop the inline vw width. */
-    .gem .media{ width:100% !important; max-height:52dvh; border-left:none; border-right:none; border-radius:0; }
+    .gem{ padding:70px 0 56px; }
 
-    /* Info becomes a 2-column grid so specs + minimap sit side by side and everything
-       fits under the photo without extra scrolling. */
-    .info{
-      max-width:none; padding:0 7vw;
-      display:grid; align-items:start;
+    /* The whole gem is one grid. .info uses display:contents so its children
+       (title, eyebrow, desc, meta, map) become items of this grid alongside the
+       media — that lets the title + number counter sit ABOVE the photo.
+         row 1: title (left)  |  number counter (right)
+         row 2: photo/video (full-bleed, edge to edge)
+         row 3: description (full width)
+         row 4: specs (left)  |  minimap (right)
+       Everything except the media gets 10px side padding via the grid container. */
+    .gem .stage{
       grid-template-columns:1fr auto;
-      column-gap:6vw; row-gap:16px;
+      column-gap:14px; row-gap:16px;
+      max-width:none; width:100%;
+      align-items:start;
+      padding:0 10px;
       grid-template-areas:
-        "eyebrow eyebrow"
-        "title   title"
-        "desc    desc"
-        "meta    map";
+        "title  eyebrow"
+        "media  media"
+        "desc   desc"
+        "meta   map";
     }
-    .info .eyebrow{ grid-area:eyebrow; }
-    .info .title{ grid-area:title; font-size:clamp(19.6px,2.24vw,30.8px); }
+    .info{ display:contents; }
+
+    .info .title{ grid-area:title; font-size:clamp(19.6px,2.24vw,30.8px); align-self:center; }
+    .info .eyebrow{ grid-area:eyebrow; justify-self:end; align-self:center; }
+
+    /* Photo/video: full-bleed (breaks out past the 10px padding) and shown true to
+       size — natural aspect ratio, never cropped. */
+    .gem .media{
+      grid-area:media;
+      width:calc(100% + 20px) !important;
+      margin:0 -10px;
+      aspect-ratio:auto !important;
+      max-height:none;
+      border-left:none; border-right:none; border-radius:0;
+    }
+    .gem .media img{ height:auto; max-height:60dvh; object-fit:contain; }
+
     .info .desc{ grid-area:desc; max-width:none; font-size:11.9px; }
     .info .meta{ grid-area:meta; align-self:start; }
-    .info .info-foot{ grid-area:map; margin:0; align-self:start; }
+    .info .info-foot{ grid-area:map; margin:0; align-self:start; justify-self:end; }
     .gem .map{ width:120px; height:120px; }
   }
 </style>
