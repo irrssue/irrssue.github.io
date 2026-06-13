@@ -196,8 +196,8 @@
     width:100%; max-width:1320px;
   }
   .info{ display:flex; flex-direction:column; gap:20px; max-width:440px; }
-  .title{ font-size:clamp(19.6px,2.24vw,30.8px); }
-  .desc{ font-size:11.9px; max-width:400px; }
+  .title{ font-size:clamp(28px,3.2vw,44px); }
+  .desc{ font-size:17px; max-width:400px; }
   .info-foot{ display:flex; gap:30px; align-items:flex-start; }
   .map{ width:138px; height:138px; border-radius:10px; flex:none; }
   .map .plabel{ display:none; }
@@ -230,8 +230,8 @@
         "meta    map";
     }
     .info .eyebrow{ grid-area:eyebrow; }
-    .info .title{ grid-area:title; }
-    .info .desc{ grid-area:desc; max-width:none; }
+    .info .title{ grid-area:title; font-size:clamp(19.6px,2.24vw,30.8px); }
+    .info .desc{ grid-area:desc; max-width:none; font-size:11.9px; }
     .info .meta{ grid-area:meta; align-self:start; }
     .info .info-foot{ grid-area:map; margin:0; align-self:start; }
     .gem .map{ width:120px; height:120px; }
