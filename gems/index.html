@@ -229,9 +229,11 @@
 
   /* ---------- mobile ---------- */
   @media (max-width:768px){
-    .gem{ padding:92px 8vw 72px; }
-    .gem .stage{ grid-template-columns:1fr; gap:28px; max-width:520px; }
-    .info{ max-width:none; }
+    .gem{ padding:88px 0 68px; }
+    .gem .stage{ grid-template-columns:1fr; gap:24px; max-width:none; width:100%; }
+    /* Media goes full-bleed: span the whole viewport width, drop the inline vw width. */
+    .gem .media{ width:100% !important; max-height:58dvh; border-left:none; border-right:none; border-radius:0; }
+    .info{ max-width:none; padding:0 8vw; }
     .desc{ max-width:none; }
   }
 </style>
