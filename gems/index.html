@@ -149,7 +149,7 @@
     color:var(--fg); margin:0; line-height:1.02;
   }
   .desc{
-    font-family:'EB Garamond',serif; font-style:italic; color:#cfc7ba;
+    font-family:'Fraunces',serif; font-style:normal; color:#cfc7ba;
     line-height:1.5; margin:0;
   }
   .meta{ display:grid; gap:9px; }
@@ -229,12 +229,30 @@
 
   /* ---------- mobile ---------- */
   @media (max-width:768px){
-    .gem{ padding:88px 0 68px; }
-    .gem .stage{ grid-template-columns:1fr; gap:24px; max-width:none; width:100%; }
+    .gem{ padding:84px 0 64px; }
+    .gem .stage{ grid-template-columns:1fr; gap:22px; max-width:none; width:100%; }
     /* Media goes full-bleed: span the whole viewport width, drop the inline vw width. */
-    .gem .media{ width:100% !important; max-height:58dvh; border-left:none; border-right:none; border-radius:0; }
-    .info{ max-width:none; padding:0 8vw; }
-    .desc{ max-width:none; }
+    .gem .media{ width:100% !important; max-height:52dvh; border-left:none; border-right:none; border-radius:0; }
+
+    /* Info becomes a 2-column grid so specs + minimap sit side by side and everything
+       fits under the photo without extra scrolling. */
+    .info{
+      max-width:none; padding:0 7vw;
+      display:grid; align-items:start;
+      grid-template-columns:1fr auto;
+      column-gap:6vw; row-gap:16px;
+      grid-template-areas:
+        "eyebrow eyebrow"
+        "title   title"
+        "desc    desc"
+        "meta    map";
+    }
+    .info .eyebrow{ grid-area:eyebrow; }
+    .info .title{ grid-area:title; }
+    .info .desc{ grid-area:desc; max-width:none; }
+    .info .meta{ grid-area:meta; align-self:start; }
+    .info .info-foot{ grid-area:map; margin:0; align-self:start; }
+    .gem .map{ width:120px; height:120px; }
   }
 </style>
 </head>
