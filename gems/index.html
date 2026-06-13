@@ -211,11 +211,9 @@
 
   /* ---------- mobile ---------- */
   @media (max-width:768px){
-    /* Stretch (not center) so the single gem row is definite and the stage's
-       height:100% resolves — that's what lets minmax(0,1fr) actually cap the
-       photo. Bottom padding clears the floating nav so the specs + map row
-       below the photo stays visible. */
-    .gem{ padding:58px 0 84px; place-items:stretch; grid-template-rows:1fr; }
+    /* Center the whole stack in the viewport; bottom padding clears the
+       floating nav so the specs + map row stays visible. */
+    .gem{ padding:54px 0 84px; }
 
     /* The whole gem is one grid. .info uses display:contents so its children
        (title, eyebrow, desc, meta, map) become items of this grid alongside the
@@ -225,17 +223,12 @@
          row 3: description (full width)
          row 4: specs (left)  |  minimap (right)
        Everything except the media gets 10px side padding via the grid container. */
-    /* Make the whole gem fill the snap viewport and give the photo row all the
-       leftover height (minmax(0,1fr)) — the title/desc/specs/map rows stay their
-       natural size, and the photo shrinks or grows to fill whatever is left so
-       every gem fits in exactly one screen with no overflow. */
     .gem .stage{
       grid-template-columns:1fr auto;
-      column-gap:14px; row-gap:14px;
-      max-width:none; width:100%; height:100%;
+      column-gap:14px; row-gap:12px;
+      max-width:none; width:100%;
       align-items:start;
       padding:0 10px;
-      grid-template-rows:auto minmax(0,1fr) auto auto;
       grid-template-areas:
         "title  eyebrow"
         "media  media"
@@ -257,20 +250,27 @@
       width:calc(100% + 20px) !important;
       margin:0 -10px;
       aspect-ratio:auto !important;
-      height:100%; min-height:0;
-      max-height:none;
+      max-height:none; min-height:0;
       background:transparent;
       box-shadow:none;
       border:none; border-radius:0;
+      display:flex; align-items:center; justify-content:center;
     }
-    /* object-fit:contain inside a 100%-height row = liquid photo: it scales to
-       fill the leftover space, keeping its true aspect ratio, never cropped. */
-    .gem .media img{ height:100%; width:100%; max-height:none; object-fit:contain; }
+    /* Liquid photo cap: the image scales to its true aspect ratio (never cropped)
+       but is capped at viewport-height minus the room the title/desc/specs/map +
+       padding + floating nav need (~24rem). That guarantees every gem — photo and
+       all its context — fits in one screen. */
+    .gem .media img{
+      width:auto; height:auto;
+      max-width:100%;
+      max-height:calc(100dvh - 24rem);
+      object-fit:contain;
+    }
 
     .info .desc{ grid-area:desc; max-width:none; font-size:11.9px; }
     .info .meta{ grid-area:meta; align-self:start; }
     .info .info-foot{ grid-area:map; margin:0; align-self:start; justify-self:end; }
-    .gem .map{ width:120px; height:120px; }
+    .gem .map{ width:104px; height:104px; }
   }
 </style>
 </head>
