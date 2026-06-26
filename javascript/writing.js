@@ -7,7 +7,6 @@ let allPosts = [];
 let currentFilter = null;
 
 const MONTHS_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-const MONTHS_UPPER = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
 
 async function fetchPosts() {
     const container = document.getElementById('posts-container');
@@ -26,7 +25,7 @@ async function fetchPosts() {
 
         if (postFiles.length === 0) {
             container.textContent = '';
-            container.appendChild(Object.assign(document.createElement('div'), { className: 'no-posts', textContent: 'No posts yet. Check back soon!' }));
+            container.appendChild(Object.assign(document.createElement('div'), { className: 'bk-empty', textContent: 'No posts yet. Check back soon!' }));
             return;
         }
 
@@ -98,28 +97,11 @@ async function fetchPosts() {
 
         if (allPosts.length === 0) {
             container.textContent = '';
-            container.appendChild(Object.assign(document.createElement('div'), { className: 'no-posts', textContent: 'No published posts yet. Check back soon!' }));
+            container.appendChild(Object.assign(document.createElement('div'), { className: 'bk-empty', textContent: 'No published posts yet. Check back soon!' }));
             return;
         }
 
-        // Populate writing counts (count, since date)
-        const countsEl = document.getElementById('writing-counts');
-        if (countsEl && allPosts.length > 0) {
-            const oldest = allPosts[allPosts.length - 1];
-            const count = allPosts.length;
-            const sinceStr = `${MONTHS_SHORT[oldest.dateObj.getMonth()]} ${oldest.dateObj.getFullYear()}`;
-            [
-                [String(count), ` ${count === 1 ? 'essay' : 'essays'}`],
-                ['since', ` ${sinceStr}`]
-            ].forEach(([bold, rest]) => {
-                const span = document.createElement('span');
-                const b = document.createElement('b');
-                b.textContent = bold;
-                span.appendChild(b);
-                span.appendChild(document.createTextNode(rest));
-                countsEl.appendChild(span);
-            });
-        }
+        renderHeader();
 
         const urlParams = new URLSearchParams(window.location.search);
         const tagFilter = urlParams.get('tag');
@@ -131,10 +113,89 @@ async function fetchPosts() {
 
     } catch (error) {
         console.error('Error fetching posts:', error);
-        const container = document.getElementById('posts-container');
         container.textContent = '';
-        container.appendChild(Object.assign(document.createElement('div'), { className: 'error', textContent: 'Failed to load posts. Please try again later.' }));
+        container.appendChild(Object.assign(document.createElement('div'), { className: 'bk-error', textContent: 'Failed to load posts. Please try again later.' }));
     }
+}
+
+function getTagCounts() {
+    const counts = {};
+    allPosts.forEach(p => {
+        if (p.tag) {
+            const t = p.tag.toLowerCase();
+            counts[t] = (counts[t] || 0) + 1;
+        }
+    });
+    return Object.entries(counts).sort((a, b) => b[1] - a[1]);
+}
+
+function renderHeader() {
+    const header = document.getElementById('writing-header');
+    header.textContent = '';
+    const tags = getTagCounts();
+    const total = allPosts.length;
+    const oldest = allPosts[allPosts.length - 1];
+    const sinceStr = `${MONTHS_SHORT[oldest.dateObj.getMonth()]} ${oldest.dateObj.getFullYear()}`;
+
+    const heading = document.createElement('div');
+    heading.className = 'bk-heading';
+    heading.textContent = 'Writing.';
+
+    const sub = document.createElement('div');
+    sub.className = 'bk-sub';
+    sub.textContent = 'Things I found in life as in blog format';
+
+    const counts = document.createElement('div');
+    counts.className = 'bk-counts';
+    [
+        [String(total), ` ${total === 1 ? 'essay' : 'essays'}`],
+        [String(tags.length), ` ${tags.length === 1 ? 'tag' : 'tags'}`],
+        ['since', ` ${sinceStr}`]
+    ].forEach(([bold, rest]) => {
+        const span = document.createElement('span');
+        const b = document.createElement('b');
+        b.textContent = bold;
+        span.appendChild(b);
+        span.appendChild(document.createTextNode(rest));
+        counts.appendChild(span);
+    });
+
+    const chipsRow = document.createElement('div');
+    chipsRow.className = 'bk-chips';
+
+    const makeChip = (tag, label) => {
+        const chip = document.createElement('span');
+        chip.className = 'bk-chip';
+        chip.dataset.tag = tag;
+        chip.textContent = label;
+        chip.addEventListener('click', () => {
+            if (!tag || (currentFilter && currentFilter === tag)) {
+                clearFilter();
+            } else {
+                filterByTag(tag);
+            }
+        });
+        return chip;
+    };
+
+    chipsRow.appendChild(makeChip('', 'all'));
+    tags.forEach(([tag, count]) => {
+        chipsRow.appendChild(makeChip(tag, `${tag} · ${count}`));
+    });
+
+    header.appendChild(heading);
+    header.appendChild(sub);
+    header.appendChild(counts);
+    header.appendChild(chipsRow);
+
+    updateChips();
+}
+
+function updateChips() {
+    document.querySelectorAll('.bk-chip').forEach(chip => {
+        const tag = chip.dataset.tag;
+        chip.classList.toggle('on', !tag ? !currentFilter : currentFilter === tag);
+    });
 }
 
 function renderPosts(posts) {
@@ -142,172 +203,120 @@ function renderPosts(posts) {
     container.textContent = '';
 
     if (posts.length === 0) {
-        container.appendChild(Object.assign(document.createElement('div'), { className: 'no-posts', textContent: 'No posts found with this tag.' }));
+        container.appendChild(Object.assign(document.createElement('div'), { className: 'bk-empty', textContent: 'No posts found with this tag.' }));
         return;
     }
 
-    const [featured, ...archivePosts] = posts;
-    container.appendChild(buildFeaturedPost(featured));
-
-    if (archivePosts.length > 0) {
-        const archiveSection = document.createElement('div');
-        archiveSection.className = 'archive-section';
-
-        let lastYear = null;
-        for (const post of archivePosts) {
-            const year = post.dateObj.getFullYear();
-            if (year !== lastYear) {
-                const yearEl = document.createElement('div');
-                yearEl.className = 'archive-year';
-                yearEl.textContent = String(year);
-                archiveSection.appendChild(yearEl);
-                lastYear = year;
-            }
-            archiveSection.appendChild(buildArchiveRow(post));
+    const groups = {};
+    const groupOrder = [];
+    posts.forEach(p => {
+        const date = p.dateObj;
+        const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+        if (!groups[key]) {
+            groups[key] = {
+                label: date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
+                items: []
+            };
+            groupOrder.push(key);
         }
+        groups[key].items.push(p);
+    });
 
-        container.appendChild(archiveSection);
-    }
+    groupOrder.forEach(key => {
+        const { label, items } = groups[key];
+
+        const monthDiv = document.createElement('div');
+        monthDiv.className = 'bk-month';
+
+        const monthHeader = document.createElement('div');
+        monthHeader.className = 'bk-month-header';
+
+        const monthName = document.createElement('span');
+        monthName.className = 'bk-month-name';
+        monthName.textContent = label;
+
+        const monthCount = document.createElement('span');
+        monthCount.className = 'bk-month-count';
+        monthCount.textContent = `· ${items.length} essay${items.length !== 1 ? 's' : ''}`;
+
+        monthHeader.appendChild(monthName);
+        monthHeader.appendChild(monthCount);
+        monthDiv.appendChild(monthHeader);
+
+        items.forEach(p => {
+            monthDiv.appendChild(renderItem(p));
+        });
+
+        container.appendChild(monthDiv);
+    });
 }
 
-function buildFeaturedPost(post) {
+function renderItem(post) {
     const dateStr = post.dateObj && !isNaN(post.dateObj)
-        ? `${MONTHS_UPPER[post.dateObj.getMonth()]} ${post.dateObj.getDate()}, ${post.dateObj.getFullYear()}`
-        : '';
-    const kickerParts = ['LATEST', dateStr].filter(Boolean).join(' · ');
+        ? post.dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+        : '—';
 
-    const wrap = document.createElement('div');
-    wrap.className = 'featured-post';
+    const item = document.createElement('div');
+    item.className = 'bk-item';
 
-    // Kicker
-    const kicker = document.createElement('div');
-    kicker.className = 'featured-kicker';
-    const dot = document.createElement('span');
-    dot.className = 'kicker-dot';
-    dot.textContent = '●';
-    kicker.appendChild(dot);
-    kicker.appendChild(document.createTextNode(kickerParts));
-    wrap.appendChild(kicker);
-
-    // Title
-    const titleEl = document.createElement('h2');
-    titleEl.className = 'featured-title';
-    const titleLink = document.createElement('a');
-    titleLink.href = post.url;
-    titleLink.textContent = post.title;
-    titleEl.appendChild(titleLink);
-    wrap.appendChild(titleEl);
-
-    // Excerpt
-    if (post.excerpt) {
-        const excerptEl = document.createElement('p');
-        excerptEl.className = 'featured-excerpt';
-        excerptEl.textContent = post.excerpt;
-        wrap.appendChild(excerptEl);
-    }
-
-    // Footer
-    const foot = document.createElement('div');
-    foot.className = 'featured-foot';
-    if (post.tag) {
-        const tagEl = document.createElement('span');
-        tagEl.className = 'featured-tag';
-        tagEl.dataset.tag = post.tag;
-        tagEl.textContent = `#${post.tag}`;
-        tagEl.addEventListener('click', makeTagHandler(post.tag));
-        foot.appendChild(tagEl);
-    }
-    wrap.appendChild(foot);
-
-    return wrap;
-}
-
-function buildArchiveRow(post) {
-    const dateStr = post.dateObj && !isNaN(post.dateObj)
-        ? `${MONTHS_SHORT[post.dateObj.getMonth()]} ${post.dateObj.getDate()}`
-        : '';
-
-    const row = document.createElement('div');
-    row.className = 'archive-row';
-
-    // Date
     const dateEl = document.createElement('span');
-    dateEl.className = 'archive-date';
+    dateEl.className = 'bk-item-date';
     dateEl.textContent = dateStr;
-    row.appendChild(dateEl);
 
-    // Title + excerpt
-    const titleBlock = document.createElement('div');
-    titleBlock.className = 'archive-title-block';
+    const body = document.createElement('div');
+    body.className = 'bk-item-body';
+
+    const titleDiv = document.createElement('div');
+    titleDiv.className = 'bk-item-title';
     const link = document.createElement('a');
     link.href = post.url;
     link.textContent = post.title;
-    titleBlock.appendChild(link);
+    titleDiv.appendChild(link);
+    body.appendChild(titleDiv);
+
     if (post.excerpt) {
-        const excerptEl = document.createElement('div');
-        excerptEl.className = 'archive-excerpt';
-        excerptEl.textContent = post.excerpt;
-        titleBlock.appendChild(excerptEl);
+        const desc = document.createElement('div');
+        desc.className = 'bk-item-desc';
+        desc.textContent = post.excerpt;
+        body.appendChild(desc);
     }
-    row.appendChild(titleBlock);
 
-    // Tag
     const tagEl = document.createElement('span');
-    tagEl.className = 'archive-tag';
     if (post.tag) {
-        tagEl.dataset.tag = post.tag;
-        tagEl.textContent = `#${post.tag}`;
-        tagEl.addEventListener('click', makeTagHandler(post.tag));
+        tagEl.className = 'bk-item-tag';
+        tagEl.dataset.tag = post.tag.toLowerCase();
+        tagEl.textContent = post.tag;
+        tagEl.addEventListener('click', () => {
+            const tag = tagEl.dataset.tag;
+            currentFilter === tag ? clearFilter() : filterByTag(tag);
+        });
     }
-    row.appendChild(tagEl);
 
-    return row;
-}
+    item.appendChild(dateEl);
+    item.appendChild(body);
+    item.appendChild(tagEl);
 
-function makeTagHandler(tag) {
-    return function(e) {
-        e.preventDefault();
-        if (currentFilter && currentFilter.toLowerCase() === tag.toLowerCase()) {
-            clearFilter();
-        } else {
-            filterByTag(tag);
-        }
-    };
+    return item;
 }
 
 function filterByTag(tag) {
     currentFilter = tag;
-
-    const filterContainer = document.getElementById('filter-container');
-    const filterTagText = document.getElementById('filter-tag');
-    filterContainer.style.display = 'flex';
-    filterTagText.textContent = '#' + tag;
-
-    const filteredPosts = allPosts.filter(post =>
+    updateChips();
+    renderPosts(allPosts.filter(post =>
         post.tag && post.tag.toLowerCase() === tag.toLowerCase()
-    );
-
+    ));
     const url = new URL(window.location);
     url.searchParams.set('tag', tag);
     window.history.pushState({}, '', url);
-
-    renderPosts(filteredPosts);
 }
 
 function clearFilter() {
     currentFilter = null;
-
-    const filterContainer = document.getElementById('filter-container');
-    filterContainer.style.display = 'none';
-
+    updateChips();
+    renderPosts(allPosts);
     const url = new URL(window.location);
     url.searchParams.delete('tag');
     window.history.pushState({}, '', url);
-
-    renderPosts(allPosts);
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-    fetchPosts();
-    document.getElementById('filter-container').addEventListener('click', clearFilter);
-});
+document.addEventListener('DOMContentLoaded', fetchPosts);
