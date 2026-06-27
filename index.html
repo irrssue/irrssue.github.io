@@ -49,6 +49,64 @@
             document.body.classList.add('dark-mode');
         }
     </script>
+
+    <!-- Intro overlay: shows "Hello" on a full-screen themed backdrop, then fades away -->
+    <style>
+        .intro-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #ffffff;
+            color: #000000;
+            opacity: 1;
+            transition: opacity 0.7s ease;
+            -webkit-font-smoothing: antialiased;
+        }
+        body.dark-mode .intro-overlay {
+            background-color: #000000;
+            color: #ffffff;
+        }
+        .intro-overlay__word {
+            font-family: 'Instrument Serif', serif;
+            font-size: clamp(2.5rem, 9vw, 5.5rem);
+            font-weight: 400;
+            letter-spacing: 0.01em;
+            opacity: 0;
+            transform: translateY(8px);
+            animation: intro-word-in 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        @keyframes intro-word-in {
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* Lock scroll while the overlay is up */
+        body.intro-active { overflow: hidden; }
+        /* Hidden + removed-from-flow once it has faded out */
+        .intro-overlay.intro-hidden { opacity: 0; pointer-events: none; }
+        @media (prefers-reduced-motion: reduce) {
+            .intro-overlay__word { animation: none; opacity: 1; transform: none; }
+        }
+    </style>
+    <div class="intro-overlay" id="introOverlay" aria-hidden="true">
+        <span class="intro-overlay__word">Hello</span>
+    </div>
+    <script>
+        (function() {
+            document.body.classList.add('intro-active');
+            var overlay = document.getElementById('introOverlay');
+            // Hold "Hello" for 2s, then fade out and remove from the page
+            setTimeout(function() {
+                overlay.classList.add('intro-hidden');
+                document.body.classList.remove('intro-active');
+                overlay.addEventListener('transitionend', function() {
+                    overlay.remove();
+                }, { once: true });
+            }, 2000);
+        })();
+    </script>
+
     <div class="grid-container">
         <main class="main-content">
             <section class="content-section" id="home">
