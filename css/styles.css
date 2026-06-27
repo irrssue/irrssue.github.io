@@ -10,6 +10,9 @@ body.dark,
 
 html {
     font-size: 130%;
+    /* Always reserve the scrollbar gutter so toggling overflow:hidden
+       (e.g. the intro scroll-lock) doesn't shift centered content */
+    scrollbar-gutter: stable;
 }
 
 * {
