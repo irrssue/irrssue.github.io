@@ -103,8 +103,15 @@
     </div>
     <script>
         (function() {
-            document.body.classList.add('intro-active');
+            var seenKey = 'introSeen';
             var overlay = document.getElementById('introOverlay');
+            if (localStorage.getItem(seenKey)) {
+                overlay.remove();
+                return;
+            }
+            localStorage.setItem(seenKey, '1');
+
+            document.body.classList.add('intro-active');
             // Hold "Hello" for 2s, then fade out and remove from the page
             setTimeout(function() {
                 overlay.classList.add('intro-hidden');
