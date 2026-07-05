@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>upload - irrssue</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --text: #1a1a1a;
+    --text-muted: #6b6b6b;
+    --border: #d9d9d9;
+    --accent: #0b66c3;
+    --ok: #1a7f37;
+    --err: #c0392b;
+    --panel: #f6f6f6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #111111;
+      --text: #e6e6e6;
+      --text-muted: #9a9a9a;
+      --border: #333333;
+      --accent: #5aa2e8;
+      --ok: #4cbb6c;
+      --err: #e07060;
+      --panel: #1b1b1b;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 1rem/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    display: flex;
+    justify-content: center;
+    padding: 3rem 1rem;
+  }
+  main { width: 100%; max-width: 40rem; }
+  h1 { font-size: 1.25rem; margin: 0 0 0.25rem; }
+  p.hint { color: var(--text-muted); margin: 0 0 1.5rem; font-size: 0.9rem; }
+  label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.3rem; }
+  #token {
+    width: 100%;
+    padding: 0.5rem 0.7rem;
+    font: inherit;
+    color: var(--text);
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin-bottom: 1.5rem;
+  }
+  #token:focus { outline: none; border-color: var(--accent); }
+  #drop {
+    border: 2px dashed var(--border);
+    border-radius: 10px;
+    padding: 3rem 1rem;
+    text-align: center;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  #drop.over { border-color: var(--accent); background: var(--panel); }
+  #results { list-style: none; padding: 0; margin: 1.5rem 0 0; }
+  #results li {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.6rem 0.8rem;
+    margin-bottom: 0.6rem;
+    font-size: 0.9rem;
+    overflow-wrap: anywhere;
+  }
+  .status { color: var(--text-muted); }
+  .ok { color: var(--ok); }
+  .err { color: var(--err); }
+  .url-row { display: flex; gap: 0.5rem; align-items: center; margin-top: 0.3rem; }
+  .url-row code { flex: 1; overflow-wrap: anywhere; font-size: 0.85em; }
+  button.copy {
+    font: inherit;
+    font-size: 0.8rem;
+    padding: 0.2rem 0.6rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--bg);
+    color: var(--text);
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  button.copy:hover { border-color: var(--accent); }
+</style>
+</head>
+<body>
+<main>
+  <h1>media upload</h1>
+  <p class="hint">Drop images below. Files land in /var/www/media and are served at upload.irrssue.com/&lt;filename&gt;.</p>
+
+  <label for="token">upload token</label>
+  <input id="token" type="password" autocomplete="off" placeholder="paste token">
+
+  <div id="drop" role="button" tabindex="0" aria-label="Drop files or click to choose">
+    drag &amp; drop images here, or click to choose
+  </div>
+  <input id="picker" type="file" multiple accept="image/*" hidden>
+
+  <ul id="results"></ul>
+</main>
+<script>
+(function () {
+  var tokenInput = document.getElementById('token');
+  var drop = document.getElementById('drop');
+  var picker = document.getElementById('picker');
+  var results = document.getElementById('results');
+
+  tokenInput.value = localStorage.getItem('uploadToken') || '';
+  tokenInput.addEventListener('input', function () {
+    localStorage.setItem('uploadToken', tokenInput.value);
+  });
+
+  function upload(file) {
+    var li = document.createElement('li');
+    li.innerHTML = '<strong></strong> <span class="status">uploading…</span>';
+    li.querySelector('strong').textContent = file.name;
+    results.prepend(li);
+    var status = li.querySelector('.status');
+
+    fetch('/upload?name=' + encodeURIComponent(file.name), {
+      method: 'POST',
+      headers: { 'X-Upload-Token': tokenInput.value.trim() },
+      body: file
+    }).then(function (r) {
+      return r.json().then(function (data) { return { ok: r.ok, data: data }; });
+    }).then(function (res) {
+      if (!res.ok) {
+        status.textContent = res.data.error || 'upload failed';
+        status.className = 'status err';
+        return;
+      }
+      status.textContent = 'done';
+      status.className = 'status ok';
+      var row = document.createElement('div');
+      row.className = 'url-row';
+      var code = document.createElement('code');
+      code.textContent = res.data.url;
+      var btn = document.createElement('button');
+      btn.className = 'copy';
+      btn.textContent = 'copy';
+      btn.addEventListener('click', function () {
+        navigator.clipboard.writeText(res.data.url).then(function () {
+          btn.textContent = 'copied';
+          setTimeout(function () { btn.textContent = 'copy'; }, 1500);
+        });
+      });
+      row.appendChild(code);
+      row.appendChild(btn);
+      li.appendChild(row);
+    }).catch(function (err) {
+      status.textContent = 'network error: ' + err.message;
+      status.className = 'status err';
+    });
+  }
+
+  function handleFiles(list) {
+    if (!tokenInput.value.trim()) {
+      tokenInput.focus();
+      tokenInput.style.borderColor = 'var(--err)';
+      setTimeout(function () { tokenInput.style.borderColor = ''; }, 1200);
+      return;
+    }
+    Array.prototype.forEach.call(list, upload);
+  }
+
+  drop.addEventListener('click', function () { picker.click(); });
+  drop.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); picker.click(); }
+  });
+  picker.addEventListener('change', function () {
+    handleFiles(picker.files);
+    picker.value = '';
+  });
+
+  ['dragenter', 'dragover'].forEach(function (ev) {
+    drop.addEventListener(ev, function (e) {
+      e.preventDefault();
+      drop.classList.add('over');
+    });
+  });
+  ['dragleave', 'drop'].forEach(function (ev) {
+    drop.addEventListener(ev, function (e) {
+      e.preventDefault();
+      drop.classList.remove('over');
+    });
+  });
+  drop.addEventListener('drop', function (e) {
+    if (e.dataTransfer && e.dataTransfer.files.length) handleFiles(e.dataTransfer.files);
+  });
+})();
+</script>
+</body>
+</html>
