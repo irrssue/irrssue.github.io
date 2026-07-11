@@ -1,32 +1,56 @@
-# Thura Zaw's playground
+# Saw Thura Zaw's playground
 
-Personal portfolio and writing site — vanilla HTML, CSS, and JavaScript. Hosted on GitHub Pages.
+My personal portfolio and writing site, built with vanilla HTML, CSS, and JavaScript — no frameworks, no build tools.
+Live at **[irrssue.com](https://irrssue.com)** (hosted on GitHub Pages).
 
-## Progress
+The whole thing is intentionally minimal: fast to load, easy to read, and simple to extend.
 
-| Date | Progress | What |
-|------|----------|-------|
-| 2026-04-14 | Rebrand to Saw Thura Zaw | Updated page title and hero section from "Thura Zaw" to "Saw Thura Zaw" across the site |
-| 2026-04-14 | Hero section polish | Updated intro text with links to YouTube channel and side projects; added continuous 5s font cycling with glitch animation on hero name; fixed colors for both light and dark modes |
-| 2026-04-14 | Post page typography overhaul | Tuned post content font sizes, line height (1.8), and color contrast — soft off-white (`#F2F2F2`) for dark mode body text; removed Georgia serif for cleaner system-font look |
-| 2026-04-14 | Mobile responsiveness pass | Fixed CSS grid overflow issues, reduced mobile font sizes globally, tightened padding and project spacing for a cleaner mobile layout |
-| 2026-04-14 | Writing section on homepage | Added a writing/blog section to the homepage; set 800px max-width on the writing page; bumped base font size to 130% across pages |
-| 2026-04-13 | New post | Published "How I Replaced Google With a Homelab" |
-| 2026-03-25 | Projects updated | Added Baremail and Conflict Map projects; removed older entries |
-| 2026-03-10 | Lightweight CMS | Built a local admin panel (`html/admin.html`) with GitHub API integration — manage projects, bookmarks, and posts directly from the browser without touching files. Projects and bookmarks migrated to JSON files; homepage now renders projects dynamically |
-| 2026-03-10 | Rebranded to Thura Zaw | Updated all project names and hero text from Liam Rolert to Thura Zaw across the site |
-| 2026-03-09 | Social link preview cards | Hover over social links to see a preview card — with motion blur transitions and dark mode support |
-| 2026-03-08 | Intro animation overlay | Implemented a GSAP-powered intro animation sequence that plays on page load |
-| 2026-03-08 | CLAUDE.md documentation | Added full project overview and coding guidelines for Claude Code |
-| 2026-02-27 | Nav pill hover fix | Fixed the sliding hover pill glitch on mobile navigation where active item flashed on hover |
-| 2025-12-07 | First personal post | Published first personal blog post "Hi" and cleaned up the writing pipeline |
-| 2025-11-28 | Homepage redesign | Rebuilt homepage with 2-column grid layout, projects section, and icon-only compact navbar |
-| 2025-11-22 | Full mobile UI overhaul | Added mobile navigation to all pages, fluid typography, responsive blog layout, and system theme detection |
-| 2025-11-14 | Bookmarks page | Added a bookmarks page with dynamic loading, tag filtering, and URL tooltip on hover |
-| 2025-11-12 | Search overhaul | Multi-match search results, clickable context lines with scroll-to-match, switched to system fonts |
-| 2025-11-10 | Tag filtering system | Added search and tag filtering to the writing page with a custom filter pill UI |
-| 2025-11-06 | Writing page + GitHub Actions | Rebuilt the writing/blog system using GitHub Actions to render markdown posts to HTML |
-| 2025-11-02 | Blog post layout | Initial blog post page with dark mode styles, back button, and navigation structure |
-| 2025-11-01 | Restarted the portfolio | Began rebuilding the site from scratch with a minimal, single-column layout |
-| 2025-06-28 | Initial portfolio structure | First proper portfolio build with responsive layout, navigation, and dark mode toggle |
-| 2025-03-24 | Project restart | Nuked the old project and started fresh |
+## What's here
+
+- **Homepage** — intro, projects, and a short writing section, in a minimal single-column layout.
+- **Writing** — blog posts written in Markdown and rendered to HTML through GitHub Actions. Includes search and tag filtering.
+- **Bookmarks** — a curated, tag-filterable list of links.
+- **Gems** — small collected finds and moments.
+- **Resume** — hosted PDF with an inline viewer and download link.
+
+## Tech
+
+- Plain HTML5, CSS3, and vanilla JavaScript — no React, no Tailwind, no npm.
+- GitHub Pages serves the static files directly from `main`.
+- GitHub Actions handles the Markdown-to-HTML pipeline for posts.
+- System font stack, zero external requests on load, and no analytics — the site works fully without JavaScript.
+
+## Structure
+
+```
+index.html        Homepage
+main.css          Shared base styles
+html/             Subpages (admin, upload)
+css/              Page-specific stylesheets
+javascript/       Vanilla JS
+posts/            Writing content in Markdown
+bookmarks/        Bookmarks data
+gems/             Gems page
+resume/           Resume PDF + viewer
+.github/workflows/ Content pipeline (Markdown → HTML)
+```
+
+## Design
+
+Minimal, single-column, and calm — see [docs/Design_goal.md](docs/Design_goal.md) for the full direction.
+All design tokens (colors, fonts, spacing) live as CSS custom properties in `:root`, and the site supports light and dark themes.
+
+## Local development
+
+No build step. Serve the files with any static server:
+
+```bash
+python3 -m http.server
+```
+
+Then open <http://localhost:8000>.
+
+## Writing a post
+
+Add a Markdown file under `posts/`.
+GitHub Actions renders it to HTML and wires up the route automatically on push to `main`.
