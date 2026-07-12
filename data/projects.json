@@ -52,5 +52,11 @@
     "url": "https://irrssue.com/howgitworks/",
     "description": "like really how it works tho?",
     "external": true
+  },
+  {
+    "name": "Solar System",
+    "url": "https://irrssue.com/solarsystem/",
+    "description": "a view to mesmerize to",
+    "external": true
   }
 ]
