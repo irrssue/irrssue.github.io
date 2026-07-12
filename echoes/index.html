@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Echoes</title>
+  <meta name="description" content="A living pool of light. Hundreds of glowing creatures drift, school, and chase your cursor. Everyone who visits today shares the same world - move, and it moves back.">
+  <meta name="theme-color" content="#04060c">
+  <meta property="og:title" content="Echoes">
+  <meta property="og:description" content="A living pool of light that chases your cursor. Everyone visiting today shares the same world.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✦</text></svg>">
+</head>
+<body>
+<style>
+  :root {
+    color-scheme: dark;
+    --bg: #04060c;
+    --ink: #e9e5d6;
+    --muted: #8a8fa3;
+    --faint: #4a4f63;
+    --accent: #e2b04a;
+    --font-display: "Didot", "Bodoni 72", "Bodoni MT", "Playfair Display", Georgia, serif;
+    --font-body: "Avenir Next", "Avenir", "Seravek", "Gill Sans", "Segoe UI", system-ui, sans-serif;
+    --font-mono: "SF Mono", "Cascadia Code", "JetBrains Mono", Menlo, ui-monospace, monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body { height: 100%; background: var(--bg); overscroll-behavior: none; }
+
+  .stage {
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(120% 90% at 50% 8%, #0a0f1c 0%, #05070e 45%, var(--bg) 100%);
+    font-family: var(--font-body);
+    color: var(--ink);
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+    cursor: none;
+  }
+  .stage.touch { cursor: auto; }
+
+  #pool {
+    position: absolute;
+    inset: 0;
+    display: block;
+    touch-action: none;
+  }
+
+  /* ---------- intro veil ---------- */
+  .veil {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 0.9rem;
+    padding: 6vh 8vw;
+    z-index: 5;
+    background: radial-gradient(60% 60% at 50% 45%, rgba(4,6,12,0.35), rgba(4,6,12,0.86));
+    transition: opacity 1.4s ease 0.2s, visibility 1.4s ease 0.2s;
+  }
+  .veil.gone { opacity: 0; visibility: hidden; pointer-events: none; }
+
+  .veil h1 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(2.6rem, 9vw, 5.4rem);
+    letter-spacing: 0.14em;
+    text-indent: 0.14em;
+    color: var(--ink);
+    text-shadow: 0 0 40px rgba(226,176,74,0.28);
+  }
+  .veil p {
+    max-width: 30ch;
+    color: var(--muted);
+    font-size: clamp(0.95rem, 2.4vw, 1.08rem);
+    line-height: 1.6;
+  }
+  .veil .enter {
+    margin-top: 1.4rem;
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    letter-spacing: 0.34em;
+    text-indent: 0.34em;
+    color: var(--faint);
+    text-transform: uppercase;
+    animation: breathe 3.4s ease-in-out infinite;
+  }
+  @keyframes breathe { 0%,100% { opacity: 0.35; } 50% { opacity: 0.85; } }
+
+  /* ---------- ambient HUD ---------- */
+  .hud {
+    position: absolute;
+    left: clamp(14px, 3vw, 26px);
+    bottom: clamp(14px, 3vh, 24px);
+    z-index: 4;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.05em;
+    color: var(--faint);
+    line-height: 1.8;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 1.2s ease;
+    user-select: none;
+    max-width: 62vw;
+  }
+  .hud.show { opacity: 1; }
+  .hud .name { color: var(--muted); }
+  .hud b { color: var(--accent); font-weight: 400; }
+
+  .title-mark {
+    position: absolute;
+    right: clamp(14px, 3vw, 26px);
+    bottom: clamp(14px, 3vh, 24px);
+    z-index: 4;
+    font-family: var(--font-display);
+    font-size: 0.98rem;
+    letter-spacing: 0.32em;
+    text-indent: 0.32em;
+    color: var(--faint);
+    text-decoration: none;
+    pointer-events: auto;
+    opacity: 0;
+    transition: opacity 1.2s ease, color 0.4s ease;
+    user-select: none;
+  }
+  .title-mark.show { opacity: 0.7; }
+  .title-mark:hover { color: var(--muted); }
+
+  .hint {
+    position: absolute;
+    left: 50%;
+    top: clamp(18px, 5vh, 40px);
+    transform: translateX(-50%);
+    z-index: 4;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.16em;
+    color: var(--faint);
+    pointer-events: none;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 1s ease;
+    white-space: nowrap;
+  }
+  .hint.show { opacity: 0.8; }
+  .hint.fade { opacity: 0; }
+
+  .flash {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 4;
+    font-family: var(--font-display);
+    font-size: clamp(1.1rem, 3.4vw, 1.7rem);
+    letter-spacing: 0.28em;
+    text-indent: 0.28em;
+    color: var(--ink);
+    text-shadow: 0 0 30px rgba(226,176,74,0.4);
+    pointer-events: none;
+    opacity: 0;
+    text-align: center;
+    text-transform: lowercase;
+  }
+  .flash.pop { animation: flashPop 3.2s ease forwards; }
+  @keyframes flashPop {
+    0% { opacity: 0; letter-spacing: 0.5em; }
+    18% { opacity: 0.92; letter-spacing: 0.28em; }
+    70% { opacity: 0.92; }
+    100% { opacity: 0; letter-spacing: 0.24em; }
+  }
+
+  .noscript {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    text-align: center;
+    color: var(--muted);
+    font-size: 1rem;
+    z-index: 9;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .veil .enter { animation: none; opacity: 0.6; }
+  }
+</style>
+
+<div class="stage" id="stage">
+  <canvas id="pool" aria-label="A living pool of light. Hundreds of glowing creatures drift and school, and follow your cursor. Move your pointer to interact."></canvas>
+
+  <div class="hint" id="hint">move slowly - they are curious</div>
+
+  <div class="flash" id="flash" aria-hidden="true"></div>
+
+  <div class="hud" id="hud" aria-hidden="true">
+    <div><span class="name" id="worldName">the still water</span></div>
+    <div><b id="countN">0</b> alive · <b id="dayN">day</b></div>
+  </div>
+
+  <a class="title-mark" id="titleMark" href="/">ECHOES</a>
+
+  <div class="veil" id="veil">
+    <h1>echoes</h1>
+    <p>A pool of living light. Everyone who visits today shares the same world. Move - and it moves back.</p>
+    <div class="enter">move to begin</div>
+  </div>
+
+  <noscript>
+    <div class="noscript">Echoes is a living, interactive pool of light drawn in your browser. Please enable JavaScript.</div>
+  </noscript>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ================================================================== */
+  /*  Echoes - a shared, living pool of light.                          */
+  /*                                                                    */
+  /*  No libraries. Everything below is hand-rolled: a seeded PRNG so    */
+  /*  every visitor on the same day meets the same world, a boids       */
+  /*  flocking model for schooling, per-creature temperament that       */
+  /*  reads the cursor, additive glow rendering with motion trails,     */
+  /*  and rare procedural "events" that surprise you if you stay.       */
+  /* ================================================================== */
+
+  var stage = document.getElementById("stage");
+  var canvas = document.getElementById("pool");
+  var ctx = canvas.getContext("2d", { alpha: false });
+
+  var veil = document.getElementById("veil");
+  var hud = document.getElementById("hud");
+  var hint = document.getElementById("hint");
+  var flash = document.getElementById("flash");
+  var titleMark = document.getElementById("titleMark");
+  var worldNameEl = document.getElementById("worldName");
+  var countNEl = document.getElementById("countN");
+  var dayNEl = document.getElementById("dayN");
+
+  var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var isTouch = window.matchMedia("(hover: none), (pointer: coarse)").matches;
+  if (isTouch) stage.classList.add("touch");
+
+  /* ---------- deterministic daily seed --------------------------------
+   * Same calendar day (local) => same seed => same starting world for
+   * everyone. mulberry32: tiny, fast, well-distributed 32-bit PRNG.    */
+  function makeDaySeed() {
+    var d = new Date();
+    var key = d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate();
+    // xor-fold into a 32-bit space with a fixed salt
+    var s = (key ^ 0x9e3779b9) >>> 0;
+    return { seed: s, key: key, date: d };
+  }
+  function mulberry32(a) {
+    return function () {
+      a |= 0; a = (a + 0x6d2b79f5) | 0;
+      var t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  var DAY = makeDaySeed();
+  var rand = mulberry32(DAY.seed);
+  function rr(lo, hi) { return lo + (hi - lo) * rand(); }
+  function pick(arr) { return arr[(rand() * arr.length) | 0]; }
+
+  /* ---------- the world's identity is seeded, so it feels named ------ */
+  var ADJ = ["the still", "the slow", "the deep", "the pale", "the amber",
+             "the drifting", "the quiet", "the folded", "the tidal", "the far"];
+  var NOUN = ["water", "current", "shoal", "lantern-tide", "drift", "shallows",
+              "glassfield", "constellation", "hush", "meridian"];
+  var WORLD_NAME = pick(ADJ) + " " + pick(NOUN);
+
+  /* Each day picks a palette. Hues are seeded but always luminous.     */
+  var PALETTES = [
+    { base: 205, spread: 45, name: "cyan" },   // ocean cyans/blues
+    { base: 38,  spread: 26, name: "amber" },  // warm amber/gold
+    { base: 285, spread: 40, name: "violet" }, // violet/magenta
+    { base: 150, spread: 55, name: "aurora" }, // green/teal aurora
+    { base: 12,  spread: 30, name: "ember" }   // red/orange embers
+  ];
+  var PAL = pick(PALETTES);
+  function creatureColor(t) {
+    // t in [0,1] positions the creature within the day's palette
+    var h = PAL.base + (t - 0.5) * 2 * PAL.spread;
+    return { h: (h + 360) % 360, s: rr(60, 92), l: rr(55, 72) };
+  }
+
+  /* ---------- retina-aware sizing ------------------------------------ */
+  var W = 0, H = 0, DPR = 1;
+  function resize() {
+    DPR = Math.min(window.devicePixelRatio || 1, 2);
+    W = window.innerWidth;
+    H = window.innerHeight;
+    canvas.width = Math.floor(W * DPR);
+    canvas.height = Math.floor(H * DPR);
+    canvas.style.width = W + "px";
+    canvas.style.height = H + "px";
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    // paint an opaque backdrop once so the first trail-fade has something
+    ctx.fillStyle = "#04060c";
+    ctx.fillRect(0, 0, W, H);
+  }
+  window.addEventListener("resize", resize, { passive: true });
+  resize();
+
+  /* ---------- population ---------------------------------------------
+   * Count scales with screen area but is capped for smoothness. Each
+   * creature is a small autonomous agent with a temperament that
+   * decides how it reads the cursor.                                    */
+  var area = W * H;
+  var COUNT = Math.max(90, Math.min(reduceMotion ? 120 : 360,
+                       Math.round(area / 5200)));
+
+  // Temperaments: how a creature reacts to the pointer.
+  //  curious  -> gently attracted, likes to orbit
+  //  shy      -> flees when pointer is near and fast
+  //  bold     -> strongly attracted, darts toward you
+  //  drifter  -> mostly ignores you, pure flocking
+  var TEMPERS = ["curious", "curious", "shy", "bold", "drifter"];
+
+  var creatures = [];
+  function spawn(n) {
+    for (var i = 0; i < n; i++) {
+      var t = rand();
+      var c = creatureColor(t);
+      creatures.push({
+        x: rr(0, W), y: rr(0, H),
+        vx: rr(-0.3, 0.3), vy: rr(-0.3, 0.3),
+        r: rr(1.1, 3.2) * (0.9 + t * 0.6),  // size varies by palette pos
+        h: c.h, s: c.s, l: c.l,
+        temper: pick(TEMPERS),
+        phase: rr(0, Math.PI * 2),           // for gentle pulsing
+        pulse: rr(0.7, 1.7),
+        maxSpeed: rr(1.4, 2.8),
+        wander: rr(0, Math.PI * 2),
+        energy: 1
+      });
+    }
+  }
+  spawn(COUNT);
+
+  /* ---------- pointer -------------------------------------------------- */
+  var ptr = { x: W / 2, y: H / 2, px: W / 2, py: H / 2, speed: 0, active: false, down: false };
+  function setPtr(x, y) {
+    ptr.x = x; ptr.y = y; ptr.active = true;
+    if (!started) begin();
+  }
+  window.addEventListener("pointermove", function (e) {
+    setPtr(e.clientX, e.clientY);
+  }, { passive: true });
+  window.addEventListener("pointerdown", function (e) {
+    setPtr(e.clientX, e.clientY);
+    ptr.down = true;
+    ripple(e.clientX, e.clientY);   // a tap sends out a shove
+  }, { passive: true });
+  window.addEventListener("pointerup", function () { ptr.down = false; }, { passive: true });
+  window.addEventListener("pointerleave", function () { ptr.active = false; }, { passive: true });
+  // keyboard: space also triggers a ripple at pointer for accessibility
+  window.addEventListener("keydown", function (e) {
+    if (!started) { begin(); return; }
+    if (e.code === "Space") { e.preventDefault(); ripple(ptr.x, ptr.y); }
+  });
+
+  /* A ripple is a short-lived radial shove that pushes creatures out.  */
+  var ripples = [];
+  function ripple(x, y) {
+    ripples.push({ x: x, y: y, r: 0, max: Math.max(W, H) * 0.5, life: 1 });
+  }
+
+  /* ================================================================== */
+  /*  Rare events - the "wait, what was that?" moments.                 */
+  /*  A scheduler fires an event every so often; which one is weighted  */
+  /*  by the day's seed so some days lean cometary, some bloom.         */
+  /* ================================================================== */
+  var comets = [];        // streaking lights that creatures chase
+  var blooms = [];        // slow expanding rings of light
+  var convergence = null; // a gravity well that briefly gathers everyone
+
+  function spawnComet() {
+    var edge = (rand() * 4) | 0;
+    var x, y, ang;
+    if (edge === 0) { x = -40; y = rr(0, H); ang = rr(-0.5, 0.5); }
+    else if (edge === 1) { x = W + 40; y = rr(0, H); ang = Math.PI + rr(-0.5, 0.5); }
+    else if (edge === 2) { x = rr(0, W); y = -40; ang = Math.PI / 2 + rr(-0.5, 0.5); }
+    else { x = rr(0, W); y = H + 40; ang = -Math.PI / 2 + rr(-0.5, 0.5); }
+    var sp = rr(4.5, 7);
+    comets.push({ x: x, y: y, vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp,
+                  h: PAL.base + rr(-30, 30), life: 1, trail: [] });
+    showFlash("a comet");
+  }
+  function spawnBloom() {
+    blooms.push({ x: rr(W * 0.2, W * 0.8), y: rr(H * 0.2, H * 0.8),
+                  r: 0, max: rr(160, 320), life: 1, h: PAL.base + rr(-40, 40) });
+    showFlash("a bloom");
+  }
+  function spawnConvergence() {
+    convergence = { x: rr(W * 0.3, W * 0.7), y: rr(H * 0.3, H * 0.7), life: 1, t: 0 };
+    showFlash("they gather");
+  }
+
+  var EVENTS = [
+    { fn: spawnComet, w: 3 },
+    { fn: spawnComet, w: 2 },
+    { fn: spawnBloom, w: 2 },
+    { fn: spawnConvergence, w: 1 }
+  ];
+  function fireEvent() {
+    var total = 0, i;
+    for (i = 0; i < EVENTS.length; i++) total += EVENTS[i].w;
+    var r = rand() * total;
+    for (i = 0; i < EVENTS.length; i++) { r -= EVENTS[i].w; if (r <= 0) { EVENTS[i].fn(); return; } }
+  }
+  // first event comes fairly soon so a visitor who stays is rewarded
+  var nextEventAt = 9 + rand() * 8;      // seconds
+  var elapsed = 0;
+
+  function showFlash(text) {
+    flash.textContent = text;
+    flash.classList.remove("pop");
+    void flash.offsetWidth;              // restart the animation
+    flash.classList.add("pop");
+  }
+
+  /* ================================================================== */
+  /*  Intro handoff                                                     */
+  /* ================================================================== */
+  var started = false;
+  function begin() {
+    if (started) return;
+    started = true;
+    veil.classList.add("gone");
+    setTimeout(function () {
+      hud.classList.add("show");
+      titleMark.classList.add("show");
+      hint.classList.add("show");
+    }, 900);
+    setTimeout(function () { hint.classList.add("fade"); }, 6500);
+  }
+  worldNameEl.textContent = WORLD_NAME;
+  dayNEl.textContent = "day " + (DAY.key % 1000);
+
+  /* ================================================================== */
+  /*  Simulation                                                        */
+  /* ================================================================== */
+  // spatial grid keeps flocking O(n) instead of O(n^2)
+  var CELL = 64;
+  var grid = {};
+  function gkey(cx, cy) { return cx + "," + cy; }
+  function rebuildGrid() {
+    grid = {};
+    for (var i = 0; i < creatures.length; i++) {
+      var c = creatures[i];
+      var cx = (c.x / CELL) | 0, cy = (c.y / CELL) | 0;
+      var k = gkey(cx, cy);
+      (grid[k] || (grid[k] = [])).push(i);
+    }
+  }
+
+  function step(dt) {
+    // pointer speed (px/frame-ish), smoothed
+    var dpx = ptr.x - ptr.px, dpy = ptr.y - ptr.py;
+    ptr.speed = ptr.speed * 0.8 + Math.min(60, Math.hypot(dpx, dpy)) * 0.2;
+    ptr.px = ptr.x; ptr.py = ptr.y;
+
+    rebuildGrid();
+
+    if (convergence) {
+      convergence.t += dt;
+      convergence.life -= dt / 4.5;       // ~4.5s pull
+      if (convergence.life <= 0) convergence = null;
+    }
+
+    for (var i = 0; i < creatures.length; i++) {
+      var c = creatures[i];
+
+      // --- flocking: sample neighbours from the 3x3 grid neighbourhood
+      var ax = 0, ay = 0;      // alignment
+      var cxs = 0, cys = 0;    // cohesion centroid
+      var sx = 0, sy = 0;      // separation
+      var n = 0;
+      var gx = (c.x / CELL) | 0, gy = (c.y / CELL) | 0;
+      for (var ox = -1; ox <= 1; ox++) {
+        for (var oy = -1; oy <= 1; oy++) {
+          var bucket = grid[gkey(gx + ox, gy + oy)];
+          if (!bucket) continue;
+          for (var b = 0; b < bucket.length; b++) {
+            var j = bucket[b];
+            if (j === i) continue;
+            var o = creatures[j];
+            var ddx = o.x - c.x, ddy = o.y - c.y;
+            var d2 = ddx * ddx + ddy * ddy;
+            if (d2 > 3600 || d2 === 0) continue;   // 60px neighbourhood
+            n++;
+            ax += o.vx; ay += o.vy;
+            cxs += o.x; cys += o.y;
+            if (d2 < 340) {                          // too close: push apart
+              var inv = 1 / Math.sqrt(d2);
+              sx -= ddx * inv; sy -= ddy * inv;
+            }
+          }
+        }
+      }
+      if (n > 0) {
+        ax /= n; ay /= n;
+        cxs = cxs / n - c.x; cys = cys / n - c.y;
+        c.vx += (ax - c.vx) * 0.035;         // alignment
+        c.vy += (ay - c.vy) * 0.035;
+        c.vx += cxs * 0.0009;                 // cohesion
+        c.vy += cys * 0.0009;
+        c.vx += sx * 0.045;                   // separation
+        c.vy += sy * 0.045;
+      }
+
+      // --- wander so the field never freezes into a lattice
+      c.wander += rr(-0.3, 0.3);
+      c.vx += Math.cos(c.wander) * 0.02;
+      c.vy += Math.sin(c.wander) * 0.02;
+
+      // --- pointer interaction by temperament
+      if (ptr.active) {
+        var pdx = ptr.x - c.x, pdy = ptr.y - c.y;
+        var pd = Math.hypot(pdx, pdy) || 1;
+        var pull = 0;
+        if (c.temper === "curious") {
+          if (pd < 260) {
+            // approach but orbit: mix radial pull with a tangential nudge
+            pull = (pd - 90) * 0.00035;
+            var tx = -pdy / pd, ty = pdx / pd;
+            c.vx += tx * 0.22; c.vy += ty * 0.22;
+          }
+        } else if (c.temper === "bold") {
+          if (pd < 340) pull = 0.06;
+        } else if (c.temper === "shy") {
+          if (pd < 200) pull = -(0.05 + ptr.speed * 0.004);  // flee, more if you're fast
+        }
+        // apply pull along the unit vector toward (or away from) the pointer
+        if (pull) { c.vx += (pdx / pd) * pull * 6; c.vy += (pdy / pd) * pull * 6; }
+
+        // a fast pointer shoves everyone a little, regardless of temper
+        if (ptr.speed > 8 && pd < 120) {
+          c.vx += (pdx / pd) * -0.08 * (ptr.speed / 30);
+          c.vy += (pdy / pd) * -0.08 * (ptr.speed / 30);
+        }
+        // energy brightens creatures near an active pointer
+        c.energy += ((pd < 160 ? 1.9 : 1) - c.energy) * 0.05;
+      } else {
+        c.energy += (1 - c.energy) * 0.02;
+      }
+
+      // --- convergence gravity well
+      if (convergence) {
+        var vdx = convergence.x - c.x, vdy = convergence.y - c.y;
+        var vd = Math.hypot(vdx, vdy) || 1;
+        var g = 0.10 * convergence.life;
+        c.vx += (vdx / vd) * g;
+        c.vy += (vdy / vd) * g;
+        var tx2 = -vdy / vd, ty2 = vdx / vd;   // swirl for a vortex look
+        c.vx += tx2 * 0.10 * convergence.life;
+        c.vy += ty2 * 0.10 * convergence.life;
+      }
+
+      // --- comets: creatures are briefly drawn to a passing comet
+      for (var m = 0; m < comets.length; m++) {
+        var cm = comets[m];
+        var kdx = cm.x - c.x, kdy = cm.y - c.y;
+        var kd2 = kdx * kdx + kdy * kdy;
+        if (kd2 < 24000) {
+          var kd = Math.sqrt(kd2) || 1;
+          c.vx += (kdx / kd) * 0.10;
+          c.vy += (kdy / kd) * 0.10;
+          c.energy += (2.2 - c.energy) * 0.06;
+        }
+      }
+
+      // --- ripples: radial shove from taps/space
+      for (var rp = 0; rp < ripples.length; rp++) {
+        var R = ripples[rp];
+        var rdx = c.x - R.x, rdy = c.y - R.y;
+        var rd = Math.hypot(rdx, rdy) || 1;
+        if (Math.abs(rd - R.r) < 46) {          // only the wavefront pushes
+          var force = 1.4 * R.life;
+          c.vx += (rdx / rd) * force;
+          c.vy += (rdy / rd) * force;
+          c.energy += (2.4 - c.energy) * 0.2;
+        }
+      }
+
+      // --- soft edge steering: creatures ease away from the walls so the
+      //     pool stays evenly filled instead of piling up on the perimeter
+      //     (which happened on tall/narrow phone screens).
+      var margin = Math.min(W, H) * 0.14;
+      if (c.x < margin)      c.vx += (1 - c.x / margin) * 0.14;
+      else if (c.x > W - margin) c.vx -= (1 - (W - c.x) / margin) * 0.14;
+      if (c.y < margin)      c.vy += (1 - c.y / margin) * 0.14;
+      else if (c.y > H - margin) c.vy -= (1 - (H - c.y) / margin) * 0.14;
+
+      // --- speed clamp
+      var sp = Math.hypot(c.vx, c.vy);
+      var lim = c.maxSpeed * (convergence ? 1.7 : 1);
+      if (sp > lim) { c.vx = c.vx / sp * lim; c.vy = c.vy / sp * lim; }
+      // gentle drag so bursts settle
+      c.vx *= 0.985; c.vy *= 0.985;
+
+      // --- integrate
+      c.x += c.vx * dt * 60;
+      c.y += c.vy * dt * 60;
+
+      // --- wrap softly at edges (torus) so nobody piles at a wall
+      if (c.x < -20) c.x = W + 20; else if (c.x > W + 20) c.x = -20;
+      if (c.y < -20) c.y = H + 20; else if (c.y > H + 20) c.y = -20;
+
+      c.phase += dt * c.pulse;
+    }
+
+    // advance events
+    for (var e = comets.length - 1; e >= 0; e--) {
+      var C = comets[e];
+      C.trail.push({ x: C.x, y: C.y });
+      if (C.trail.length > 18) C.trail.shift();
+      C.x += C.vx; C.y += C.vy;
+      if (C.x < -80 || C.x > W + 80 || C.y < -80 || C.y > H + 80) comets.splice(e, 1);
+    }
+    for (var bl = blooms.length - 1; bl >= 0; bl--) {
+      var B = blooms[bl];
+      B.r += (B.max - B.r) * 0.03 + 0.6;
+      B.life -= dt / 3.5;
+      if (B.life <= 0) blooms.splice(bl, 1);
+    }
+    for (var rp2 = ripples.length - 1; rp2 >= 0; rp2--) {
+      var RR2 = ripples[rp2];
+      RR2.r += 9;
+      RR2.life -= dt / 1.1;
+      if (RR2.life <= 0 || RR2.r > RR2.max) ripples.splice(rp2, 1);
+    }
+
+    // event scheduler
+    elapsed += dt;
+    if (started && elapsed >= nextEventAt) {
+      fireEvent();
+      nextEventAt = elapsed + 14 + rand() * 16;   // 14–30s between events
+    }
+  }
+
+  /* ================================================================== */
+  /*  Render                                                            */
+  /* ================================================================== */
+  function render() {
+    // trail fade: draw a translucent backdrop instead of clearing, so
+    // motion leaves soft comet-tails. Lower alpha => longer trails.
+    ctx.globalCompositeOperation = "source-over";
+    ctx.fillStyle = reduceMotion ? "rgba(4,6,12,1)" : "rgba(4,6,12,0.22)";
+    ctx.fillRect(0, 0, W, H);
+
+    // everything glowing draws additively
+    ctx.globalCompositeOperation = "lighter";
+
+    // blooms first (behind creatures)
+    for (var bl = 0; bl < blooms.length; bl++) {
+      var B = blooms[bl];
+      var bg = ctx.createRadialGradient(B.x, B.y, B.r * 0.6, B.x, B.y, B.r);
+      var a = Math.max(0, B.life) * 0.5;
+      bg.addColorStop(0, "hsla(" + B.h + ",90%,65%,0)");
+      bg.addColorStop(0.82, "hsla(" + B.h + ",90%,66%," + (a * 0.5) + ")");
+      bg.addColorStop(1, "hsla(" + B.h + ",90%,70%,0)");
+      ctx.fillStyle = bg;
+      ctx.beginPath(); ctx.arc(B.x, B.y, B.r, 0, Math.PI * 2); ctx.fill();
+    }
+
+    // creatures
+    for (var i = 0; i < creatures.length; i++) {
+      var c = creatures[i];
+      var pulse = 0.75 + 0.25 * Math.sin(c.phase);
+      var glow = c.r * (2.4 + c.energy * 1.4) * pulse;
+      var light = Math.min(85, c.l + c.energy * 8);
+
+      // soft halo
+      var g = ctx.createRadialGradient(c.x, c.y, 0, c.x, c.y, glow);
+      g.addColorStop(0, "hsla(" + c.h + "," + c.s + "%," + light + "%," + (0.55 * c.energy) + ")");
+      g.addColorStop(0.4, "hsla(" + c.h + "," + c.s + "%," + light + "%," + (0.18 * c.energy) + ")");
+      g.addColorStop(1, "hsla(" + c.h + "," + c.s + "%," + light + "%,0)");
+      ctx.fillStyle = g;
+      ctx.beginPath(); ctx.arc(c.x, c.y, glow, 0, Math.PI * 2); ctx.fill();
+
+      // bright core
+      ctx.fillStyle = "hsla(" + c.h + "," + (c.s - 15) + "%," + Math.min(95, light + 18) + "%," + (0.9 * pulse) + ")";
+      ctx.beginPath(); ctx.arc(c.x, c.y, c.r * pulse, 0, Math.PI * 2); ctx.fill();
+    }
+
+    // comets on top
+    for (var m = 0; m < comets.length; m++) {
+      var C = comets[m];
+      for (var t = 0; t < C.trail.length; t++) {
+        var tp = C.trail[t];
+        var ta = (t / C.trail.length);
+        var tr = 1 + ta * 5;
+        ctx.fillStyle = "hsla(" + C.h + ",90%,70%," + (ta * 0.5) + ")";
+        ctx.beginPath(); ctx.arc(tp.x, tp.y, tr, 0, Math.PI * 2); ctx.fill();
+      }
+      var cg = ctx.createRadialGradient(C.x, C.y, 0, C.x, C.y, 22);
+      cg.addColorStop(0, "hsla(" + C.h + ",95%,85%,0.95)");
+      cg.addColorStop(0.4, "hsla(" + C.h + ",95%,70%,0.4)");
+      cg.addColorStop(1, "hsla(" + C.h + ",95%,70%,0)");
+      ctx.fillStyle = cg;
+      ctx.beginPath(); ctx.arc(C.x, C.y, 22, 0, Math.PI * 2); ctx.fill();
+    }
+
+    // convergence well glow
+    if (convergence) {
+      var vg = ctx.createRadialGradient(convergence.x, convergence.y, 0, convergence.x, convergence.y, 120);
+      var va = convergence.life * 0.35;
+      vg.addColorStop(0, "hsla(" + PAL.base + ",90%,80%," + va + ")");
+      vg.addColorStop(1, "hsla(" + PAL.base + ",90%,80%,0)");
+      ctx.fillStyle = vg;
+      ctx.beginPath(); ctx.arc(convergence.x, convergence.y, 120, 0, Math.PI * 2); ctx.fill();
+    }
+
+    // the cursor itself is a light (custom pointer)
+    if (ptr.active && !isTouch) {
+      var pg = ctx.createRadialGradient(ptr.x, ptr.y, 0, ptr.x, ptr.y, 26);
+      pg.addColorStop(0, "rgba(255,244,214,0.9)");
+      pg.addColorStop(0.5, "hsla(" + PAL.base + ",80%,75%,0.35)");
+      pg.addColorStop(1, "hsla(" + PAL.base + ",80%,75%,0)");
+      ctx.fillStyle = pg;
+      ctx.beginPath(); ctx.arc(ptr.x, ptr.y, 26, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "rgba(255,250,235,0.95)";
+      ctx.beginPath(); ctx.arc(ptr.x, ptr.y, 2.4, 0, Math.PI * 2); ctx.fill();
+    }
+
+    ctx.globalCompositeOperation = "source-over";
+  }
+
+  /* ================================================================== */
+  /*  Loop                                                              */
+  /* ================================================================== */
+  var last = performance.now();
+  var acc = 0;
+  var uiTick = 0;
+  function frame(now) {
+    var dt = Math.min(0.05, (now - last) / 1000);  // clamp big gaps
+    last = now;
+    step(dt);
+    render();
+
+    // update the live count occasionally (creatures are constant, but the
+    // "alive" figure breathes with energy so the HUD feels responsive)
+    uiTick += dt;
+    if (uiTick > 0.5) {
+      uiTick = 0;
+      countNEl.textContent = started ? COUNT : 0;
+    }
+
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+
+  // If the user never moves, drift the "pointer" gently so the world is
+  // never fully static behind the veil - a slow tour of the pool.
+  var idleT = 0;
+  setInterval(function () {
+    if (!ptr.active) {
+      idleT += 0.1;
+      ptr.px = ptr.x; ptr.py = ptr.y;
+      ptr.x = W / 2 + Math.cos(idleT * 0.3) * W * 0.28;
+      ptr.y = H / 2 + Math.sin(idleT * 0.21) * H * 0.24;
+      // note: ptr.active stays false so no cursor light is drawn
+    }
+  }, 100);
+
+  // expose the world seed on the title for the curious (view-source vibe)
+  titleMark.title = WORLD_NAME + " · " + PAL.name + " · seed " + DAY.seed;
+
+})();
+</script>
+</body>
+</html>
