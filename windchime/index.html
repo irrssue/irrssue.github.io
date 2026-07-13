@@ -120,7 +120,7 @@
 
   <!-- transient sound hint -->
   <div id="hint" style="position:absolute;left:0;right:0;bottom:14px;text-align:center;z-index:5;pointer-events:none;transition:opacity 1.4s ease;opacity:0;">
-    <div style="font-size:11px;letter-spacing:0.28em;color:#9a8f79;text-transform:uppercase;">move or tap to let the wind in</div>
+    <div style="font-size:11px;letter-spacing:0.28em;color:#9a8f79;text-transform:uppercase;">move or tap to let the sound in</div>
   </div>
 
 </div>
@@ -217,7 +217,6 @@ const WIND = {
   nextGust: 1.5 + Math.random() * 3,
   u: 0,                   // instantaneous signed wind speed
   smooth: 0,              // |u| smoothed, for the wind-noise bed
-  pointer: 0,             // wind injected by cursor movement
   phases: [0, 0, 0, 0],
 };
 // low-frequency turbulence harmonics (incommensurate freqs, ~von Karman shape:
@@ -254,10 +253,7 @@ function updateWind(dt) {
   }
   turb *= carrier * 0.4;
 
-  // pointer wind decays quickly once the hand stops
-  WIND.pointer *= Math.exp(-2.2 * dt);
-
-  WIND.u = WIND.mean + gust + turb + WIND.pointer;
+  WIND.u = WIND.mean + gust + turb;
   WIND.smooth += (Math.abs(WIND.u) - WIND.smooth) * Math.min(1, 2.5 * dt);
 }
 
@@ -436,24 +432,8 @@ setTimeout(() => {
   if ((!actx || actx.state !== 'running') && hint) hint.style.opacity = '1';
 }, 1200);
 
-// cursor movement is wind: horizontal hand speed becomes air speed
-let lastPX = null, lastPT = 0;
-window.addEventListener('pointermove', (e) => {
-  wake();
-  const now = performance.now();
-  if (lastPX != null && now > lastPT) {
-    const vx = (e.clientX - lastPX) / (now - lastPT) * 1000; // px/s
-    // hand speed -> wind, capped so a fast flick is a strong gust, not a hurricane
-    WIND.pointer = Math.max(-6, Math.min(6, WIND.pointer + vx / SCALE * 0.5));
-  }
-  lastPX = e.clientX; lastPT = now;
-}, { passive: true });
-
-// a tap throws a burst of wind from the tap side
-window.addEventListener('pointerdown', (e) => {
-  const dir = e.clientX < window.innerWidth / 2 ? 1 : -1;
-  WIND.pointer += dir * (3 + Math.random() * 2);
-}, { passive: true });
+// pointer movement only unlocks audio (browser autoplay policy); it is not wind
+window.addEventListener('pointermove', wake, { passive: true });
 
 const DEG = 57.29578;
 function render() {
