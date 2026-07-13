@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Windchime</title>
+  <meta name="description" content="A wind chime with real physics. Gusts drift by, the sail catches them, and the clapper only rings a tube when it actually strikes one.">
+  <meta name="theme-color" content="#efe7d6">
+  <meta property="og:title" content="Windchime">
+  <meta property="og:description" content="A wind chime with real physics - it only makes sound when the wind actually moves it.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>&#127925;</text></svg>">
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; height: 100%; }
+    body { background: #efe7d6; }
+    a { color: #6f6553; text-decoration: none; }
+    a:hover { color: #4a4436; }
+    .stage {
+      position: relative; min-height: 100vh; width: 100%;
+      background: #efe7d6;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+      font-family: "Cormorant Garamond", "Hoefler Text", Georgia, serif;
+    }
+    .chime-svg { position: relative; z-index: 3; height: 78vh; max-height: 820px; width: auto; overflow: visible; }
+  </style>
+</head>
+<body>
+<div class="stage" id="stage">
+
+  <!-- paper texture -->
+  <svg id="paper" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" style="position:absolute;inset:0;pointer-events:none;mix-blend-mode:multiply;opacity:0.55;z-index:1;">
+    <defs>
+      <filter id="paperNoise"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"></feTurbulence><feColorMatrix type="matrix" values="0 0 0 0 0.30  0 0 0 0 0.26  0 0 0 0 0.18  0 0 0 0.05 0"></feColorMatrix></filter>
+    </defs>
+    <rect width="100%" height="100%" filter="url(#paperNoise)"></rect>
+  </svg>
+  <!-- warm vignette -->
+  <div style="position:absolute;inset:0;pointer-events:none;z-index:2;background:radial-gradient(120% 90% at 50% 42%, rgba(255,250,238,0.55), rgba(232,222,201,0) 55%, rgba(120,105,78,0.10) 100%);"></div>
+
+  <!-- the chime -->
+  <svg id="chime" class="chime-svg" viewBox="0 0 420 700">
+    <defs>
+      <linearGradient id="tubeGrad" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stop-color="#100e0b"></stop>
+        <stop offset="16%" stop-color="#312c25"></stop>
+        <stop offset="38%" stop-color="#4f473b"></stop>
+        <stop offset="50%" stop-color="#5b5244"></stop>
+        <stop offset="62%" stop-color="#3f382f"></stop>
+        <stop offset="84%" stop-color="#1f1c17"></stop>
+        <stop offset="100%" stop-color="#0d0b09"></stop>
+      </linearGradient>
+      <linearGradient id="woodGrad" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stop-color="#241c14"></stop>
+        <stop offset="50%" stop-color="#574636"></stop>
+        <stop offset="100%" stop-color="#211a12"></stop>
+      </linearGradient>
+      <linearGradient id="sailGrad" x1="0" y1="0" x2="0.7" y2="1">
+        <stop offset="0%" stop-color="#2a251d"></stop>
+        <stop offset="48%" stop-color="#39322a"></stop>
+        <stop offset="100%" stop-color="#141109"></stop>
+      </linearGradient>
+      <linearGradient id="metalGrad" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stop-color="#4c4437"></stop>
+        <stop offset="40%" stop-color="#8b8069"></stop>
+        <stop offset="53%" stop-color="#9c9077"></stop>
+        <stop offset="100%" stop-color="#2b2720"></stop>
+      </linearGradient>
+      <filter id="softShadow" x="-40%" y="-40%" width="180%" height="200%">
+        <feDropShadow dx="0" dy="7" stdDeviation="6" flood-color="#3a3018" flood-opacity="0.18"></feDropShadow>
+      </filter>
+    </defs>
+
+    <!-- fixed hook -->
+    <g id="hook" stroke="#5c5346" stroke-width="3" fill="none" stroke-linecap="round">
+      <path d="M210,20 a9,9 0 1 1 -0.1,0" stroke="#6b6153" stroke-width="3.4"></path>
+      <path d="M210,29 L210,50" stroke="#4f4638" stroke-width="2.4"></path>
+    </g>
+
+    <g id="assembly" filter="url(#softShadow)">
+      <!-- rigging: support strings + ring -->
+      <g id="rig" stroke="#2b2721" stroke-width="1" fill="none">
+        <path d="M210,50 L138,150"></path>
+        <path d="M210,50 L174,142"></path>
+        <path d="M210,50 L210,136"></path>
+        <path d="M210,50 L246,142"></path>
+        <path d="M210,50 L282,150"></path>
+        <ellipse cx="210" cy="150" rx="74" ry="14" stroke="url(#metalGrad)" stroke-width="3.4" fill="none"></ellipse>
+        <ellipse cx="210" cy="153.5" rx="74" ry="14" stroke="#1c1913" stroke-width="1" fill="none" opacity="0.6"></ellipse>
+      </g>
+
+      <!-- tubes -->
+      <g class="tube" data-i="0" data-px="144" data-py="156"><line x1="144" y1="150" x2="144" y2="156" stroke="#2b2721" stroke-width="0.8"></line><rect x="137" y="156" width="14" height="320" rx="7" fill="url(#tubeGrad)"></rect></g>
+      <g class="tube" data-i="1" data-px="170" data-py="160"><line x1="170" y1="150" x2="170" y2="160" stroke="#2b2721" stroke-width="0.8"></line><rect x="163" y="160" width="14" height="275" rx="7" fill="url(#tubeGrad)"></rect></g>
+      <g class="tube" data-i="2" data-px="196" data-py="163"><line x1="196" y1="150" x2="196" y2="163" stroke="#2b2721" stroke-width="0.8"></line><rect x="189" y="163" width="14" height="230" rx="7" fill="url(#tubeGrad)"></rect></g>
+      <g class="tube" data-i="3" data-px="224" data-py="163"><line x1="224" y1="150" x2="224" y2="163" stroke="#2b2721" stroke-width="0.8"></line><rect x="217" y="163" width="14" height="210" rx="7" fill="url(#tubeGrad)"></rect></g>
+      <g class="tube" data-i="4" data-px="250" data-py="160"><line x1="250" y1="150" x2="250" y2="160" stroke="#2b2721" stroke-width="0.8"></line><rect x="243" y="160" width="14" height="250" rx="7" fill="url(#tubeGrad)"></rect></g>
+      <g class="tube" data-i="5" data-px="276" data-py="156"><line x1="276" y1="150" x2="276" y2="156" stroke="#2b2721" stroke-width="0.8"></line><rect x="269" y="156" width="14" height="300" rx="7" fill="url(#tubeGrad)"></rect></g>
+
+      <!-- central assembly: string, clapper, sail -->
+      <g id="central">
+        <line x1="210" y1="150" x2="210" y2="293" stroke="#2b2721" stroke-width="1"></line>
+        <rect x="180" y="293" width="60" height="14" rx="7" fill="url(#woodGrad)"></rect>
+        <circle cx="210" cy="300" r="4.2" fill="#1c1710"></circle>
+        <line x1="210" y1="307" x2="210" y2="519" stroke="#2b2721" stroke-width="1"></line>
+        <g id="sail">
+          <circle cx="210" cy="519" r="3" fill="#1c1710"></circle>
+          <path d="M181,522 Q210,514 239,522 Q253,543 238,568 Q223,588 210,590 Q197,588 182,568 Q167,543 181,522 Z" fill="url(#sailGrad)" stroke="#0f0c07" stroke-width="0.8"></path>
+          <path d="M188,528 Q210,523 232,528" stroke="#5b5244" stroke-width="0.8" fill="none" opacity="0.5"></path>
+        </g>
+      </g>
+    </g>
+  </svg>
+
+  <!-- the only text -->
+  <div style="position:absolute;left:0;right:0;bottom:38px;text-align:center;z-index:4;pointer-events:none;">
+    <div style="font-size:15px;letter-spacing:0.42em;color:#6b6150;font-weight:500;text-indent:0.42em;font-family:'Times New Roman',Times,serif;">This too shall pass</div>
+  </div>
+
+  <!-- transient sound hint -->
+  <div id="hint" style="position:absolute;left:0;right:0;bottom:14px;text-align:center;z-index:5;pointer-events:none;transition:opacity 1.4s ease;opacity:0;">
+    <div style="font-size:11px;letter-spacing:0.28em;color:#9a8f79;text-transform:uppercase;">move or tap to let the wind in</div>
+  </div>
+
+</div>
+
+<script>
+(() => {
+'use strict';
+
+/* ================================================================
+   Physical model
+   ----------------------------------------------------------------
+   Everything below runs in SI units and is projected onto the SVG
+   at SCALE px per metre (the drawing is 400 px tall from ring to
+   longest tube tip, which we read as roughly a 1 m chime).
+
+   Wind      u(t)   Ornstein-Uhlenbeck mean + gust envelopes + turbulence
+   Sail rig  th_c   compound pendulum (clapper mass + sail mass) driven by
+                    quadratic aerodynamic drag on the sail:
+                      F = 1/2 * rho * Cd * A * v_rel * |v_rel|
+                      v_rel = u*cos(th) - L_s * th'          (sail speed)
+                      I th'' = -(m_c L_c + m_s L_s) g sin th
+                               + F * L_s * cos th - c_struct th'
+   Tubes     th_i   uniform rod pivoted at its top end:
+                      th'' = -(3g / 2L) sin th - c th' + small drag
+   Strike           when the clapper's angle crosses a tube's contact
+                    angle while approaching, resolve a 1-D collision at
+                    the contact point using effective masses
+                      m_eff = I / r^2   (pendulum struck at radius r)
+                    with restitution e. Sound volume = |impact velocity|,
+                    so silence is guaranteed unless something is moving.
+   ================================================================ */
+
+const SCALE = 400;            // px per metre
+const G = 9.81;
+const RHO = 1.2;              // air density kg/m^3
+
+// --- geometry read off the SVG (px -> m) ---
+const RING_Y = 150;
+const L_CLAPPER = (300 - RING_Y) / SCALE;   // 0.375 m, pivot to clapper centre
+const L_SAIL    = (555 - RING_Y) / SCALE;   // ~1.01 m, pivot to sail centre
+const M_CLAPPER = 0.15;      // kg, wooden disk
+const M_SAIL    = 0.03;      // kg
+const SAIL_AREA = 0.008;     // m^2
+const CD_SAIL   = 1.2;       // flat-plate-ish drag coefficient
+
+// compound pendulum constants for the central assembly
+const I_C  = M_CLAPPER * L_CLAPPER ** 2 + M_SAIL * L_SAIL ** 2;
+const GRAV_C = (M_CLAPPER * L_CLAPPER + M_SAIL * L_SAIL) * G; // torque coeff
+const MEFF_CLAPPER = I_C / L_CLAPPER ** 2; // effective mass at clapper height
+
+// --- tubes ---
+// off: horizontal offset from centre (px). th: contact angle (rad) - the
+// clapper swing angle at which its edge meets this tube (wider offset =
+// larger angle, matching the drawn geometry). freq: fundamental (Hz),
+// an E minor pentatonic voicing; a real tube's pitch goes as 1/L^2,
+// which these lengths approximate.
+const TUBE_SPEC = [
+  { i: 0, off: -66, lenPx: 320, py: 156, freq: 164.81, th: 0.20 },
+  { i: 1, off: -40, lenPx: 275, py: 160, freq: 220.00, th: 0.12 },
+  { i: 2, off: -14, lenPx: 230, py: 163, freq: 293.66, th: 0.05 },
+  { i: 3, off:  14, lenPx: 210, py: 163, freq: 329.63, th: 0.05 },
+  { i: 4, off:  40, lenPx: 250, py: 160, freq: 246.94, th: 0.12 },
+  { i: 5, off:  66, lenPx: 300, py: 156, freq: 196.00, th: 0.20 },
+];
+
+const tubes = TUBE_SPEC.map(s => {
+  const L = s.lenPx / SCALE;                 // rod length, m
+  const m = 0.25 * L;                        // aluminium tube ~0.25 kg/m
+  const I = m * L * L / 3;                   // rod pivoted at end
+  const rContact = (300 - s.py) / SCALE;     // contact radius (clapper height)
+  return {
+    ...s,
+    a: 0, av: 0,                             // angle, angular velocity
+    omega2: 3 * G / (2 * L),                 // (3g/2L): rod pendulum
+    meff: I / (rContact * rContact),         // effective mass at contact
+    rContact,
+    side: s.off < 0 ? -1 : 1,
+    lastHit: -1,
+    dragCoef: 0.5 * RHO * 1.1 * (L * 0.019) * L / 2 / I, // tube face drag -> ang accel per u|u|
+  };
+});
+
+// --- state ---
+let t = 0;
+let thC = 0, wC = 0;      // central pendulum angle / angular velocity
+let thG = 0, wG = 0;      // whole-assembly sway (hook string)
+let thS = 0, wS = 0;      // sail flutter about its own attachment
+let prevThC = 0;
+
+// --- wind ---
+const WIND = {
+  mean: 0,                // OU process around 0 (signed, m/s)
+  gustT: null, gustDur: 0, gustAmp: 0, gustDir: 1,
+  nextGust: 1.5 + Math.random() * 3,
+  u: 0,                   // instantaneous signed wind speed
+  smooth: 0,              // |u| smoothed, for the wind-noise bed
+  pointer: 0,             // wind injected by cursor movement
+  phases: [0, 0, 0, 0],
+};
+// low-frequency turbulence harmonics (incommensurate freqs, ~von Karman shape:
+// amplitude falls off with frequency)
+const TURB = [
+  { f: 0.11, a: 0.50 }, { f: 0.29, a: 0.32 }, { f: 0.63, a: 0.20 }, { f: 1.37, a: 0.11 },
+];
+
+function updateWind(dt) {
+  // Ornstein-Uhlenbeck drift of the mean: reverts to calm, wanders in gusts' wake
+  const theta = 0.25, sigma = 0.6;
+  WIND.mean += theta * (0 - WIND.mean) * dt + sigma * Math.sqrt(dt) * (Math.random() * 2 - 1);
+
+  // scheduled gusts with a smooth (1 - cos) envelope
+  if (t > WIND.nextGust) {
+    WIND.gustAmp = 2.0 + Math.random() * 3.5;           // 2-5.5 m/s peak
+    WIND.gustDir = Math.random() < 0.5 ? -1 : 1;
+    WIND.gustT = 0;
+    WIND.gustDur = 2 + Math.random() * 4;
+    WIND.nextGust = t + WIND.gustDur + 4 + Math.random() * 10;
+  }
+  let gust = 0;
+  if (WIND.gustT != null && WIND.gustT < WIND.gustDur) {
+    WIND.gustT += dt;
+    gust = WIND.gustDir * WIND.gustAmp * 0.5 * (1 - Math.cos(2 * Math.PI * Math.min(1, WIND.gustT / WIND.gustDur)));
+  }
+
+  // turbulence: sum of slow sinusoids, scaled by how much wind there is
+  let turb = 0;
+  const carrier = 0.4 + Math.abs(WIND.mean + gust) * 0.5;
+  for (let i = 0; i < TURB.length; i++) {
+    WIND.phases[i] += TURB[i].f * 2 * Math.PI * dt;
+    turb += TURB[i].a * Math.sin(WIND.phases[i]);
+  }
+  turb *= carrier * 0.4;
+
+  // pointer wind decays quickly once the hand stops
+  WIND.pointer *= Math.exp(-2.2 * dt);
+
+  WIND.u = WIND.mean + gust + turb + WIND.pointer;
+  WIND.smooth += (Math.abs(WIND.u) - WIND.smooth) * Math.min(1, 2.5 * dt);
+}
+
+// --- dynamics ---
+function step(dt) {
+  // central compound pendulum, driven by quadratic drag on the sail
+  const sailVel = L_SAIL * wC;                          // horizontal sail speed
+  const vRel = WIND.u * Math.cos(thC) - sailVel;
+  const Fdrag = 0.5 * RHO * CD_SAIL * SAIL_AREA * vRel * Math.abs(vRel);
+  const alphaC = (-GRAV_C * Math.sin(thC) + Fdrag * L_SAIL * Math.cos(thC)) / I_C
+               - 0.12 * wC;                             // string/pivot losses
+  wC += alphaC * dt;
+  thC += wC * dt;
+
+  // whole-assembly sway: short pendulum from the hook, pushed by total drag
+  const alphaG = -(G / 0.25) * Math.sin(thG) - 1.6 * wG + Fdrag / (0.6 * 0.25);
+  wG += alphaG * dt;
+  thG += wG * dt;
+  thG = Math.max(-0.09, Math.min(0.09, thG));
+
+  // sail flutter about its own hinge (light, high frequency, turbulent kick)
+  const alphaS = -55 * Math.sin(thS) - 4 * wS + 6 * (vRel * Math.abs(vRel)) * 0.15
+               + (Math.random() - 0.5) * 2 * Math.abs(WIND.u);
+  wS += alphaS * dt;
+  thS += wS * dt;
+  thS = Math.max(-0.18, Math.min(0.18, thS));
+
+  // tubes: rod pendulums with their own small wind drag
+  for (const tb of tubes) {
+    const aTube = -tb.omega2 * Math.sin(tb.a) - 0.8 * tb.av
+                + tb.dragCoef * WIND.u * Math.abs(WIND.u);
+    tb.av += aTube * dt;
+    tb.a += tb.av * dt;
+    tb.a = Math.max(-0.3, Math.min(0.3, tb.a));
+  }
+
+  checkStrikes();
+  prevThC = thC;
+}
+
+// collision: clapper edge meets tube at the tube's contact angle
+const RESTITUTION = 0.35;   // wood on aluminium, fairly dead
+function checkStrikes() {
+  for (const tb of tubes) {
+    const crossed = tb.side > 0
+      ? thC >= tb.th && prevThC < tb.th
+      : thC <= -tb.th && prevThC > -tb.th;
+    if (!crossed || t - tb.lastHit < 0.12) continue;
+
+    // linear velocities at the contact point (m/s, horizontal)
+    const vClap = L_CLAPPER * wC;
+    const vTube = tb.rContact * tb.av;
+    const approach = (vClap - vTube) * tb.side;
+    if (approach <= 0.01) continue;   // grazing or separating: no sound
+
+    // 1-D collision with effective masses and restitution
+    const m1 = MEFF_CLAPPER, m2 = tb.meff;
+    const v1 = (m1 * vClap + m2 * vTube - m2 * RESTITUTION * (vClap - vTube)) / (m1 + m2);
+    const v2 = (m1 * vClap + m2 * vTube + m1 * RESTITUTION * (vClap - vTube)) / (m1 + m2);
+    wC = v1 / L_CLAPPER;
+    tb.av = v2 / tb.rContact;
+    tb.lastHit = t;
+
+    // loudness tracks impact speed; this rig peaks near 0.35 m/s at contact
+    strike(tb.freq, Math.min(1, Math.max(0.08, approach * 2.8)));
+  }
+}
+
+/* ================================================================
+   Audio - modal synthesis. Overtone ratios 1 : 2.76 : 5.40 : 8.93
+   are the transverse modes of an ideal free-free bar, which is what
+   a chime tube is acoustically.
+   ================================================================ */
+let actx = null, chimeBus = null, windGain = null;
+
+function initAudio() {
+  const AC = window.AudioContext || window.webkitAudioContext;
+  if (!AC || actx) return;
+  try { actx = new AC(); } catch (e) { return; }
+
+  const master = actx.createGain();
+  master.gain.value = 0.85;
+  master.connect(actx.destination);
+
+  // gentle reverb tail
+  const conv = actx.createConvolver();
+  conv.buffer = makeImpulse(2.6, 2.4);
+  const wet = actx.createGain(); wet.gain.value = 0.5;
+  conv.connect(wet); wet.connect(master);
+
+  chimeBus = actx.createGain(); chimeBus.gain.value = 0.5;
+  chimeBus.connect(master);
+  chimeBus.connect(conv);
+
+  // soft wind bed, gain follows measured wind speed
+  windGain = actx.createGain(); windGain.gain.value = 0;
+  const wlp = actx.createBiquadFilter();
+  wlp.type = 'lowpass'; wlp.frequency.value = 470; wlp.Q.value = 0.4;
+  const src = actx.createBufferSource();
+  src.buffer = makeNoise(4); src.loop = true;
+  src.connect(wlp); wlp.connect(windGain); windGain.connect(master);
+  src.start();
+}
+
+function makeImpulse(dur, decay) {
+  const n = Math.floor(actx.sampleRate * dur);
+  const buf = actx.createBuffer(2, n, actx.sampleRate);
+  for (let ch = 0; ch < 2; ch++) {
+    const d = buf.getChannelData(ch);
+    for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / n, decay);
+  }
+  return buf;
+}
+
+function makeNoise(dur) {
+  const n = Math.floor(actx.sampleRate * dur);
+  const buf = actx.createBuffer(1, n, actx.sampleRate);
+  const d = buf.getChannelData(0);
+  let last = 0;
+  for (let i = 0; i < n; i++) {
+    const w = Math.random() * 2 - 1;
+    last = (last + 0.02 * w) / 1.02;
+    d[i] = last * 3.2;
+  }
+  return buf;
+}
+
+function strike(freq, vol) {
+  if (!actx || actx.state !== 'running') return;
+  const now = actx.currentTime;
+  const ratios = [1, 2.76, 5.40, 8.93];
+  const amps = [1, 0.5, 0.26, 0.12];
+  const durs = [5.5, 3.0, 1.8, 1.0];
+  const lp = actx.createBiquadFilter();
+  lp.type = 'lowpass';
+  // harder hits are brighter: filter opens with impact velocity
+  lp.frequency.value = 2800 + 3200 * vol;
+  lp.connect(chimeBus);
+  ratios.forEach((r, i) => {
+    const o = actx.createOscillator();
+    o.type = 'sine';
+    o.frequency.value = freq * r * (1 + (Math.random() - 0.5) * 0.004);
+    const e = actx.createGain();
+    const peak = vol * amps[i] * 0.42;
+    e.gain.setValueAtTime(0.0001, now);
+    e.gain.linearRampToValueAtTime(peak, now + 0.005);
+    e.gain.exponentialRampToValueAtTime(0.0001, now + durs[i]);
+    o.connect(e); e.connect(lp);
+    o.start(now); o.stop(now + durs[i] + 0.05);
+  });
+}
+
+/* ================================================================
+   Interaction + render loop
+   ================================================================ */
+const hint = document.getElementById('hint');
+const chime = document.getElementById('chime');
+const elAssembly = document.getElementById('assembly');
+const elCentral = document.getElementById('central');
+const elSail = document.getElementById('sail');
+const elTubes = [];
+chime.querySelectorAll('.tube').forEach(el => {
+  elTubes[+el.getAttribute('data-i')] = {
+    el, px: +el.getAttribute('data-px'), py: +el.getAttribute('data-py'),
+  };
+});
+
+function wake() {
+  initAudio();
+  if (actx && actx.state !== 'running') actx.resume().catch(() => {});
+  if (hint) hint.style.opacity = '0';
+}
+['pointerdown', 'keydown', 'touchstart'].forEach(ev =>
+  window.addEventListener(ev, wake, { passive: true }));
+setTimeout(() => {
+  if ((!actx || actx.state !== 'running') && hint) hint.style.opacity = '1';
+}, 1200);
+
+// cursor movement is wind: horizontal hand speed becomes air speed
+let lastPX = null, lastPT = 0;
+window.addEventListener('pointermove', (e) => {
+  wake();
+  const now = performance.now();
+  if (lastPX != null && now > lastPT) {
+    const vx = (e.clientX - lastPX) / (now - lastPT) * 1000; // px/s
+    // hand speed -> wind, capped so a fast flick is a strong gust, not a hurricane
+    WIND.pointer = Math.max(-6, Math.min(6, WIND.pointer + vx / SCALE * 0.5));
+  }
+  lastPX = e.clientX; lastPT = now;
+}, { passive: true });
+
+// a tap throws a burst of wind from the tap side
+window.addEventListener('pointerdown', (e) => {
+  const dir = e.clientX < window.innerWidth / 2 ? 1 : -1;
+  WIND.pointer += dir * (3 + Math.random() * 2);
+}, { passive: true });
+
+const DEG = 57.29578;
+function render() {
+  elAssembly.setAttribute('transform', `rotate(${thG * DEG} 210 44)`);
+  elCentral.setAttribute('transform', `rotate(${thC * DEG} 210 150)`);
+  elSail.setAttribute('transform', `rotate(${thS * DEG} 210 519)`);
+  for (const tb of tubes) {
+    const e = elTubes[tb.i];
+    e.el.setAttribute('transform', `rotate(${tb.a * DEG} ${e.px} ${e.py})`);
+  }
+  if (windGain && actx) {
+    windGain.gain.setTargetAtTime(Math.min(0.06, WIND.smooth * 0.012), actx.currentTime, 0.4);
+  }
+}
+
+// fixed-substep semi-implicit Euler keeps stiff springs stable
+const SUBSTEP = 1 / 240;
+let acc = 0, last = performance.now();
+function tick(now) {
+  let dt = (now - last) / 1000;
+  last = now;
+  if (dt > 0.1) dt = 0.1;   // tab was hidden: don't explode
+  acc += dt;
+  while (acc >= SUBSTEP) {
+    t += SUBSTEP;
+    updateWind(SUBSTEP);
+    step(SUBSTEP);
+    acc -= SUBSTEP;
+  }
+  render();
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+})();
+</script>
+</body>
+</html>
