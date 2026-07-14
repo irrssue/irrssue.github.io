@@ -369,32 +369,23 @@
         .modal .form-group { margin-bottom: 16px; }
         .modal-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 
-        /* ── Inline upload box ─────────────────────────── */
-        .upload-box { margin-top: 8px; }
-
-        .upload-box summary {
-            font-size: 12px;
-            color: var(--accent);
-            cursor: pointer;
-            user-select: none;
-        }
-
-        .upload-box summary:hover { color: var(--accent-hover); }
-
-        .upload-box iframe {
-            width: 100%;
-            height: 380px;
-            border: 1px solid var(--border);
-            border-radius: 8px;
+        /* ── Inline upload drop zone ───────────────────── */
+        .upload-zone {
             margin-top: 8px;
-            background: var(--surface-2);
+            border: 1px dashed var(--border);
+            border-radius: 8px;
+            padding: 18px 12px;
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: border-color 0.15s, background 0.15s;
         }
 
-        .upload-box .upload-hint {
-            font-size: 11px;
-            color: var(--text-muted);
-            margin-top: 4px;
-        }
+        .upload-zone.over { border-color: var(--accent); background: var(--surface-2); }
+        .upload-zone.busy { pointer-events: none; opacity: 0.6; }
+
+        #upload-token { margin-top: 6px; font-size: 12px; }
 
         /* ── Drag & drop ───────────────────────────────── */
         .drag-handle {
@@ -728,12 +719,13 @@
                     <div class="form-group full">
                         <label for="gem-src">Media URL / path</label>
                         <input type="text" id="gem-src" placeholder="assets/dune.jpg or https://...">
-                        <details class="upload-box" id="gem-upload-box">
-                            <summary>Upload photo/video</summary>
-                            <iframe id="gem-upload-frame" data-src="https://upload.irrssue.com/upload"
-                                    title="Media upload"></iframe>
-                            <div class="upload-hint">Drop a file above, hit copy, paste the URL into the field.</div>
-                        </details>
+                        <div class="upload-zone" id="gem-drop" role="button" tabindex="0"
+                             aria-label="Drop a photo or video, or click to choose">
+                            drag &amp; drop a photo/video here, or click to choose
+                        </div>
+                        <input type="file" id="gem-picker" accept="image/*,video/*" hidden>
+                        <input type="password" id="upload-token" placeholder="upload token" autocomplete="off"
+                               aria-label="Upload token">
                     </div>
                     <div class="form-group full">
                         <label for="gem-desc">Description</label>
@@ -1311,10 +1303,72 @@
         document.getElementById('gem-cancel').style.display = 'none';
     }
 
-    // Load the upload iframe only when the box is first opened
-    document.getElementById('gem-upload-box').addEventListener('toggle', function () {
-        const f = document.getElementById('gem-upload-frame');
-        if (this.open && !f.src) f.src = f.dataset.src;
+    // ── Inline media upload (upload.irrssue.com) ─────
+    const UPLOAD_URL  = 'https://upload.irrssue.com/upload';
+    const DROP_LABEL  = 'drag & drop a photo/video here, or click to choose';
+    const gemDrop     = document.getElementById('gem-drop');
+    const gemPicker   = document.getElementById('gem-picker');
+    const uploadToken = document.getElementById('upload-token');
+
+    uploadToken.value = localStorage.getItem('uploadToken') || '';
+    uploadToken.addEventListener('input', () => localStorage.setItem('uploadToken', uploadToken.value));
+
+    async function uploadGemMedia(file) {
+        const token = uploadToken.value.trim();
+        if (!token) {
+            uploadToken.focus();
+            return toast('Upload token required.', 'error');
+        }
+        gemDrop.classList.add('busy');
+        gemDrop.textContent = 'Uploading ' + file.name + '…';
+        try {
+            const res  = await fetch(UPLOAD_URL + '?name=' + encodeURIComponent(file.name), {
+                method: 'POST',
+                headers: { 'X-Upload-Token': token },
+                body: file
+            });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) throw new Error(data.error || 'HTTP ' + res.status);
+
+            document.getElementById('gem-src').value = data.url;
+            if (file.type.startsWith('video/')) document.getElementById('gem-type').value = 'video';
+            if (file.type.startsWith('image/')) {
+                const img = new Image();
+                img.onload = () => {
+                    document.getElementById('gem-orient').value =
+                        img.width > img.height ? 'landscape' :
+                        img.width < img.height ? 'portrait'  : 'square';
+                    URL.revokeObjectURL(img.src);
+                };
+                img.src = URL.createObjectURL(file);
+            }
+            toast('Uploaded: ' + data.url, 'success');
+        } catch (e) {
+            toast('Upload error: ' + e.message, 'error');
+        } finally {
+            gemDrop.classList.remove('busy');
+            gemDrop.textContent = DROP_LABEL;
+        }
+    }
+
+    gemDrop.addEventListener('click', () => gemPicker.click());
+    gemDrop.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); gemPicker.click(); }
+    });
+    gemPicker.addEventListener('change', () => {
+        if (gemPicker.files.length) uploadGemMedia(gemPicker.files[0]);
+        gemPicker.value = '';
+    });
+    ['dragenter', 'dragover'].forEach(ev => gemDrop.addEventListener(ev, e => {
+        e.preventDefault();
+        gemDrop.classList.add('over');
+    }));
+    ['dragleave', 'drop'].forEach(ev => gemDrop.addEventListener(ev, e => {
+        e.preventDefault();
+        gemDrop.classList.remove('over');
+    }));
+    gemDrop.addEventListener('drop', e => {
+        if (e.dataTransfer && e.dataTransfer.files.length) uploadGemMedia(e.dataTransfer.files[0]);
     });
 
     function slugify(str) {
