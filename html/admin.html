@@ -369,6 +369,33 @@
         .modal .form-group { margin-bottom: 16px; }
         .modal-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 
+        /* ── Inline upload box ─────────────────────────── */
+        .upload-box { margin-top: 8px; }
+
+        .upload-box summary {
+            font-size: 12px;
+            color: var(--accent);
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .upload-box summary:hover { color: var(--accent-hover); }
+
+        .upload-box iframe {
+            width: 100%;
+            height: 380px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-top: 8px;
+            background: var(--surface-2);
+        }
+
+        .upload-box .upload-hint {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
         /* ── Drag & drop ───────────────────────────────── */
         .drag-handle {
             color: var(--text-muted);
@@ -701,12 +728,12 @@
                     <div class="form-group full">
                         <label for="gem-src">Media URL / path</label>
                         <input type="text" id="gem-src" placeholder="assets/dune.jpg or https://...">
-                        <div style="margin-top:6px;font-size:11px;color:var(--text-muted)">
-                            Self-hosted media:
-                            <a href="https://upload.irrssue.com/upload" target="_blank" rel="noopener"
-                               style="color:var(--accent)">open upload page ↗</a>
-                            — drag a photo/video, copy the returned URL, paste it here.
-                        </div>
+                        <details class="upload-box" id="gem-upload-box">
+                            <summary>Upload photo/video</summary>
+                            <iframe id="gem-upload-frame" data-src="https://upload.irrssue.com/upload"
+                                    title="Media upload"></iframe>
+                            <div class="upload-hint">Drop a file above, hit copy, paste the URL into the field.</div>
+                        </details>
                     </div>
                     <div class="form-group full">
                         <label for="gem-desc">Description</label>
@@ -1283,6 +1310,12 @@
         document.getElementById('gem-form-title').textContent = 'New Gem';
         document.getElementById('gem-cancel').style.display = 'none';
     }
+
+    // Load the upload iframe only when the box is first opened
+    document.getElementById('gem-upload-box').addEventListener('toggle', function () {
+        const f = document.getElementById('gem-upload-frame');
+        if (this.open && !f.src) f.src = f.dataset.src;
+    });
 
     function slugify(str) {
         return String(str || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
