@@ -1,10 +1,3 @@
-// End-to-end checks for the built site. Serve the repo first:
-//   python3 -m http.server 8899
-//   npx playwright install chromium && node scripts/check_site.mjs
-//
-// Guards the things that broke while optimising: build-time rendering must put
-// real content in the HTML (so the no-JS pass matters), filtered rows must
-// actually hide, and the YouTube embed must stay off the page until play.
 import { chromium } from 'playwright';
 const BASE = 'http://localhost:8899';
 const browser = await chromium.launch();
@@ -17,7 +10,7 @@ async function open(path) {
   const errors = [], external = [], failed = [];
   page.on('console', m => m.type() === 'error' && errors.push(m.text()));
   page.on('pageerror', e => errors.push('pageerror: ' + e.message));
-  page.on('request', r => { if (!r.url().startsWith(BASE) && !r.url().includes('upload.irrssue.com')) external.push(r.url()); });
+  page.on('request', r => !r.url().startsWith(BASE) && external.push(r.url()));
   page.on('requestfailed', r => failed.push(r.url()));
   await page.goto(BASE + path, { waitUntil: 'load' });
   await page.waitForTimeout(1200);            // let idle callbacks fire
