@@ -3,11 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Post - Saw Thura Zaw</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500&family=Inter:wght@400;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/main.css">
+    <title>4 hour of CI rabbit hole - Saw Thura Zaw</title>
+    <meta name="description" content="It started small. I was scrolling my repo&#x27;s git log and saw this:">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/theme.css">
+    <link rel="stylesheet" href="/css/post.css">
+    <link rel="stylesheet" href="/css/fonts-post.css">
     <style>
         .main-content { max-width: 720px; padding-left: 40px; padding-right: 40px; }
         .post-container { padding-left: 0; padding-right: 0; max-width: 100%; }
@@ -26,9 +28,6 @@
             }
         }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/markdown-it@13.0.1/dist/markdown-it.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
     <script>
         (function() {
             const isMobile = window.innerWidth <= 768;
@@ -68,9 +67,45 @@
                     </svg>
                     Back to writing
                 </a>
-                <div id="post-content">
-                    <div class="loading">Loading post...</div>
-                </div>
+                <div id="post-content"><article>
+  <header class="post-header">
+    
+    <h1 class="post-title">4 hour of CI rabbit hole</h1>
+    <div class="post-meta">
+      <span class="post-date" data-full-date="May 4, 2026" data-iso="2026-05-04">May 4, 2026</span>
+      <span class="post-tag"><a href="/writing?tag=macos">#MacOS</a></span>
+    </div>
+  </header>
+  <div class="post-content"><p>It started small. I was scrolling my repo’s git log and saw this:</p>
+<pre><code>auto: update NavBar.tsx
+auto: update StoryList.tsx
+auto: update NavBar.tsx
+auto: update NavBar.tsx
+</code></pre>
+<p>A wall of identical, useless commit messages. My agent had been auto-committing my edits with whatever the laziest possible summary was, and <code>git log</code> had become a void. I wanted real messages — <code>feat(StoryList): paginate in batches of 30</code>, the kind of thing I could read in six months and actually understand.</p>
+<p>Simple fix, right? Update <code>CLAUDE.md</code> with a strict commit message template. Done in five minutes.</p>
+<p>Except I didn’t stop there.</p>
+<p>Somewhere in that five-minute fix I started thinking about the <em>deploy pipeline</em>. My homelab was running this Next.js app behind a Cloudflare tunnel, and I’d been deploying it by SSH-ing in and running <code>git pull &amp;&amp; npm ci &amp;&amp; npm run build &amp;&amp; pm2 restart</code>. Boring. Manual. Surely I could automate it with GitHub Actions.</p>
+<p>So I wrote a workflow. The CI runner needed to reach my homeserver, which lives on Tailscale, so I added the <code>tailscale/github-action</code>. Then OAuth instead of the deprecated authkey. Then <code>tag:ci</code>. Then <code>SSH_KNOWN_HOSTS</code> because strict host checking. Then a known-hosts mismatch because <code>ssh-keyscan</code> output didn’t match my <code>SSH_HOST</code> secret. Then host-key copying problems because the terminal was wrapping the keys.</p>
+<p>By the time I sat back and looked, I had:</p>
+<ul>
+<li>A broken workflow file</li>
+<li>A Tailscale OAuth client I didn’t need</li>
+<li>Six new GitHub secrets</li>
+<li>A bunch of <code>fix(ci):</code> commits that were entirely about fixing CI, not the actual app</li>
+<li>And zero working deploys</li>
+</ul>
+<p>So I gave up. Nuked the workflow. Just deleted <code>.github/workflows/deploy.yml</code> and pushed.</p>
+<p>Then I went looking for a simpler path: cron polling. Server checks <code>origin/main</code> every 2 minutes, pulls + builds if there’s a new commit. I started writing the script…</p>
+<p>…and then ran <code>crontab -l</code>. There it was:</p>
+<pre><code>*/2 * * * * /bin/bash /home/irrssue/minimal-hackernews/scripts/deploy-hn.sh &gt;&gt; /home/irrssue/deploy-hn.log 2&gt;&amp;1
+</code></pre>
+<p>I had set this up weeks ago. Forgot about it. It had been quietly working the entire time. The reason the log went silent was that I’d been committing from the server itself — so by the time cron’s <code>git fetch</code> ran, HEAD already matched origin, and there was nothing to pull.</p>
+<p>The whole CI saga was solving a problem that didn’t exist.</p>
+<p><strong>The actual lesson:</strong> before reaching for a new system, run <code>crontab -l</code>. Or <code>systemctl list-timers</code>. Or <code>ls ~/scripts/</code>. Half the time the thing you’re about to build is already running on your own machine, doing exactly what you need, and the only reason it feels broken is that the trigger condition isn’t being hit.</p>
+<p>The commit message thing? Fixed in one <a href="http://CLAUDE.md" target="_blank" rel="noopener noreferrer">CLAUDE.md</a> edit. Took five minutes. Exactly like I thought at the start.</p>
+</div>
+</article></div>
             </div>
         </main>
     </div>
@@ -96,7 +131,7 @@
                 <path d="M6 2l-4 6 10 14L22 8l-4-6H6zm.24 2h11.52l2.4 3.6H3.84L6.24 4zM4.6 9.6h4.07l2.33 8.16L4.6 9.6zm6.16 0h2.48l-1.24 8.68L10.76 9.6zm4.57 0h4.07l-6.4 8.16L15.33 9.6z"/>
             </svg>
         </a>
-        <a href="mailto:liamrolert@gmail.com" class="mobile-nav-item">
+        <a href="mailto:liam@irrssue.com" class="mobile-nav-item">
             <svg class="mobile-nav-icon" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
             </svg>
@@ -111,7 +146,7 @@
         </button>
     </nav>
 
-    <script src="/javascript/script.js"></script>
-    <script src="/javascript/post.js"></script>
+    <script src="/javascript/script.js" defer></script>
+    <script src="/javascript/post.js" defer></script>
 </body>
 </html>

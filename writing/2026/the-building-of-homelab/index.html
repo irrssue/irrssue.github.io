@@ -3,11 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Post - Saw Thura Zaw</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500&family=Inter:wght@400;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/main.css">
+    <title>The Building of Homelab - Saw Thura Zaw</title>
+    <meta name="description" content="I shoot a lot of footage. My Sony ZV-E10 fills SD cards faster than I can name folders, and at some point I realized my entire creative life had quietly migr…">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/theme.css">
+    <link rel="stylesheet" href="/css/post.css">
+    <link rel="stylesheet" href="/css/fonts-post.css">
     <style>
         .main-content { max-width: 720px; padding-left: 40px; padding-right: 40px; }
         .post-container { padding-left: 0; padding-right: 0; max-width: 100%; }
@@ -26,9 +28,6 @@
             }
         }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/markdown-it@13.0.1/dist/markdown-it.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
     <script>
         (function() {
             const isMobile = window.innerWidth <= 768;
@@ -68,9 +67,527 @@
                     </svg>
                     Back to writing
                 </a>
-                <div id="post-content">
-                    <div class="loading">Loading post...</div>
-                </div>
+                <div id="post-content"><article>
+  <header class="post-header">
+    
+    <h1 class="post-title">The Building of Homelab</h1>
+    <div class="post-meta">
+      <span class="post-date" data-full-date="April 28, 2026" data-iso="2026-04-28">April 28, 2026</span>
+      <span class="post-tag"><a href="/writing?tag=homelab">#homelab</a></span>
+    </div>
+  </header>
+  <div class="post-content"><h1>I Replaced Google Photos, Google Drive, and Netflix With a $7 Cable and an Old Laptop</h1>
+<blockquote>
+<p>Total recurring cost: <strong>$10.46/year</strong>. That’s a domain. Everything else is free, open-source, and running on a laptop that was about to be donated.</p>
+</blockquote>
+<h2>Why I built this</h2>
+<p>I shoot a lot of footage. My Sony ZV-E10 fills SD cards faster than I can name folders, and at some point I realized my entire creative life had quietly migrated into Google’s pricing tiers. Google Photos was nibbling at my wallet, Google Drive was about to start charging me for the privilege of holding files I’d already paid for once, and the only reason I tolerated Netflix was inertia.</p>
+<p>So I asked myself a simple question: <strong>what if I just hosted all of it myself?</strong></p>
+<p>I had:</p>
+<ul>
+<li>An old laptop running Ubuntu Server</li>
+<li>A 2TB external SSD full of footage from Vietnam, San Francisco, ZV-E10 b-roll, and projects</li>
+<li>A vague idea that Tailscale and Cloudflare existed</li>
+<li>Zero patience for monthly subscriptions</li>
+</ul>
+<p>Two weeks, three near-disasters, and one $7 Ethernet cable later, I had a fully working personal cloud at <code>irrssue.com</code>. This is the long story of how that happened, what I broke, what I learned, and what I’d do differently.</p>
+<hr>
+<h2>The architecture, at a glance</h2>
+<p>Before we dive in, here’s the shape of the thing:</p>
+<pre><code>                    Internet
+                       │
+                       ▼
+              ┌──────────────────┐
+              │  Cloudflare DNS  │   irrssue.com → tunnel UUID
+              └────────┬─────────┘
+                       │
+              ┌────────▼─────────┐
+              │ Cloudflare Tunnel│   (cloudflared, encrypted, no port forwarding)
+              │   (HTTP/2 over   │
+              │      QUIC)       │
+              └────────┬─────────┘
+                       │
+              ┌────────▼─────────┐
+              │  Ubuntu Server   │
+              │   (homelab)      │
+              ├──────────────────┤
+              │ Docker           │
+              │  ├─ Immich       │ → photos.irrssue.com  :2283
+              │  ├─ Nextcloud    │ → drive.irrssue.com   :8080
+              │  └─ Jellyfin     │ → tv.irrssue.com      :8096
+              ├──────────────────┤
+              │ /mnt/storage     │ → 2TB exFAT SSD (read-only into containers)
+              └──────────────────┘
+                       │
+                       └─── Tailscale overlay (private mesh)
+                              ├─ MacBook Air M1
+                              ├─ iPhone 15 Pro
+                              └─ Windows laptop (gaming machine)
+</code></pre>
+<p>The idea: <strong>public traffic goes through Cloudflare Tunnel</strong>, <strong>private/heavy traffic goes through Tailscale</strong>, and the laptop never has to expose a single port to the open internet. No port forwarding. No router config. No dynamic DNS. No static IP from my ISP. Just two encrypted tunnels meeting in the middle.</p>
+<p>That last sentence took me a week to actually believe. Bear with me — it gets there.</p>
+<hr>
+<h2>Phase 1 — Planning (and the first identity crisis)</h2>
+<p>The first decision was philosophical: <strong>public or private?</strong></p>
+<p>I kept flipping between two options:</p>
+<ol>
+<li><strong>Tailscale only.</strong> A private mesh VPN. Free forever. No domain needed. Devices on my Tailnet can hit the homelab at <code>100.100.200.29</code> like it’s on the same LAN. Anyone not on my Tailnet sees nothing.</li>
+<li><strong>Cloudflare Tunnel.</strong> Real public URLs like <code>photos.irrssue.com</code>. Anyone can visit. Requires a domain.</li>
+</ol>
+<p>The reasonable answer is <strong>both</strong>, which is what I ended up doing — but it took me a minute to get there. Tailscale is the daily driver because it’s faster and there are no edge timeouts. Cloudflare Tunnel is for when I want to send a friend a link without making them install a VPN client.</p>
+<p>Then there was the domain. I already owned <code>irrssue</code> as a brand — YouTube channel, GitHub, a portfolio at <code>irrssue.github.io</code>. So I bought <code>irrssue.com</code> through <strong>Cloudflare Registrar for $10.46/year</strong>. Cloudflare sells domains at cost with no markup, which is wild — most registrars mark up <code>.com</code> registrations 3-5x.</p>
+<p>Quick aside: the checkout asked me for a VAT number. If you’re a US individual, you skip that field. I almost typed in my SSN, which is the kind of decision-making that produces blog posts about homelabs.</p>
+<p>I also pointed <code>irrssue.com</code> at my existing GitHub Pages portfolio. That meant:</p>
+<ul>
+<li><code>irrssue.com</code> → portfolio (existing)</li>
+<li><code>photos.irrssue.com</code> → Immich (planned)</li>
+<li><code>drive.irrssue.com</code> → Nextcloud (planned)</li>
+<li><code>tv.irrssue.com</code> → Jellyfin (planned)</li>
+</ul>
+<p>Subdomains are free once you own the apex. I was already getting four URLs out of one $10.46 charge.</p>
+<p><strong>Lesson #1:</strong> Buy the domain even if you “don’t need it yet.” It’s the cheapest piece of infrastructure you’ll ever own.</p>
+<hr>
+<h2>Phase 2 — The lid that wouldn’t shut up</h2>
+<p>Before any of the cool stuff, there was a stupid hardware problem: this is a <em>laptop</em>. When you close a laptop, it goes to sleep. When it goes to sleep, your homelab dies.</p>
+<p>The fix is a one-time edit to <code>systemd-logind</code>:</p>
+<pre><code class="language-bash">sudo systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target
+sudo nano /etc/systemd/logind.conf
+</code></pre>
+<p>In that file, set:</p>
+<pre><code class="language-ini">HandleLidSwitch=ignore
+HandleLidSwitchExternalPower=ignore
+HandleLidSwitchDocked=ignore
+</code></pre>
+<p>Then:</p>
+<pre><code class="language-bash">sudo systemctl restart systemd-logind
+</code></pre>
+<p>Now I can close the lid, shove the laptop on a shelf, and treat it as a headless server. This is so banal that nobody mentions it in the big homelab YouTube videos, and yet it’s the difference between a working server and a $0 brick.</p>
+<p><strong>Lesson #2:</strong> Headless laptops need an explicit “ignore lid” config. The default behavior will quietly nuke your uptime.</p>
+<hr>
+<h2>Phase 3 — Mounting the 2TB drive (and meeting exFAT)</h2>
+<p>The 2TB drive is where this whole project lives or dies. Two terabytes of ZV-E10 footage, family photos, project files, archived YouTube source material. I needed the server to mount it on boot, every time, no exceptions.</p>
+<h3>Step 1 — find the drive</h3>
+<pre><code class="language-bash">lsblk -f
+</code></pre>
+<p>There it was: <code>/dev/sdb1</code>, formatted as <strong>exFAT</strong>, labeled <code>&quot;SSD&quot;</code>, UUID <code>B2CA-AD86</code>.</p>
+<p>I’d formatted it exFAT years ago because I needed it to work on both Mac and Windows. That decision is going to come back and bite me in about ten minutes — keep that filed away.</p>
+<h3>Step 2 — install exFAT support</h3>
+<pre><code class="language-bash">sudo apt install exfat-fuse exfat-utils -y
+</code></pre>
+<p>Ubuntu Server doesn’t ship with exFAT support out of the box.</p>
+<h3>Step 3 — mount it</h3>
+<pre><code class="language-bash">sudo mkdir /mnt/storage
+sudo mount /dev/sdb1 /mnt/storage
+ls /mnt/storage
+</code></pre>
+<p>And there it all was — <code>Vietnam_2024/</code>, <code>SF_trip/</code>, <code>ZVE10_BROLL/</code>, every folder, every file, exactly as I’d left them. Mounting doesn’t touch the data. (I asked Claude this three times. I’m a CS student. The fear is real.)</p>
+<h3>Step 4 — make it permanent</h3>
+<p>A manual mount disappears on reboot. For permanent mounting, you add a line to <code>/etc/fstab</code>:</p>
+<pre><code class="language-fstab">UUID=B2CA-AD86 /mnt/storage exfat defaults,uid=1000,gid=1000,nofail 0 0
+</code></pre>
+<p>The MVP of this line is <strong><code>nofail</code></strong>. It tells systemd: “if this drive isn’t plugged in at boot, don’t panic, just keep going.” Without it, your server refuses to boot whenever the drive is unplugged, which means a cable bump can soft-brick the entire homelab. With it, the worst case is your services come up without storage and complain politely in the logs.</p>
+<pre><code class="language-bash">sudo systemctl daemon-reload
+sudo umount /mnt/storage
+sudo mount -a
+</code></pre>
+<p>The <code>daemon-reload</code> cleared a systemd warning about fstab being modified. The <code>umount</code> + <code>mount -a</code> cycle is how you test that the fstab entry actually works without rebooting — if <code>mount -a</code> succeeds and your files come back, you’re good.</p>
+<p><strong>Lesson #3:</strong> Always add <code>nofail</code> to fstab entries for removable drives. The five extra characters will save you a panicked recovery boot at 2am.</p>
+<hr>
+<h2>Phase 4 — Immich, and the exFAT trap</h2>
+<p>Immich is the headline act. It’s an open-source Google Photos clone with a beautiful UI, a real mobile app, facial recognition, map view, RAW support, and CLIP-based smart search. It’s the closest thing to a drop-in Google Photos replacement that exists.</p>
+<p>I created <code>~/docker/immich/</code>, downloaded the official <code>docker-compose.yml</code> and <code>.env</code> from the Immich release page, and made my first mistake.</p>
+<h3>The mistake</h3>
+<p>The <code>.env</code> has one critical variable: <code>UPLOAD_LOCATION</code>. This is where Immich writes everything — uploads, thumbnails, metadata, the whole library. My instinct was to point it at the big drive:</p>
+<pre><code class="language-env">UPLOAD_LOCATION=/mnt/storage/immich-uploads
+</code></pre>
+<p>I ran <code>docker compose up -d</code>. The container immediately died with:</p>
+<pre><code>chown: changing ownership of '/usr/src/app/upload': Operation not permitted
+</code></pre>
+<h3>Why it failed</h3>
+<p><strong>exFAT does not support Linux file permissions.</strong> It’s a FAT-derived filesystem designed for cross-platform USB sticks. There’s no concept of “this file is owned by user 1000, mode 0644.” Immich’s container starts up by running <code>chown</code> on its upload directory to make sure it has the right ownership, and on exFAT, <code>chown</code> is a hard no. The container can read files, but it cannot stamp permissions on them, so it crashes before it can even get to “hello world.”</p>
+<p>This is the cost of having formatted the drive exFAT five years ago for cross-platform compatibility. I now had two choices:</p>
+<ol>
+<li><strong>Reformat the drive to ext4.</strong> Cleanest fix. But that means moving 1+ TB of footage somewhere else first, reformatting, copying it back. I didn’t have the spare storage to do that safely.</li>
+<li><strong>Use the drive as a read-only library and store Immich’s writable data on the OS drive.</strong></li>
+</ol>
+<p>I went with option 2.</p>
+<h3>The fix</h3>
+<p>I changed <code>UPLOAD_LOCATION</code> to a local path on the OS drive (which is ext4 and supports permissions just fine):</p>
+<pre><code class="language-env">UPLOAD_LOCATION=./library
+</code></pre>
+<p>This puts thumbnails, metadata, and any new uploads on the laptop’s internal SSD.</p>
+<p>Then I added the 2TB drive as a <strong>read-only volume</strong> in <code>docker-compose.yml</code>:</p>
+<pre><code class="language-yaml">services:
+  immich-server:
+    volumes:
+      - ${UPLOAD_LOCATION}:/data
+      - /etc/localtime:/etc/localtime:ro
+      - /mnt/storage:/mnt/storage:ro    # ← the magic line
+</code></pre>
+<p>That <code>:ro</code> at the end is the entire workaround. Immich can read everything on the drive and serve it to the browser, but it can never try to write to it, so the chown problem evaporates.</p>
+<p>Then in the Immich UI, I added <code>/mnt/storage</code> as an <strong>External Library</strong>. Immich rescanned, indexed, and pulled in everything I’d shot in the last decade. New uploads still work — they just land on the OS drive instead.</p>
+<h3>Boot it up</h3>
+<pre><code class="language-bash">docker compose up -d
+</code></pre>
+<p>Four containers came up:</p>
+<pre><code>✔ Container immich_redis            Started
+✔ Container immich_postgres         Started
+✔ Container immich_machine_learning Started
+✔ Container immich_server           Started
+</code></pre>
+<p>I opened <code>http://100.100.200.29:2283</code> over Tailscale on my MacBook, walked through onboarding (turned off Google Cast and Storage Template — not needed), created the admin account, and was inside.</p>
+<p><strong>Lesson #4:</strong> exFAT and Docker do not mix. Either reformat to ext4, or use the read-only-library pattern. The read-only pattern is genuinely a clean way to mix old data with new uploads, and I now think it’s the better default for anyone with a drive full of pre-existing content.</p>
+<hr>
+<h2>Phase 5 — Cloudflare Tunnel, and the great config-file split</h2>
+<p>This was the hardest part to get right, not because it’s technically complex but because the conceptual model isn’t obvious until you’ve made every wrong assumption first.</p>
+<h3>What a Cloudflare Tunnel actually is</h3>
+<p>You do not “expose ports” with a tunnel. The tunnel is an outbound, persistent connection from your server to Cloudflare’s edge. Your server says, “Hi, I’m tunnel UUID <code>0a8aaea3-...</code>, I’ll be holding this connection open.” Cloudflare receives a request for <code>photos.irrssue.com</code>, looks up which tunnel UUID owns that hostname, and sends the request <em>down</em> the existing connection. Your server responds back up the same tunnel.</p>
+<p>This means:</p>
+<ul>
+<li><strong>No inbound ports open on your router.</strong> Goodbye port forwarding.</li>
+<li><strong>No public IP needed.</strong> Your ISP can put you behind CGNAT and the tunnel still works.</li>
+<li><strong>TLS terminates at Cloudflare’s edge.</strong> You don’t need a Let’s Encrypt cert.</li>
+<li><strong>DDoS protection comes free.</strong> You’re behind Cloudflare’s network.</li>
+</ul>
+<h3>Setup</h3>
+<pre><code class="language-bash"># 1. Install
+# (download the .deb from https://github.com/cloudflare/cloudflared/releases)
+sudo dpkg -i cloudflared-linux-amd64.deb
+
+# 2. Authenticate (opens a browser to pick which Cloudflare zone)
+cloudflared tunnel login
+# → saves cert to ~/.cloudflared/cert.pem
+
+# 3. Create the tunnel
+cloudflared tunnel create homelab
+# → returns a UUID like 0a8aaea3-74e6-4be1-be23-20eb4fa0b6da
+# → saves credentials JSON to ~/.cloudflared/&lt;UUID&gt;.json
+
+# 4. Write the config
+nano ~/.cloudflared/config.yml
+</code></pre>
+<pre><code class="language-yaml">tunnel: 0a8aaea3-74e6-4be1-be23-20eb4fa0b6da
+credentials-file: /home/irrssue/.cloudflared/0a8aaea3-74e6-4be1-be23-20eb4fa0b6da.json
+
+ingress:
+  - hostname: photos.irrssue.com
+    service: http://127.0.0.1:2283
+  - hostname: drive.irrssue.com
+    service: http://127.0.0.1:8080
+  - service: http_status:404
+</code></pre>
+<pre><code class="language-bash"># 5. Map DNS
+cloudflared tunnel route dns homelab photos.irrssue.com
+cloudflared tunnel route dns homelab drive.irrssue.com
+</code></pre>
+<p>That last command creates a CNAME record on Cloudflare pointing the subdomain at the tunnel UUID. (One of mine timed out due to network instability and I had to add the CNAME manually in the dashboard — a foreshadowing of what was about to come.)</p>
+<h3>Two mistakes that cost me an hour each</h3>
+<p><strong>Mistake 1: I left a placeholder in the config.</strong> The first version of my config had <code>credentials-file: /home/irrssue/.cloudflared/YOUR-TUNNEL-ID.json</code> because I’d copy-pasted from a template and forgotten to edit. The tunnel started but couldn’t authenticate. The error message wasn’t great. I noticed it about thirty minutes in.</p>
+<p><strong>Mistake 2: I used <code>localhost</code> instead of <code>127.0.0.1</code>.</strong> In some contexts these resolve identically. Inside cloudflared, <code>localhost</code> was getting resolved in a way that didn’t reach the Docker-published ports. Switching to the explicit IPv4 loopback fixed it instantly.</p>
+<h3>The systemd config-file split (the one that bit everyone twice)</h3>
+<p>I ran <code>sudo cloudflared service install</code> to make the tunnel auto-start on boot. The first install failed with “config could not be found.” Apparently the service installer doesn’t always pick up <code>~/.cloudflared/config.yml</code> automatically. I had to point at it explicitly:</p>
+<pre><code class="language-bash">sudo cloudflared --config /home/irrssue/.cloudflared/config.yml service install
+sudo systemctl enable cloudflared
+sudo systemctl start cloudflared
+</code></pre>
+<p>This is where the trap is.</p>
+<p>The service installer <strong>copies</strong> the config to <code>/etc/cloudflared/config.yml</code> and reads from there. The original at <code>~/.cloudflared/config.yml</code> is now just a leftover. If you edit <code>~/.cloudflared/config.yml</code> after this point, <strong>the running service will not pick up your changes.</strong> You will edit the wrong file. You will restart the service. Nothing will change. You will lose a full evening to this.</p>
+<p>I lost a full evening to this.</p>
+<p>The correct mental model: <strong><code>/etc/cloudflared/config.yml</code> is the only file the service reads.</strong> Always edit that one. The user-level copy is a vestigial artifact from setup.</p>
+<pre><code class="language-bash">sudo nano /etc/cloudflared/config.yml
+sudo systemctl restart cloudflared
+sudo systemctl status cloudflared
+</code></pre>
+<p><strong>Lesson #5:</strong> When a tool has both a user-level config and a service config, find out which one is actually being read and only edit that one. Symlink the other if you need to keep them visually identical.</p>
+<hr>
+<h2>Phase 6 — Nextcloud (which was almost boring, in a good way)</h2>
+<p>After the Immich + Cloudflare adventure, Nextcloud was a relief. I made <code>~/docker/nextcloud/</code>, dropped in a compose file with two services:</p>
+<pre><code class="language-yaml">services:
+  nextcloud:
+    image: nextcloud:latest
+    container_name: nextcloud
+    restart: always
+    ports:
+      - &quot;8080:80&quot;
+    volumes:
+      - nextcloud_data:/var/www/html
+      - /mnt/storage:/mnt/storage      # for External Storage
+    environment:
+      - NEXTCLOUD_TRUSTED_DOMAINS=drive.irrssue.com localhost
+    depends_on:
+      - db
+
+  db:
+    image: mariadb:10.11
+    container_name: nextcloud_db
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=&lt;your-root-password&gt;
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+      - MYSQL_PASSWORD=&lt;your-app-password&gt;
+    volumes:
+      - db_data:/var/lib/mysql
+
+volumes:
+  nextcloud_data:
+  db_data:
+</code></pre>
+<p><code>docker compose up -d</code>, two containers came up clean, <code>drive.irrssue.com</code> started loading the setup wizard once I fixed the tunnel config. The Nextcloud setup (admin user, database connection) was straightforward web-form stuff.</p>
+<p>The one thing worth calling out: I added <code>/mnt/storage</code> as an <strong>External Storage</strong> in Nextcloud admin settings, same trick as Immich’s external library. Now my entire footage archive is browsable through both the Immich photo UI <em>and</em> the Nextcloud file manager. Different views, same data.</p>
+<p>I also later installed <strong>Nextcloud Talk</strong> for video calls (an open-source Zoom replacement), which is a few clicks in Apps once Nextcloud is up. For calls outside my home network you need a TURN server (<code>coturn</code>) — but for Tailscale-to-Tailscale calls the routing handles itself.</p>
+<hr>
+<h2>Phase 7 — The first real disaster: the 524 timeouts</h2>
+<p>This is the part where I learned something deep.</p>
+<p>Immich came up. I uploaded a few test photos, they appeared. I added the 2TB external library, and Immich started indexing.</p>
+<p>A 2TB photo/video library is not a small ask. Immich was doing all of these jobs simultaneously across thousands of files:</p>
+<ul>
+<li>Thumbnail generation</li>
+<li>EXIF metadata extraction</li>
+<li><strong>Facial recognition</strong> (CNN-based, needs serious compute)</li>
+<li><strong>CLIP embeddings for smart search</strong> (also CNN-based, also serious)</li>
+<li><strong>Duplicate detection</strong></li>
+</ul>
+<p>The server has 4 CPU cores and 3.6GB of RAM. It is a six-year-old laptop. This was not a fair fight.</p>
+<p>I tried loading <code>photos.irrssue.com</code>. The Immich logo appeared. Then nothing. After 100 seconds, Cloudflare returned a <strong>524 timeout error</strong>.</p>
+<h3>The diagnostic process</h3>
+<p>I started with <code>docker stats</code>:</p>
+<pre><code>CONTAINER                   CPU %    MEM USAGE / LIMIT
+immich_server               193%     905MB / 3.598GB
+immich_machine_learning     332%     726MB / 3.598GB
+immich_postgres             45%      280MB
+immich_redis                3%       40MB
+</code></pre>
+<p>That’s the entire CPU pegged, with the ML container alone consuming <strong>332% CPU</strong> (multiple cores at 100%) doing tasks I literally don’t need. I’m not trying to CLIP-search “person on beach in 2019” across a video archive — I want to <em>look at my footage</em>.</p>
+<p>Local response was fine:</p>
+<pre><code class="language-bash">$ curl -I http://localhost:2283
+HTTP/1.1 200 OK
+</code></pre>
+<p>200 OK. Immediate. So the server itself works. The problem is that under that load, the API specifically takes too long to respond, and Cloudflare’s free-tier edge has a hard 100-second timeout that I cannot increase, ever, no matter what.</p>
+<p>That last part is the lesson. <strong>Cloudflare’s free-tier 100-second timeout is a structural ceiling.</strong> No <code>originRequest: connectTimeout: 120s</code> config in the world will fix it, because the timeout is on Cloudflare’s side, not the tunnel’s side. I added <code>connectTimeout: 120s</code> and <code>noTLSVerify: true</code> to my config anyway because they help with other edge cases, but they don’t move the 100s wall.</p>
+<h3>The fix: kill the ML container</h3>
+<pre><code class="language-bash">docker stop immich_machine_learning
+</code></pre>
+<p>CPU usage on <code>immich_server</code> dropped from 193% to <strong>7.65%</strong>. The site loaded instantly through Tailscale. Cloudflare still threw 502s sporadically (foreshadowing!), but Immich itself was finally responsive.</p>
+<p>To make this permanent — so the ML container doesn’t come back up next time I run <code>docker compose up -d</code> — I scaled it to zero:</p>
+<pre><code class="language-bash">docker compose up -d --scale immich-machine-learning=0
+</code></pre>
+<p>You can also comment out the ML service entirely in your compose file. I went with <code>--scale 0</code> because it leaves the door open to bring it back later when I have GPU acceleration on the new server.</p>
+<h3>The Tailscale + Cloudflare split</h3>
+<p>The bigger architectural insight: <strong>don’t treat Cloudflare Tunnel as your daily driver.</strong> It’s free, fast, and convenient for browsing, but it’s not built for heavy uploads or long-running ML jobs. The 100-second timeout is the killer.</p>
+<p>The right pattern, which I now follow religiously:</p>
+<table>
+<thead>
+<tr>
+<th>Path</th>
+<th>Use for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Tailscale</strong></td>
+<td>Photo uploads from phone, mobile sync, admin work, anything that takes more than ~30s</td>
+</tr>
+<tr>
+<td><strong>Cloudflare Tunnel</strong></td>
+<td>Quick browsing, sharing a link with a friend, casual viewing</td>
+</tr>
+</tbody>
+</table>
+<p>Both paths point at the same Immich instance. You just choose which one based on what you’re doing.</p>
+<p><strong>Lesson #6:</strong> Cloudflare’s free tier is amazing for what it gives you, but the 100-second timeout is non-negotiable. Architect around it. Don’t fight it.</p>
+<p><strong>Lesson #7:</strong> Immich’s ML features are a resource trap on constrained hardware. If you don’t need facial recognition and smart search, turn them off — your server will run 10x faster.</p>
+<hr>
+<h2>Phase 8 — The second real disaster: the WiFi keeps dying</h2>
+<p>I thought I’d solved everything. I’d killed the ML container. The server was responsive. Local curl returned in 0.11s. I went to bed.</p>
+<p>The next morning, <code>photos.irrssue.com</code> was throwing <strong>502 Bad Gateway</strong> errors. Not 524. <em>502</em>. Different beast.</p>
+<p>A 524 means: “Cloudflare reached your server, but it took too long to respond.”<br>
+A 502 means: “Cloudflare couldn’t reach your server <em>at all</em>.”</p>
+<p>The tunnel was registering as up. Immich was healthy locally. But traffic wasn’t flowing.</p>
+<h3>The smoking gun: cloudflared logs</h3>
+<pre><code class="language-bash">sudo journalctl -u cloudflared --since &quot;10 min ago&quot; --no-pager
+</code></pre>
+<p>This was the moment everything clicked. The logs told a 45-second horror story, every time:</p>
+<pre><code>16:48:03  INF  timeout: no recent network activity        connIndex=0
+16:48:03  INF  failed to accept QUIC stream               connIndex=0,1,2,3
+16:48:06  WRN  retrying connection                         error=sendmsg: network is unreachable
+16:48:07  WRN  retrying connection                         error=sendmsg: network is unreachable
+16:48:15  ERR  failed to dial to edge                      error=network is unreachable
+16:48:20  ERR  lookup region1.v2.argotunnel.com: i/o timeout
+16:48:28  INF  Registered tunnel connection                connIndex=0
+16:48:47  INF  Registered tunnel connection                connIndex=3   ← all 4 reconnected
+</code></pre>
+<p>For 45 seconds, the server had <strong>no internet</strong>. DNS resolution failed. All four tunnel connections died. Then everything came back. This was happening every few minutes, all night.</p>
+<h3>The interface was <code>wlp2s0</code></h3>
+<p>WiFi. The server was connected to my home network over WiFi, and WiFi cannot do “always-on for a server” reliably. There are too many things that can interrupt it:</p>
+<ul>
+<li>Power management putting the WiFi card into low-power mode under low activity</li>
+<li>Microwave / Bluetooth interference</li>
+<li>Heavy disk I/O competing with WiFi driver processing (Immich’s indexing was a perfect storm here)</li>
+<li>Plain old signal flakiness</li>
+</ul>
+<p>QUIC (the default cloudflared protocol, UDP-based) is <em>especially</em> sensitive to this because UDP doesn’t retransmit lost packets the way TCP does.</p>
+<h3>The interim mitigation: switch to HTTP/2</h3>
+<p>I added one line to <code>/etc/cloudflared/config.yml</code>:</p>
+<pre><code class="language-yaml">tunnel: 0a8aaea3-74e6-4be1-be23-20eb4fa0b6da
+credentials-file: /home/irrssue/.cloudflared/0a8aaea3-74e6-4be1-be23-20eb4fa0b6da.json
+protocol: http2          # ← this line
+
+ingress:
+  - hostname: photos.irrssue.com
+    service: http://127.0.0.1:2283
+    originRequest:
+      noTLSVerify: true
+      connectTimeout: 120s
+  ...
+</code></pre>
+<p>HTTP/2 runs over TCP, which retransmits dropped packets and reconnects faster after interruption. It made the outages shorter and less frequent. It did not make them go away.</p>
+<h3>The actual fix: a $7 Ethernet cable</h3>
+<p>Cat 8, 6 feet, ordered from Amazon for about $7. I’m now waiting on it as I write this. The plan once it arrives:</p>
+<pre><code class="language-bash"># After plugging in the Ethernet
+ip a                                       # confirm new interface (eth0 or enp...)
+sudo nmcli device disconnect wlp2s0       # force all traffic onto the wired connection
+sudo systemctl restart cloudflared
+</code></pre>
+<p>That’s it. The single most important line of code I’ll write for this homelab is the one that says “stop using WiFi.”</p>
+<p><strong>Lesson #8:</strong> WiFi for an always-on server is a non-starter. It’s not a “nice to have wired” — it’s a fundamental architectural requirement. The cheapest Cat 5e cable beats the fastest WiFi for reliability.</p>
+<hr>
+<h2>Phase 9 — Jellyfin (the easy win)</h2>
+<p>After Immich and Nextcloud, Jellyfin felt almost suspiciously smooth. It’s a self-hosted media server (think Plex, but fully open-source and free of the gradual feature-paywalling that has consumed Plex). It runs in a single Docker container, reads from <code>/mnt/storage</code>, and gives me a Netflix-like UI for any video library I throw at it.</p>
+<p>I added a third subdomain — <code>tv.irrssue.com</code> → Jellyfin on port 8096 — and added the corresponding ingress rule to <code>/etc/cloudflared/config.yml</code>:</p>
+<pre><code class="language-yaml">- hostname: tv.irrssue.com
+  service: http://127.0.0.1:8096
+</code></pre>
+<p>The cool part: Jellyfin reads the same <code>/mnt/storage</code> mount as Immich and Nextcloud. So one drive serves three different views of the same content — gallery, file manager, video streaming UI. That’s the moment the homelab really starts to feel like a <em>platform</em> and not just a collection of services.</p>
+<p>(I’ll be honest, Jellyfin came together so fast I forgot to document the port until weeks later when I was prepping for a server migration. Always document your ports immediately. The next person to log in is future-you.)</p>
+<hr>
+<h2>What’s next: the Acer migration</h2>
+<p>The current homelab is on an old laptop with 4 cores and 3.6GB of RAM. It works, but Immich’s ML container has been disabled because that hardware can’t keep up.</p>
+<p>The next phase is migrating the entire stack to an <strong>Acer Nitro AN715-51</strong> that I’ve barely touched since I stopped using it for gaming:</p>
+<ul>
+<li><strong>CPU:</strong> Intel Core i7-9750H (6 cores / 12 threads)</li>
+<li><strong>RAM:</strong> 16GB</li>
+<li><strong>GPU:</strong> NVIDIA GeForce GTX 1660 Ti (6GB VRAM) ← the headline feature</li>
+<li><strong>Storage:</strong> 477GB SSD</li>
+<li><strong>Currently:</strong> Windows 10</li>
+<li><strong>Soon:</strong> Ubuntu Server</li>
+</ul>
+<p>The 1660 Ti is the unlock. With NVIDIA Container Toolkit and Immich’s GPU acceleration, I can re-enable facial recognition and CLIP smart search and have them actually finish in a reasonable time. The 4-core laptop was choking on what’s basically an entry-level ML workload for a real GPU.</p>
+<p>The migration plan:</p>
+<ol>
+<li>Back up Docker volumes from the old server (<code>docker run --rm -v immich_postgres:/data -v $(pwd):/backup ubuntu tar czf /backup/immich-pg.tgz /data</code> style)</li>
+<li>Wipe Windows, install Ubuntu Server on the Acer</li>
+<li>Install Docker, Tailscale, cloudflared, NVIDIA drivers, NVIDIA Container Toolkit</li>
+<li>Restore Docker volumes</li>
+<li>Move the 2TB drive over (same UUID, same fstab line — it just works)</li>
+<li>Re-auth Tailscale on the new machine (the homelab Tailscale IP will change — <code>100.100.200.29</code> becomes whatever the new device gets)</li>
+<li>Copy <code>/etc/cloudflared/config.yml</code> and the credentials JSON over (same tunnel UUID, no DNS changes needed)</li>
+<li>Re-enable Immich ML with GPU passthrough and watch the indexer fly</li>
+</ol>
+<p>Then the old laptop becomes a backup target or gets repurposed. Possibly as a Pi-hole. Possibly as a second redundant server in a tiny home cluster. Probably as a paperweight for a few months while I do other things.</p>
+<hr>
+<h2>Total damage report</h2>
+<p>Here’s the full damage. Everything I spent money on, everything I’d do differently, everything I’m proud of.</p>
+<h3>Money</h3>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Cost</th>
+<th>Recurring</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>irrssue.com</code> domain</td>
+<td>$10.46</td>
+<td>yearly</td>
+</tr>
+<tr>
+<td>Cat 8 Ethernet cable, 6ft</td>
+<td>~$7.00</td>
+<td>one-time</td>
+</tr>
+<tr>
+<td>Tailscale</td>
+<td>$0</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Cloudflare Tunnel</td>
+<td>$0</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Immich</td>
+<td>$0</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Nextcloud</td>
+<td>$0</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Jellyfin</td>
+<td>$0</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Docker</td>
+<td>$0</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Total recurring: $10.46/year. One-time: ~$7. Hardware: the old laptop I already owned.</strong></p>
+<p>For comparison, Google One at the 2TB tier is $9.99/month — about $120/year. The homelab pays for itself in five weeks. After that, it’s pure margin.</p>
+<h3>Things that worked first try</h3>
+<ul>
+<li>Tailscale install on all three devices. (Genuinely the best onboarding flow I’ve used for any infrastructure tool, ever.)</li>
+<li>Mounting the 2TB drive once I knew the UUID and <code>nofail</code>.</li>
+<li>Nextcloud’s docker-compose. It just worked.</li>
+<li>Jellyfin. Came up, scanned, played video.</li>
+</ul>
+<h3>Things that did not work first try</h3>
+<ul>
+<li>Pointing Immich at exFAT (<code>chown</code> fails — use the read-only library pattern instead)</li>
+<li>The <code>localhost</code> vs <code>127.0.0.1</code> thing in cloudflared (use the explicit IP)</li>
+<li>Editing <code>~/.cloudflared/config.yml</code> after service install (edit <code>/etc/cloudflared/config.yml</code> instead)</li>
+<li>Trying to fix the 524 with config tweaks (it’s a Cloudflare-side limit, not configurable)</li>
+<li>Running a server on WiFi (don’t)</li>
+</ul>
+<h3>The principles I’d hand to past-me</h3>
+<ol>
+<li><strong>Always add <code>nofail</code> to fstab entries for removable drives.</strong></li>
+<li><strong>exFAT is for sneakernet, ext4 is for servers.</strong> If you can reformat, do.</li>
+<li><strong>Read-only volume mounts are an underrated workaround</strong> when you can’t reformat.</li>
+<li><strong>Cloudflare Tunnel’s free-tier 100s timeout is a structural fact</strong>, not a config knob. Architect around it.</li>
+<li><strong>Tailscale for heavy/private use, Cloudflare Tunnel for light/public use.</strong> They’re not competitors, they’re complements.</li>
+<li><strong>Edit <code>/etc/cloudflared/config.yml</code>, never <code>~/.cloudflared/config.yml</code></strong> once the service is installed.</li>
+<li><strong>WiFi is not a server-grade transport.</strong> A $7 cable beats a $300 router for this use case.</li>
+<li><strong>Immich’s ML features will eat your CPU for breakfast.</strong> Disable them unless you have GPU acceleration.</li>
+<li><strong>Document your ports the moment you set up the service.</strong> Future-you is not going to remember.</li>
+<li><strong>Kill the lid switch on day zero.</strong> <code>systemd-logind</code> takes one minute to configure and saves you an entire category of bug.</li>
+</ol>
+<hr>
+<h2>Why this matters more than the dollars</h2>
+<p>Honestly, the $120/year I’m not paying Google is the smallest part of why I did this.</p>
+<p>The bigger thing is that I now actually <em>understand</em> my infrastructure. I can SSH into my own server and read my own logs and edit my own configs. When something breaks, I fix it. When I want a new service, I write a docker-compose file and turn it on. There’s no support ticket, no pricing page, no policy update I have to read every six months to find out what just got worse.</p>
+<p>A lot of people in tech talk about “owning your stack.” For me, this homelab is the smallest, scrappiest, most personal version of that idea. It’s a single laptop in a corner of my apartment, holding two terabytes of footage and serving them to my MacBook and my iPhone over a private mesh network and a public tunnel, with no monthly fee and no terms-of-service page anyone could ever change on me.</p>
+<p>I’m a CS student trying to build a software company, and eventually a robotics company. I’m going to need to build a lot of bigger systems than this one. But every concept in here — Docker, reverse tunnels, mesh VPNs, mounting filesystems, debugging from logs, working around platform limits — is the foundation of all of it.</p>
+<p>You can’t skip the small homelab. You build the small one to learn how to build the big one.</p>
+<hr>
+<h2>Try it yourself</h2>
+<p>The full repo (sanitized configs, docker-compose files, the Cloudflare tunnel template, the fstab example, and step-by-step docs) is on GitHub:</p>
+<p><strong><a href="https://github.com/irrssue/homelab" target="_blank" rel="noopener noreferrer">github.com/irrssue/homelab</a></strong></p>
+<p>Star it if you find it useful. Fork it if you want to build your own. Open an issue if I missed something or got something wrong — I’ll be migrating to the Acer over the next couple weeks and updating as I go.</p>
+<p>If you want to follow along with the migration, my YouTube is <strong><a href="https://youtube.com/@irrssue" target="_blank" rel="noopener noreferrer">youtube.com/@irrssue</a></strong> — I’ll be filming the Ubuntu install on the Acer and the GPU-accelerated Immich ML setup. It’s gonna be fun.</p>
+<p>Until then: shut your laptop lid, listen for the fans, and remember to add <code>nofail</code>.</p>
+<p>— Liam</p>
+<p><em><a href="http://irrssue.com" target="_blank" rel="noopener noreferrer">irrssue.com</a> — built on a laptop that was about to be donated, a 2TB drive that almost ended up in a drawer, and a Cat 8 Ethernet cable that I bought from amazon</em></p>
+</div>
+</article></div>
             </div>
         </main>
     </div>
@@ -96,7 +613,7 @@
                 <path d="M6 2l-4 6 10 14L22 8l-4-6H6zm.24 2h11.52l2.4 3.6H3.84L6.24 4zM4.6 9.6h4.07l2.33 8.16L4.6 9.6zm6.16 0h2.48l-1.24 8.68L10.76 9.6zm4.57 0h4.07l-6.4 8.16L15.33 9.6z"/>
             </svg>
         </a>
-        <a href="mailto:liamrolert@gmail.com" class="mobile-nav-item">
+        <a href="mailto:liam@irrssue.com" class="mobile-nav-item">
             <svg class="mobile-nav-icon" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
             </svg>
@@ -111,7 +628,7 @@
         </button>
     </nav>
 
-    <script src="/javascript/script.js"></script>
-    <script src="/javascript/post.js"></script>
+    <script src="/javascript/script.js" defer></script>
+    <script src="/javascript/post.js" defer></script>
 </body>
 </html>
