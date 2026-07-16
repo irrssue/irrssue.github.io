@@ -21,6 +21,12 @@ html {
     box-sizing: border-box;
 }
 
+/* Any author `display` rule outranks the UA stylesheet's [hidden], so a
+   display:grid/flex element stays visible when JS sets .hidden. Restore it. */
+[hidden] {
+    display: none !important;
+}
+
 body {
     font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     background-color: #ffffff;
