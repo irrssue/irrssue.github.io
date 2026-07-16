@@ -22,6 +22,8 @@
     ];
 
     var player = null;
+    var playerReady = false;
+    var apiRequested = false;
     var playing = false;
     var userWantsPlay = false;
     var myPlaylist = [];
@@ -101,15 +103,22 @@
         player.loadVideoById(myPlaylist[myIndex].id);
     }
 
-    window.onYouTubeIframeAPIReady = function () {
-        myPlaylist = shuffle(SONGS);
-        myIndex = 0;
-        updateDisplay();
+    // The YouTube embed pulls in ~20 requests, including doubleclick and
+    // googleads, so it stays off the page until someone actually presses play.
+    // The track name comes from SONGS, not the API, so nothing waits on it.
+    function requestApi() {
+        if (apiRequested) return;
+        apiRequested = true;
+        var tag = document.createElement('script');
+        tag.src = 'https://www.youtube.com/iframe_api';
+        document.head.appendChild(tag);
+    }
 
+    window.onYouTubeIframeAPIReady = function () {
         player = new YT.Player('yt-player', {
             height: '1',
             width:  '1',
-            videoId: myPlaylist[0].id,
+            videoId: myPlaylist[myIndex].id,
             playerVars: {
                 autoplay:        0,
                 controls:        0,
@@ -122,7 +131,10 @@
             },
             events: {
                 onReady: function () {
-                    player.cueVideoById(myPlaylist[0].id);
+                    playerReady = true;
+                    // The click that loaded the API leaves the document with
+                    // sticky activation, so this still counts as user-initiated.
+                    if (userWantsPlay) player.playVideo();
                 },
                 onStateChange: function (e) {
                     if (e.data === YT.PlayerState.PLAYING) {
@@ -149,16 +161,23 @@
     };
 
     document.addEventListener('DOMContentLoaded', function () {
+        myPlaylist = shuffle(SONGS);
+        myIndex = 0;
+        updateDisplay();
+
         var btn = document.getElementById('npPlayBtn');
         if (btn) {
             btn.addEventListener('click', function () {
-                if (!player) return;
                 if (playing) {
                     userWantsPlay = false;
-                    player.pauseVideo();
-                } else {
-                    userWantsPlay = true;
+                    if (player) player.pauseVideo();
+                    return;
+                }
+                userWantsPlay = true;
+                if (playerReady) {
                     player.playVideo();
+                } else {
+                    requestApi(); // onReady picks it up from userWantsPlay
                 }
             });
         }
@@ -170,9 +189,5 @@
                 playNext();
             });
         }
-
-        var tag = document.createElement('script');
-        tag.src = 'https://www.youtube.com/iframe_api';
-        document.head.appendChild(tag);
     });
 })();

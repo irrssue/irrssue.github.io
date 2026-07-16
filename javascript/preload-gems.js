@@ -27,7 +27,9 @@
   var conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
   if (conn) {
     if (conn.saveData) return;
-    if (/(^|-)2g$/.test(conn.effectiveType || "")) return;
+    // Full-size photos are a bad trade on anything slower than 4g: the visitor
+    // pays now for a page they may never open.
+    if (/(^|-)[23]g$/.test(conn.effectiveType || "")) return;
   }
 
   function warm() {
