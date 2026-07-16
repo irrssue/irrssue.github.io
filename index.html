@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Saw Thura Zaw</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-    <link rel="stylesheet" href="main.css">
-    <!-- Fonts for hero-name cycling -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@300&family=Cormorant+Garamond:wght@300&family=VT323&family=Bricolage+Grotesque:wght@700&family=Playfair+Display:wght@700&family=DM+Serif+Display&family=Instrument+Serif&display=swap">
-    <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@700&display=swap">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/theme.css">
+    <!-- Self-hosted display fonts, subset to the hero name's glyphs -->
+    <link rel="stylesheet" href="css/fonts-hero.css">
     <script>
         // Apply dark mode immediately to prevent flash
         (function() {
@@ -128,7 +128,7 @@
             <section class="content-section" id="home">
                 <div class="hero-layout">
                     <div class="hero-portrait-col">
-                        <img src="images/profile.jpg" alt="Thura Zaw" class="hero-portrait" width="120" height="120">
+                        <img src="images/profile.webp" alt="Thura Zaw" class="hero-portrait" width="120" height="120">
                           <div class="now-playing">
                             <div class="np-controls">
                                 <button class="np-btn" id="npPlayBtn" aria-label="Play">
@@ -149,17 +149,17 @@
                             I'm a software engineer living in NYC, currently building a <a href="https://youtube.com/@irrssue">channel</a> and <a href="https://github.com/irrssue">side projects</a>
                         </p>
                         <div class="hero-social reveal-item">
-                    <a href="https://youtube.com/@liamrolert" target="_blank" class="social-icon" aria-label="YouTube" data-preview="previews/youtube.png">
+                    <a href="https://youtube.com/@liamrolert" target="_blank" class="social-icon" aria-label="YouTube" data-preview="previews/youtube.webp">
                         <svg viewBox="0 0 24 24" fill="currentColor">
                             <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
                         </svg>
                     </a>
-                    <a href="https://github.com/irrssue" target="_blank" class="social-icon" aria-label="GitHub" data-preview="previews/github.png">
+                    <a href="https://github.com/irrssue" target="_blank" class="social-icon" aria-label="GitHub" data-preview="previews/github.webp">
                         <svg viewBox="0 0 24 24" fill="currentColor">
                             <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
                         </svg>
                     </a>
-                    <a href="https://www.instagram.com/irrssue" target="_blank" class="social-icon" aria-label="Instagram" data-preview="previews/instagram.png">
+                    <a href="https://www.instagram.com/irrssue" target="_blank" class="social-icon" aria-label="Instagram" data-preview="previews/instagram.webp">
                         <svg viewBox="0 0 24 24" fill="currentColor">
                             <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
                         </svg>
@@ -175,34 +175,30 @@
                     <a href="/writing" class="writing-heading-link">Writing <span class="writing-arrow">›</span></a>
                 </h2>
                 <ul class="writing-list" id="recent-posts-list">
-                    <!-- populated by home-writing.js -->
+                    <!-- build:recent-posts -->
+<li class="writing-post-item reveal-item"><a href="/writing/2026/dealing-with-in-terminal-copy-is-pain-in-ass" class="writing-post-link">Dealing with &quot;In Terminal&quot; copy is pain in ass</a></li>
+<li class="writing-post-item reveal-item"><a href="/writing/2026/4-hour-of-ci-rabbit-hole" class="writing-post-link">4 hour of CI rabbit hole</a></li>
+<li class="writing-post-item reveal-item"><a href="/writing/2026/don-t-trust-macos-terminal-app" class="writing-post-link">Don&#x27;t Trust macOS Terminal App</a></li>
+<!-- /build:recent-posts -->
                 </ul>
             </section>
 
             <section class="projects-section">
                 <h2 class="projects-heading reveal-item">Projects</h2>
                 <ul class="projects-list">
-                    <li class="project-item reveal-item">
-                        <a href="/writing" class="project-link">
-                            <span class="project-name">Writing</span>
-                            <span class="project-description">Notes on software</span>
-                        </a>
-                    </li>
-                    <li class="project-item reveal-item">
-                        <a href="/bookmarks" class="project-link">
-                            <span class="project-name">Bookmarks</span>
-                            <span class="project-description">Curated interesting links</span>
-                        </a>
-                    </li>
-                    <li class="project-item reveal-item">
-                        <a href="https://irrssue.github.io/" class="project-link external">
-                            <span class="project-name">Thura Zaw</span>
-                            <span class="project-description">Private playground</span>
-                            <svg class="external-icon" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/>
-                            </svg>
-                        </a>
-                    </li>
+                    <!-- build:projects -->
+<li class="project-item reveal-item"><a href="https://irrssue.com/windchime/" class="project-link external" target="_blank" rel="noopener noreferrer"><span class="project-name">Wind Chime</span><span class="project-description">A place to take a break to</span><svg class="external-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg></a></li>
+<li class="project-item reveal-item"><a href="https://news.irrssue.com" class="project-link external" target="_blank" rel="noopener noreferrer"><span class="project-name">Minimal HackerNews</span><span class="project-description">Hackernews reimagined</span><svg class="external-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg></a></li>
+<li class="project-item reveal-item"><a href="https://github.com/irrssue/homelab" class="project-link external" target="_blank" rel="noopener noreferrer"><span class="project-name">Homelab</span><span class="project-description">The start of my hobby into self hosting</span><svg class="external-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg></a></li>
+<li class="project-item reveal-item"><a href="https://irrssue.github.io/" class="project-link external" target="_blank" rel="noopener noreferrer"><span class="project-name">Thura Zaw</span><span class="project-description">Private playground</span><svg class="external-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg></a></li>
+<li class="project-item reveal-item"><a href="https://mail.irrssue.com/" class="project-link external" target="_blank" rel="noopener noreferrer"><span class="project-name">Baremail</span><span class="project-description">the minimal version of gmail</span><svg class="external-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg></a></li>
+<li class="project-item reveal-item"><a href="https://github.com/irrssue/conflict-map.git" class="project-link external" target="_blank" rel="noopener noreferrer"><span class="project-name">Conflict Map</span><span class="project-description">interactive conflict map</span><svg class="external-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg></a></li>
+<li class="project-item reveal-item"><a href="https://irrssue.com/mood-receipt/" class="project-link external" target="_blank" rel="noopener noreferrer"><span class="project-name">Mood Receipt</span><span class="project-description">shareable what&#x27;s up in receipt format</span><svg class="external-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg></a></li>
+<li class="project-item reveal-item"><a href="https://thadar.com/" class="project-link external" target="_blank" rel="noopener noreferrer"><span class="project-name">Thadar.com</span><span class="project-description">A minimal Student management platform</span><svg class="external-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg></a></li>
+<li class="project-item reveal-item"><a href="https://irrssue.com/drawsomething/" class="project-link external" target="_blank" rel="noopener noreferrer"><span class="project-name">Draw Something</span><span class="project-description">Idk, just draw something, that it.</span><svg class="external-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg></a></li>
+<li class="project-item reveal-item"><a href="https://irrssue.com/howgitworks/" class="project-link external" target="_blank" rel="noopener noreferrer"><span class="project-name">How Git Works</span><span class="project-description">like really how it works tho?</span><svg class="external-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg></a></li>
+<li class="project-item reveal-item"><a href="https://irrssue.com/solarsystem/" class="project-link external" target="_blank" rel="noopener noreferrer"><span class="project-name">Solar System</span><span class="project-description">a view to mesmerize to</span><svg class="external-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg></a></li>
+<!-- /build:projects -->
                 </ul>
             </section>
         </main>
@@ -245,10 +241,8 @@
         </button>
     </nav>
 
-    <script src="javascript/now-playing.js"></script>
-    <script src="javascript/script.js"></script>
-    <script src="javascript/projects.js"></script>
-    <script src="javascript/home-writing.js"></script>
+    <script src="javascript/now-playing.js" defer></script>
+    <script src="javascript/script.js" defer></script>
     <!-- Warms the Gems photo cache in the background once the homepage is idle -->
     <script src="javascript/preload-gems.js" defer></script>
     <script>

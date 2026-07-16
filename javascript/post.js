@@ -1,100 +1,9 @@
-const REPO_OWNER = 'irrssue';
-const REPO_NAME = 'irrssue.github.io';
-const BRANCH = 'main';
-const POSTS_DIR = 'posts';
-
-// Initialize markdown-it with plugins
-const md = window.markdownit({
-    html: true,
-    linkify: true,
-    typographer: true,
-    breaks: true
-});
-
-// Add target="_blank" and security attributes to external links
-const defaultRender = md.renderer.rules.link_open || function(tokens, idx, options, env, self) {
-    return self.renderToken(tokens, idx, options);
-};
-
-md.renderer.rules.link_open = function(tokens, idx, options, env, self) {
-    const token = tokens[idx];
-    const hrefIndex = token.attrIndex('href');
-
-    if (hrefIndex >= 0) {
-        const href = token.attrs[hrefIndex][1];
-
-        // Check if it's an external link
-        if (href.startsWith('http://') || href.startsWith('https://')) {
-            token.attrPush(['target', '_blank']);
-            token.attrPush(['rel', 'noopener noreferrer']);
-        }
-    }
-
-    return defaultRender(tokens, idx, options, env, self);
-};
-
-function getPostFilename() {
-    const pathMatch = window.location.pathname.match(/^\/writing\/\d{4}\/([^\/]+)\/?$/);
-    if (pathMatch) {
-        return decodeURIComponent(pathMatch[1]) + '.md';
-    }
-    const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get('name');
-}
-
-async function loadPost() {
-    const container = document.getElementById('post-content');
-    const filename = getPostFilename();
-
-    if (!filename) {
-        showError('No post specified', 'Please return to the blog and select a post.');
-        return;
-    }
-
-    try {
-        // Fetch post content
-        const rawUrl = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/${BRANCH}/${POSTS_DIR}/${filename}`;
-        const response = await fetch(rawUrl);
-
-        if (!response.ok) {
-            throw new Error('Post not found');
-        }
-
-        const content = await response.text();
-
-        // Parse front matter and content
-        const frontMatterMatch = content.match(/^---\s*\n([\s\S]*?)\n---\s*\n([\s\S]*)$/);
-
-        if (!frontMatterMatch) {
-            throw new Error('Invalid post format');
-        }
-
-        const frontMatter = jsyaml.load(frontMatterMatch[1]);
-        const markdownContent = frontMatterMatch[2];
-
-        // Check if post is draft
-        if (frontMatter.draft === true) {
-            showError('Post not available', 'This post is still in draft mode.');
-            return;
-        }
-
-        // Update page title
-        document.title = `${frontMatter.title || 'Post'} - Saw Thura Zaw`;
-
-        // Render post
-        renderPost(frontMatter, markdownContent);
-
-    } catch (error) {
-        console.error('Error loading post:', error);
-        showError('Post not found', 'The requested post could not be loaded. Please check the URL or return to the blog.');
-    }
-}
+// Post pages are rendered at build time by scripts/build_site.py. Only the two
+// things that can't be baked live here: the date is relative to *now*, and the
+// ?search= highlight depends on the URL.
 
 function getRelativeTime(date) {
-    const now = new Date();
-    const postDate = new Date(date);
-    const diffInSeconds = Math.floor((now - postDate) / 1000);
-
+    const diffInSeconds = Math.floor((new Date() - date) / 1000);
     const intervals = {
         year: 31536000,
         month: 2592000,
@@ -116,76 +25,24 @@ function getRelativeTime(date) {
     return 'just now';
 }
 
-function renderPost(frontMatter, markdownContent) {
-    const container = document.getElementById('post-content');
-
-    // Format dates
-    const fullDate = frontMatter.date ? new Date(frontMatter.date).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-    }) : '';
-
-    const relativeDate = frontMatter.date ? getRelativeTime(frontMatter.date) : '';
-
-    // Render cover image if exists
-    const coverHtml = frontMatter.cover ?
-        `<img src="${frontMatter.cover}" alt="${frontMatter.title}" class="post-cover-image">` : '';
-
-    // Get first tag (support both 'tag' and 'tags' fields)
-    let tag = '';
-    if (frontMatter.tags && frontMatter.tags.length > 0) {
-        tag = frontMatter.tags[0];
-    } else if (frontMatter.tag) {
-        tag = frontMatter.tag;
-    }
-
-    // Convert markdown to HTML and sanitize
-    const htmlContent = md.render(markdownContent);
-    const sanitizedContent = DOMPurify.sanitize(htmlContent, {
-        ALLOWED_TAGS: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'a', 'ul', 'ol', 'li', 'blockquote', 'code', 'pre', 'strong', 'em', 'br', 'hr', 'img', 'table', 'thead', 'tbody', 'tr', 'th', 'td', 'del', 'mark', 'span', 'div'],
-        ALLOWED_ATTR: ['href', 'target', 'rel', 'src', 'alt', 'title', 'class', 'id', 'data-full-date'],
-        ALLOW_DATA_ATTR: true
-    });
-
-    // Build post HTML
-    container.innerHTML = `
-        <article>
-            <header class="post-header">
-                ${coverHtml}
-                <h1 class="post-title">${frontMatter.title || 'Untitled'}</h1>
-                <div class="post-meta">
-                    <span class="post-date" data-full-date="${fullDate}">${relativeDate || ''}</span>
-                    <span class="post-tag">${tag ? `<a href="/writing?tag=${encodeURIComponent(tag)}">#${tag}</a>` : ''}</span>
-                </div>
-            </header>
-            <div class="post-content">
-                ${sanitizedContent}
-            </div>
-        </article>
-    `;
-
-    // Scroll to search match if search parameter is present
-    highlightAndScrollToSearch();
+function showRelativeDate() {
+    const el = document.querySelector('.post-date[data-iso]');
+    if (!el) return;
+    const date = new Date(el.dataset.iso + 'T00:00:00');
+    if (isNaN(date)) return;
+    // Built HTML ships the full date so no-JS readers still get one; swap it
+    // for the relative form now that we can compute it.
+    el.textContent = getRelativeTime(date);
 }
 
 function highlightAndScrollToSearch() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const searchQuery = urlParams.get('search');
-
+    const searchQuery = new URLSearchParams(window.location.search).get('search');
     if (!searchQuery) return;
 
-    // Find all text nodes in the post content
     const postContent = document.querySelector('.post-content');
     if (!postContent) return;
 
-    // Use TreeWalker to find text nodes
-    const walker = document.createTreeWalker(
-        postContent,
-        NodeFilter.SHOW_TEXT,
-        null
-    );
-
+    const walker = document.createTreeWalker(postContent, NodeFilter.SHOW_TEXT, null);
     const textNodes = [];
     let node;
     while (node = walker.nextNode()) {
@@ -194,53 +51,26 @@ function highlightAndScrollToSearch() {
         }
     }
 
-    // Search for the query in text nodes
     const searchLower = searchQuery.toLowerCase();
-    let foundNode = null;
 
     for (const textNode of textNodes) {
         const text = textNode.textContent;
         const index = text.toLowerCase().indexOf(searchLower);
+        if (index === -1) continue;
 
-        if (index !== -1) {
-            foundNode = textNode;
+        const span = document.createElement('span');
+        span.appendChild(document.createTextNode(text.substring(0, index)));
+        const mark = document.createElement('mark');
+        mark.className = 'search-highlight';
+        mark.textContent = text.substring(index, index + searchQuery.length);
+        span.appendChild(mark);
+        span.appendChild(document.createTextNode(text.substring(index + searchQuery.length)));
 
-            // Highlight the matched text
-            const before = text.substring(0, index);
-            const match = text.substring(index, index + searchQuery.length);
-            const after = text.substring(index + searchQuery.length);
-
-            const span = document.createElement('span');
-            span.innerHTML = `${before}<mark class="search-highlight">${match}</mark>${after}`;
-
-            textNode.parentNode.replaceChild(span, textNode);
-
-            // Scroll to the first match
-            const markElement = span.querySelector('mark');
-            if (markElement) {
-                setTimeout(() => {
-                    markElement.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'center'
-                    });
-                }, 100);
-            }
-
-            break; // Only highlight and scroll to first match
-        }
+        textNode.parentNode.replaceChild(span, textNode);
+        setTimeout(() => mark.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
+        break; // Only highlight and scroll to the first match
     }
 }
 
-function showError(title, message) {
-    const container = document.getElementById('post-content');
-    container.innerHTML = `
-        <div class="error">
-            <h2>${title}</h2>
-            <p>${message}</p>
-            <p><a href="/writing">← Return to writing</a></p>
-        </div>
-    `;
-}
-
-// Load post when page loads
-document.addEventListener('DOMContentLoaded', loadPost);
+showRelativeDate();
+highlightAndScrollToSearch();

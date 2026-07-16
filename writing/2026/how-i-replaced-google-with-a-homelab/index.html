@@ -3,11 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Post - Saw Thura Zaw</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500&family=Inter:wght@400;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/main.css">
+    <title>How I Replaced Google With a Homelab - Saw Thura Zaw</title>
+    <meta name="description" content="I pay Google roughly nothing for Photos and Drive. Most people do. And yet I spent a weekend replacing both of them with software I run on my own server. Why…">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/theme.css">
+    <link rel="stylesheet" href="/css/post.css">
+    <link rel="stylesheet" href="/css/fonts-post.css">
     <style>
         .main-content { max-width: 720px; padding-left: 40px; padding-right: 40px; }
         .post-container { padding-left: 0; padding-right: 0; max-width: 100%; }
@@ -26,9 +28,6 @@
             }
         }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/markdown-it@13.0.1/dist/markdown-it.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
     <script>
         (function() {
             const isMobile = window.innerWidth <= 768;
@@ -68,9 +67,81 @@
                     </svg>
                     Back to writing
                 </a>
-                <div id="post-content">
-                    <div class="loading">Loading post...</div>
-                </div>
+                <div id="post-content"><article>
+  <header class="post-header">
+    
+    <h1 class="post-title">How I Replaced Google With a Homelab</h1>
+    <div class="post-meta">
+      <span class="post-date" data-full-date="April 13, 2026" data-iso="2026-04-13">April 13, 2026</span>
+      <span class="post-tag"><a href="/writing?tag=homelab">#homelab</a></span>
+    </div>
+  </header>
+  <div class="post-content"><p>I pay Google roughly nothing for Photos and Drive. Most people do. And yet I spent a weekend replacing both of them with software I run on my own server. Why would anyone do this?</p>
+<p>The short answer is that I wanted to. The longer answer is that I’ve been mass of thinking about what it means to actually <em>own</em> your data — your photos, your files, your memories — versus renting space on someone else’s computer. Google Photos is free because you are the product. Your 2TB of vacation footage and selfies live on Google’s infrastructure, indexed by Google’s AI, subject to Google’s terms. They could change the deal tomorrow. They’ve done it before.</p>
+<p>So I decided to build something. And it turned out to be surprisingly doable.<br>
+<em>You don’t need a server rack. Any old machine will do.</em></p>
+<hr>
+<h2>The Idea</h2>
+<p>The plan was simple: take a 2TB external hard drive, plug it into a spare machine running Ubuntu Server, and make its contents accessible from anywhere in the world through a web browser. Two open-source apps would handle the heavy lifting — <a href="https://immich.app" target="_blank" rel="noopener noreferrer">Immich</a> for photos (a near-perfect Google Photos clone) and <a href="https://nextcloud.com" target="_blank" rel="noopener noreferrer">Nextcloud</a> for files (a Google Drive replacement). Custom subdomains on my personal domain would point to each service, so I could pull up my photos from my phone at a coffee shop the same way I’d open Google Photos.</p>
+<p>Total recurring cost: $10.46 a year for the domain name. Everything else is free.</p>
+<hr>
+<h2>Mounting the Drive</h2>
+<p>The first real task was getting the server to see the external drive. I plugged in a 2TB drive formatted as exFAT and ran <code>lsblk -f</code> to find it. It showed up immediately. A quick install of <code>exfat-fuse</code> and <code>exfat-utils</code>, a mount point at <code>/mnt/storage</code>, and I could see everything — footage from trips, camera shoots, years of files.</p>
+<p>To make the mount permanent (surviving reboots), I added an entry to <code>/etc/fstab</code> with the drive’s UUID and the <code>nofail</code> flag. That last part is important: <code>nofail</code> means the server boots normally even if the drive isn’t plugged in. Without it, an unplugged drive bricks your boot sequence. A small thing, but exactly the kind of small thing that eats an hour if you don’t know about it.</p>
+<hr>
+<h2>Setting Up Immich</h2>
+<p>Immich is the star of this project. It’s an open-source, self-hosted Google Photos alternative, and it’s <em>good</em>. It does facial recognition, smart search, EXIF parsing, timeline views, maps — the whole thing. It runs as a set of Docker containers: the main server, a machine learning service, a Postgres database, and a Redis cache.</p>
+<p><em>Immich’s web interface feels remarkably close to Google Photos.</em></p>
+<p>Setting it up was mostly smooth, with one gotcha. My first instinct was to point Immich’s upload directory straight at the external drive. This immediately failed. The error said “chown operation not permitted,” which is Linux’s way of telling you that exFAT doesn’t support file permissions. Docker needs to set ownership on its data directories, and exFAT just can’t do that.</p>
+<p>The fix was to split things up: Immich’s working directory (where it writes thumbnails, databases, etc.) stays on the server’s main ext4 drive, and the 2TB external gets mounted as a read-only volume. Then you add it as an “External Library” in Immich’s admin settings. This way Immich can <em>read</em> all your existing footage without needing to <em>write</em> to the exFAT filesystem. Clean separation.</p>
+<p>Once that was done and the containers were running, Immich started its initial scan — generating thumbnails, reading metadata, running facial recognition across every photo and video on the drive. On 2TB of media, this takes hours. The machine learning container maxes out the CPU, the server gets sluggish, Docker reports the Immich container as “unhealthy.” This is all normal. It calms down once indexing finishes.</p>
+<hr>
+<h2>Making It Accessible From Anywhere</h2>
+<p>A server sitting on your home network is useful, but only if you’re home. I needed remote access. There are two good approaches, and I ended up using both.</p>
+<p><strong>Tailscale</strong> is a mesh VPN. You install it on your server and on your phone and laptop, and they can all talk to each other over encrypted connections as if they were on the same local network. It’s completely free for personal use, and it just works. This gives you private, device-to-device access — great for when you want to manage things directly, but it requires the Tailscale app on every device.</p>
+<p><strong>Cloudflare Tunnel</strong> is the public-facing option. It creates an encrypted tunnel from your server to Cloudflare’s network, and Cloudflare handles the DNS routing. You set up subdomains — say, <code>photos.yourdomain.com</code> and <code>drive.yourdomain.com</code> — and Cloudflare routes traffic through the tunnel to the right service on your server. No port forwarding, no exposing your home IP. The tunnel client (<code>cloudflared</code>) runs as a systemd service, so it survives reboots.</p>
+<p><em>The basic architecture: Internet → Cloudflare → Tunnel → Your Server.</em></p>
+<p>Setting up the tunnel had its own gotchas. The main one: <code>cloudflared</code> keeps two config files. One lives in your home directory (created during setup), and one lives in <code>/etc/cloudflared/</code> (created when you install it as a system service). The running service reads from <code>/etc/cloudflared/</code>. If you edit the wrong file, nothing changes and you spend twenty minutes wondering why. Always edit the system config.</p>
+<p>Another issue: my server was on WiFi. Under normal load this is fine. Under the heavy load of Immich’s initial indexing, the WiFi connection started dropping entirely. The <code>cloudflared</code> logs filled up with “network is unreachable” errors. The fix is obvious — use an Ethernet cable — but if you’re setting this up, just know that WiFi and heavy I/O don’t mix well on a homelab.</p>
+<hr>
+<h2>Nextcloud</h2>
+<p>Nextcloud is the Google Drive half of this project. The setup is simpler than Immich: two Docker containers (Nextcloud itself and a MariaDB database), a compose file, and you’re running. Mount the same 2TB drive into the Nextcloud container and you can browse your files from a web browser.</p>
+<p><em>Nextcloud gives you a familiar file-browser experience, accessible from anywhere.</em></p>
+<p>I haven’t fully set up Nextcloud’s external storage integration yet — that’s next on the list — but the core is working. Combined with the Cloudflare Tunnel, it’ll be accessible at a custom subdomain just like Immich.</p>
+<hr>
+<h2>What I Learned</h2>
+<p>A few things stood out.</p>
+<p><strong>ExFAT is a headache on Linux.</strong> It’s the universal format that works on Mac, Windows, and Linux, which is why most external drives ship with it. But it doesn’t support Unix file permissions, which means any Linux application that expects to set ownership on files (which is most of them) will choke. The workaround is always the same: use exFAT drives as read-only volumes and keep your application data on a native Linux filesystem like ext4.</p>
+<p><strong>Docker makes everything easier and harder.</strong> Easier because you can spin up complex multi-service applications with a single <code>docker compose up -d</code>. Harder because when something goes wrong, you’re debugging across containers, volumes, networks, and environment files all at once. The abstraction is great until it isn’t.</p>
+<p><strong>Cloudflare’s free tier is absurdly generous.</strong> A domain costs about $10/year through their registrar. The tunnel service, DNS, and CDN are all free. For a personal project like this, you’re getting enterprise-grade infrastructure for essentially nothing.</p>
+<p><strong>The initial indexing is the worst part.</strong> If you’re throwing a large media library at Immich, expect the server to be miserable for a few hours. Timeouts, unhealthy containers, dropped connections. It all resolves once the scan finishes. Just be patient.</p>
+<hr>
+<h2>The Architecture</h2>
+<p>Here’s what the final setup looks like:</p>
+<pre><code>Internet
+  └── Cloudflare DNS
+        └── Cloudflare Tunnel (encrypted)
+              └── Homelab Server (Ubuntu)
+                    ├── Immich (photos.yourdomain.com)
+                    │     ├── immich_server
+                    │     ├── immich_machine_learning
+                    │     ├── immich_postgres
+                    │     └── immich_redis
+                    ├── Nextcloud (drive.yourdomain.com)
+                    │     ├── nextcloud
+                    │     └── mariadb
+                    └── /mnt/storage (2TB external drive)
+</code></pre>
+<p>Six Docker containers, one external drive, one tunnel, one domain. That’s the whole thing.</p>
+<hr>
+<h2>What’s Next</h2>
+<p>There’s still work to do. I need to finish configuring Nextcloud’s external storage so it can browse the 2TB drive directly. I want to set up the Immich mobile app for automatic photo backup from my phone. Desktop and mobile sync clients for Nextcloud would make it a true Dropbox replacement. And I should probably set up automated database backups before I lose something I care about.</p>
+<p>But the core is done. I have a self-hosted photo library and file manager, both accessible from anywhere, running on hardware I own, storing data on a drive I control. The total cost is a $10.46 domain renewal once a year. Everything else — Immich, Nextcloud, Docker, Tailscale, Cloudflare Tunnel — is free and open-source.</p>
+<p>If you’re the kind of person who’s ever felt uneasy about handing all your photos and files to a company that makes money by knowing everything about you, this is a weekend project that actually solves the problem. The tools are mature enough now that you don’t need to be a sysadmin to pull it off. You just need a spare machine, an external drive, and a free afternoon.</p>
+<hr>
+<p><em>If you found this useful or want to see more projects like this, I write about software, self-hosting, and building things at <a href="https://irrssue.com" target="_blank" rel="noopener noreferrer">irrssue.com</a>. You can also find me on <a href="https://youtube.com/@irrssue" target="_blank" rel="noopener noreferrer">YouTube</a>.</em></p>
+</div>
+</article></div>
             </div>
         </main>
     </div>
@@ -96,7 +167,7 @@
                 <path d="M6 2l-4 6 10 14L22 8l-4-6H6zm.24 2h11.52l2.4 3.6H3.84L6.24 4zM4.6 9.6h4.07l2.33 8.16L4.6 9.6zm6.16 0h2.48l-1.24 8.68L10.76 9.6zm4.57 0h4.07l-6.4 8.16L15.33 9.6z"/>
             </svg>
         </a>
-        <a href="mailto:liamrolert@gmail.com" class="mobile-nav-item">
+        <a href="mailto:liam@irrssue.com" class="mobile-nav-item">
             <svg class="mobile-nav-icon" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
             </svg>
@@ -111,7 +182,7 @@
         </button>
     </nav>
 
-    <script src="/javascript/script.js"></script>
-    <script src="/javascript/post.js"></script>
+    <script src="/javascript/script.js" defer></script>
+    <script src="/javascript/post.js" defer></script>
 </body>
 </html>

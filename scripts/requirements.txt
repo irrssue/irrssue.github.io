@@ -1,0 +1,3 @@
+# Build-time only - nothing here ships to the browser.
+markdown-it-py[linkify]==3.0.0
+PyYAML==6.0.2

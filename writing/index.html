@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Writing - Saw Thura Zaw</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-    <link rel="stylesheet" href="/main.css">
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/theme.css">
     <link rel="stylesheet" href="/css/bookmarks.css">
-    <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
     <script>
         // Apply dark mode immediately to prevent flash
         (function() {
@@ -52,9 +52,17 @@
         <!-- Main Content Area -->
         <main class="main-content">
             <section class="bookmarks-section">
-                <div id="writing-header" class="bk-header"></div>
-                <div id="posts-container">
-                    <div class="bk-loading">Loading posts…</div>
+                <div id="writing-header" class="bk-header">
+                    <!-- build:writing-header -->
+<div class="bk-heading">Writing.</div><div class="bk-sub">Things I found in life as in blog format</div><div class="bk-counts"><span><b>7</b> essays</span><span><b>3</b> tags</span><span><b>since</b> Dec 2025</span></div><div class="bk-chips"><span class="bk-chip on" data-tag="">all</span><span class="bk-chip" data-tag="macos">macos · 3</span><span class="bk-chip" data-tag="homelab">homelab · 2</span><span class="bk-chip" data-tag="personal">personal · 2</span></div>
+<!-- /build:writing-header -->
+                </div>
+                <div id="posts-container" data-tag-filter data-noun="essay">
+                    <!-- build:writing-list -->
+<div class="bk-month" data-month="2026-05"><div class="bk-month-header"><span class="bk-month-name">May 2026</span><span class="bk-month-count">· 2 essays</span></div><div class="bk-item" data-tag="macos"><span class="bk-item-date">May 5</span><div class="bk-item-body"><div class="bk-item-title"><a href="/writing/2026/dealing-with-in-terminal-copy-is-pain-in-ass">Dealing with &quot;In Terminal&quot; copy is pain in ass</a></div><div class="bk-item-desc">I wrote a whole post about this already.</div></div><span class="bk-item-tag" data-tag="macos">MacOS</span></div><div class="bk-item" data-tag="macos"><span class="bk-item-date">May 4</span><div class="bk-item-body"><div class="bk-item-title"><a href="/writing/2026/4-hour-of-ci-rabbit-hole">4 hour of CI rabbit hole</a></div><div class="bk-item-desc">It started small. I was scrolling my repo&#x27;s git log and saw this:</div></div><span class="bk-item-tag" data-tag="macos">MacOS</span></div></div>
+<div class="bk-month" data-month="2026-04"><div class="bk-month-header"><span class="bk-month-name">April 2026</span><span class="bk-month-count">· 4 essays</span></div><div class="bk-item" data-tag="macos"><span class="bk-item-date">Apr 28</span><div class="bk-item-body"><div class="bk-item-title"><a href="/writing/2026/don-t-trust-macos-terminal-app">Don&#x27;t Trust macOS Terminal App</a></div><div class="bk-item-desc">I lost an hour today to a bug that wasn&#x27;t a bug. Or rather — it was a bug, just not the one I was looking for.</div></div><span class="bk-item-tag" data-tag="macos">MacOS</span></div><div class="bk-item" data-tag="homelab"><span class="bk-item-date">Apr 28</span><div class="bk-item-body"><div class="bk-item-title"><a href="/writing/2026/the-building-of-homelab">The Building of Homelab</a></div><div class="bk-item-desc">I shoot a lot of footage. My Sony ZV-E10 fills SD cards faster than I can name folders, and at some point I realized my entire creative life had quietly migr…</div></div><span class="bk-item-tag" data-tag="homelab">homelab</span></div><div class="bk-item" data-tag="personal"><span class="bk-item-date">Apr 18</span><div class="bk-item-body"><div class="bk-item-title"><a href="/writing/2026/how-i-build-irrssue-com">how I build irrssue.com</a></div><div class="bk-item-desc">Most personal sites I admire are embarrassingly simple. You load the page and what you get is text, a couple of links, and nothing else. No skeleton loaders.…</div></div><span class="bk-item-tag" data-tag="personal">personal</span></div><div class="bk-item" data-tag="homelab"><span class="bk-item-date">Apr 13</span><div class="bk-item-body"><div class="bk-item-title"><a href="/writing/2026/how-i-replaced-google-with-a-homelab">How I Replaced Google With a Homelab</a></div><div class="bk-item-desc">I pay Google roughly nothing for Photos and Drive. Most people do. And yet I spent a weekend replacing both of them with software I run on my own server. Why…</div></div><span class="bk-item-tag" data-tag="homelab">homelab</span></div></div>
+<div class="bk-month" data-month="2025-12"><div class="bk-month-header"><span class="bk-month-name">December 2025</span><span class="bk-month-count">· 1 essay</span></div><div class="bk-item" data-tag="personal"><span class="bk-item-date">Dec 7</span><div class="bk-item-body"><div class="bk-item-title"><a href="/writing/2025/Hi">Hi</a></div><div class="bk-item-desc">so after years of procrastinating on not building my website, im now finally settle down and give myself a few weeks to prepare a entirely new website.</div></div><span class="bk-item-tag" data-tag="personal">Personal</span></div></div>
+<!-- /build:writing-list -->
                 </div>
             </section>
         </main>
@@ -97,7 +105,7 @@
         </button>
     </nav>
 
-    <script src="/javascript/script.js"></script>
-    <script src="/javascript/writing.js"></script>
+    <script src="/javascript/script.js" defer></script>
+    <script src="/javascript/tag-filter.js" defer></script>
 </body>
 </html>

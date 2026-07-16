@@ -3,11 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Post - Saw Thura Zaw</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500&family=Inter:wght@400;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/main.css">
+    <title>Don&#x27;t Trust macOS Terminal App - Saw Thura Zaw</title>
+    <meta name="description" content="I lost an hour today to a bug that wasn&#x27;t a bug. Or rather — it was a bug, just not the one I was looking for.">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/theme.css">
+    <link rel="stylesheet" href="/css/post.css">
+    <link rel="stylesheet" href="/css/fonts-post.css">
     <style>
         .main-content { max-width: 720px; padding-left: 40px; padding-right: 40px; }
         .post-container { padding-left: 0; padding-right: 0; max-width: 100%; }
@@ -26,9 +28,6 @@
             }
         }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/markdown-it@13.0.1/dist/markdown-it.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
     <script>
         (function() {
             const isMobile = window.innerWidth <= 768;
@@ -68,9 +67,60 @@
                     </svg>
                     Back to writing
                 </a>
-                <div id="post-content">
-                    <div class="loading">Loading post...</div>
-                </div>
+                <div id="post-content"><article>
+  <header class="post-header">
+    
+    <h1 class="post-title">Don&#x27;t Trust macOS Terminal App</h1>
+    <div class="post-meta">
+      <span class="post-date" data-full-date="April 28, 2026" data-iso="2026-04-28">April 28, 2026</span>
+      <span class="post-tag"><a href="/writing?tag=macos">#MacOS</a></span>
+    </div>
+  </header>
+  <div class="post-content"><p>I lost an hour today to a bug that wasn’t a bug. Or rather — it was a bug, just not the one I was looking for.</p>
+<h2>What I was trying to do</h2>
+<p>I’d just installed Claude Code on my homelab (Ubuntu Server, headless, SSH’d in via Tailscale). On first launch it asks you to authenticate. Since the box has no browser, the CLI prints an OAuth URL and tells you to open it on another machine, log in, and paste the resulting code back.</p>
+<p>Standard headless auth flow. Should take ten seconds.</p>
+<p>It took an <strong>hour</strong>.</p>
+<h2>What kept happening</h2>
+<p>I’d copy the URL from my terminal, paste it into the browser on my MacBook, and get this:</p>
+<blockquote>
+<p><strong>Invalid OAuth Request</strong> — Unknown scope: <code>u</code></p>
+</blockquote>
+<p>Different attempt, different error:</p>
+<blockquote>
+<p><strong>Invalid OAuth Request</strong> — Invalid <code>code_challenge_method</code>: missing. Expected: <code>S256</code></p>
+</blockquote>
+<p>Different attempt, <em>different</em> error again:</p>
+<blockquote>
+<p><strong>Invalid OAuth Request</strong> — Unknown scope: <code>user:se</code></p>
+</blockquote>
+<p>Three different errors from the same supposed action. That’s the tell. The OAuth server was getting three different malformed URLs because <strong>three different parts of the URL were getting chopped each time I copied it</strong>.</p>
+<h2>The actual cause</h2>
+<p>The OAuth URL is roughly 470 characters. In macOS Terminal.app, when a line is wider than the window, the terminal <strong>inserts a hard newline at the wrap point</strong>. Not a soft wrap — an actual <code>\n</code> character baked into the buffer.</p>
+<p>So when I triple-clicked to “select the line,” I was actually selecting one chunk of a multi-line string. When I dragged across all three visual lines, the newlines came along for the ride. When that pasted into the browser address bar, the browser either:</p>
+<ol>
+<li>Stopped reading at the first newline (truncating the URL), or</li>
+<li>Replaced the newline with a space (corrupting whatever scope/parameter was at the wrap point)<br>
+Either way, the URL the OAuth server received was not the URL the CLI had generated. And because URLs are encoded — <code>user%3Asessions</code> instead of <code>user:sessions</code> — the corruption was invisible. It looked fine. It pasted fine. It just wasn’t the same string.</li>
+</ol>
+<p>The reason the error kept changing? Each retry generated a fresh URL with a fresh <code>code_challenge</code>, fresh <code>state</code>, fresh everything. The wrap points landed on different characters, breaking different parts of the URL.</p>
+<h2>What fixed it</h2>
+<p>I tried four things before the right one:</p>
+<ol>
+<li><strong>Resize the terminal wider</strong> — helped a bit, URL still wrapped to 2 lines.</li>
+<li><strong>Shrink the font with Cmd±</strong> — same problem, just smaller text.</li>
+<li><strong>Capture the URL to a file with <code>tee</code>, then <code>grep</code> it out</strong> — would’ve worked but felt like overkill.</li>
+<li><strong>Switch to iTerm2</strong> — done.<br>
+iTerm2 doesn’t bake newlines into wrapped lines. They stay as one logical line in the buffer. Triple-click selects the whole thing cleanly. Even better: it auto-detects URLs and underlines them. <strong>Cmd+click and the URL opens in your browser directly.</strong> No copy-paste at all.</li>
+</ol>
+<p>First try. Worked. Logged in. Done.</p>
+<h2>What I’m taking from this</h2>
+<p>Two things, mostly.</p>
+<p><strong>One: macOS Terminal.app’s wrap behavior is silently destructive.</strong> Anything longer than your window width is being mutated when you copy it. JWT tokens, base64 blobs, OAuth URLs, encoded query strings, paste-bin links — anything that can’t tolerate a stray <code>\n</code> is at risk. You won’t notice with most things because most things tolerate whitespace damage. URLs and signed tokens don’t.</p>
+<p><strong>Two: when an error message keeps changing across identical retries, something nondeterministic is in your loop.</strong> I should’ve caught it sooner. I was treating “Invalid OAuth Request” as one failure mode. It was actually three different failures, each pointing at a different wrap-point corruption. The varying error message <em>was the diagnostic signal.</em></p>
+<p>If you’re on macOS and you do anything where exact string fidelity matters — auth flows, API testing, copying configs over SSH — install iTerm2. <code>brew install --cask iterm2</code>. Five seconds. Don’t trust Terminal.app with anything you can’t visually verify character-by-character.</p>
+</div>
+</article></div>
             </div>
         </main>
     </div>
@@ -96,7 +146,7 @@
                 <path d="M6 2l-4 6 10 14L22 8l-4-6H6zm.24 2h11.52l2.4 3.6H3.84L6.24 4zM4.6 9.6h4.07l2.33 8.16L4.6 9.6zm6.16 0h2.48l-1.24 8.68L10.76 9.6zm4.57 0h4.07l-6.4 8.16L15.33 9.6z"/>
             </svg>
         </a>
-        <a href="mailto:liamrolert@gmail.com" class="mobile-nav-item">
+        <a href="mailto:liam@irrssue.com" class="mobile-nav-item">
             <svg class="mobile-nav-icon" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
             </svg>
@@ -111,7 +161,7 @@
         </button>
     </nav>
 
-    <script src="/javascript/script.js"></script>
-    <script src="/javascript/post.js"></script>
+    <script src="/javascript/script.js" defer></script>
+    <script src="/javascript/post.js" defer></script>
 </body>
 </html>

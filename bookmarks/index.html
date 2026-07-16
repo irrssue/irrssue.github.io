@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bookmarks - Saw Thura Zaw</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-    <link rel="stylesheet" href="/main.css">
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/theme.css">
     <link rel="stylesheet" href="/css/bookmarks.css">
     <script>
         // Apply dark mode immediately to prevent flash
@@ -51,9 +52,16 @@
         <!-- Main Content Area -->
         <main class="main-content">
             <section class="bookmarks-section">
-                <div id="bookmarks-header" class="bk-header"></div>
-                <div id="bookmarks-container">
-                    <div class="bk-loading">Loading bookmarks…</div>
+                <div id="bookmarks-header" class="bk-header">
+                    <!-- build:bookmarks-header -->
+<div class="bk-heading">Bookmarks</div><div class="bk-sub">Articles and pages worth keeping. Updated as I find things.</div><div class="bk-counts"><span><b>4</b> links</span><span><b>2</b> tags</span><span><b>since</b> 2026</span></div><div class="bk-chips"><span class="bk-chip on" data-tag="">all</span><span class="bk-chip" data-tag="ai">ai · 1</span><span class="bk-chip" data-tag="tech">tech · 1</span></div>
+<!-- /build:bookmarks-header -->
+                </div>
+                <div id="bookmarks-container" data-tag-filter data-noun="link">
+                    <!-- build:bookmarks-list -->
+<div class="bk-month" data-month="2026-05"><div class="bk-month-header"><span class="bk-month-name">May 2026</span><span class="bk-month-count">· 1 link</span></div><div class="bk-item" data-tag="ai"><span class="bk-item-date">May 6</span><div class="bk-item-body"><div class="bk-item-title"><a href="https://susam.net/inverse-laws-of-robotics.html" target="_blank" rel="noopener noreferrer">Three Inverse Laws of AI</a></div><div class="bk-item-desc">well this is interesting BRB</div><div class="bk-item-src">susam.net</div></div><span class="bk-item-tag" data-tag="ai">AI</span></div></div>
+<div class="bk-month" data-month="2026-04"><div class="bk-month-header"><span class="bk-month-name">April 2026</span><span class="bk-month-count">· 3 links</span></div><div class="bk-item" data-tag=""><span class="bk-item-date">Apr 28</span><div class="bk-item-body"><div class="bk-item-title"><a href="https://gitperf.com/" target="_blank" rel="noopener noreferrer">High Performance Git</a></div><div class="bk-item-desc">Wow this is exactly the tutorial in depth I needed</div><div class="bk-item-src">gitperf.com</div></div><span></span></div><div class="bk-item" data-tag=""><span class="bk-item-date">Apr 28</span><div class="bk-item-body"><div class="bk-item-title"><a href="https://www.alejandro.pe/writing/sail-muddy-lessons" target="_blank" rel="noopener noreferrer">Lessons from building multiplayer browsers</a></div><div class="bk-item-desc">brb ;)</div><div class="bk-item-src">alejandro.pe</div></div><span></span></div><div class="bk-item" data-tag="tech"><span class="bk-item-date">Apr 21</span><div class="bk-item-body"><div class="bk-item-title"><a href="https://red.anthropic.com/2026/mythos-preview/" target="_blank" rel="noopener noreferrer">Assessing Claude Mythos Preview</a></div><div class="bk-item-desc">shocking how the AI has come so far as in terms of how close to the fictional character J.A.R.V.I.S.</div><div class="bk-item-src">red.anthropic.com</div></div><span class="bk-item-tag" data-tag="tech">tech</span></div></div>
+<!-- /build:bookmarks-list -->
                 </div>
             </section>
         </main>
@@ -96,7 +104,7 @@
         </button>
     </nav>
 
-    <script src="/javascript/script.js"></script>
-    <script src="/javascript/bookmarks.js"></script>
+    <script src="/javascript/script.js" defer></script>
+    <script src="/javascript/tag-filter.js" defer></script>
 </body>
 </html>
