@@ -79,6 +79,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
         self.send_header("Cache-Control", "public, max-age=31536000, immutable")
         self.send_header("Accept-Ranges", "bytes")
         self.send_header("Content-Type", ctype)
+        self.send_header("X-Content-Type-Options", "nosniff")
         if length is not None: self.send_header("Content-Length", str(length))
 
     # ---------- routes ----------
@@ -139,7 +140,8 @@ class Handler(http.server.BaseHTTPRequestHandler):
         body = json.dumps(obj).encode()
         self.send_response(code)
         self.send_header("Content-Type","application/json")
-        self.send_header("Access-Control-Allow-Origin","*")
+        self.send_header("Access-Control-Allow-Origin", ORIGIN)
+        self.send_header("X-Content-Type-Options", "nosniff")
         self.send_header("Content-Length",str(len(body)))
         self.end_headers(); self.wfile.write(body)
 

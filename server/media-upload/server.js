@@ -23,6 +23,11 @@ const MEDIA_DIR = '/var/www/media';
 const TOKEN_FILE = path.join(process.env.HOME || '/home/irrssue', '.media-upload-token');
 const PUBLIC_BASE = 'https://upload.irrssue.com';
 const MAX_BYTES = 200 * 1024 * 1024; // 200 MB
+const ALLOWED_ORIGIN = 'https://irrssue.github.io';
+const ALLOWED_EXT = new Set([
+  '.jpg', '.jpeg', '.png', '.webp', '.gif', '.avif',
+  '.mp4', '.webm', '.mov', '.m4v',
+]);
 
 const PAGE = fs.readFileSync(path.join(__dirname, 'upload.html'));
 
@@ -62,6 +67,8 @@ function sendJSON(res, status, obj) {
     'Content-Type': 'application/json; charset=utf-8',
     'Content-Length': Buffer.byteLength(body),
     'Cache-Control': 'no-store',
+    'Access-Control-Allow-Origin': ALLOWED_ORIGIN,
+    'X-Content-Type-Options': 'nosniff',
   });
   res.end(body);
 }
@@ -73,6 +80,10 @@ function handleUpload(req, res, url) {
   const name = sanitizeName(url.searchParams.get('name'));
   if (!name) {
     return sendJSON(res, 400, { error: 'missing or invalid ?name= filename' });
+  }
+  const ext = path.extname(name).toLowerCase();
+  if (!ALLOWED_EXT.has(ext)) {
+    return sendJSON(res, 400, { error: `type not allowed: ${ext || '(none)'}` });
   }
 
   const finalName = availableName(name);
@@ -122,11 +133,20 @@ const server = http.createServer((req, res) => {
   const url = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
   const route = url.pathname.replace(/\/+$/, '') || '/';
 
+  if (route === '/upload' && req.method === 'OPTIONS') {
+    res.writeHead(204, {
+      'Access-Control-Allow-Origin': ALLOWED_ORIGIN,
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'X-Upload-Token, Content-Type',
+    });
+    return res.end();
+  }
   if (route === '/upload' && req.method === 'GET') {
     res.writeHead(200, {
       'Content-Type': 'text/html; charset=utf-8',
       'Content-Length': PAGE.length,
       'Cache-Control': 'no-store',
+      'X-Content-Type-Options': 'nosniff',
     });
     return res.end(PAGE);
   }

@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' https: data:; media-src 'self' https:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src 'self' https://api.github.com https://upload.irrssue.com; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
     <title>Admin — irrssue.github.io</title>
     <style>
         :root {
@@ -532,7 +533,7 @@
         <div class="modal-actions">
             <button class="btn btn-primary" onclick="savePAT()">Save &amp; Connect</button>
             <a href="https://github.com/settings/tokens/new?scopes=repo&description=irrssue.github.io+CMS"
-               target="_blank" class="btn btn-ghost">Generate Token ↗</a>
+               target="_blank" rel="noopener noreferrer" class="btn btn-ghost">Generate Token ↗</a>
         </div>
     </div>
 </div>
@@ -1386,6 +1387,18 @@
             let ok = false;
             try { const u = new URL(gem.maps); ok = (u.protocol === 'http:' || u.protocol === 'https:'); } catch (_) {}
             if (!ok) return toast('Google Maps link must be a valid http(s) URL.', 'error');
+        }
+
+        // Media URL/path can be a relative path (assets/foo.jpg) or an absolute
+        // http(s) URL, but never javascript:/data:/vbscript: — those would run
+        // as script wherever this field is later rendered as a src attribute.
+        if (gem.src && /^\s*(javascript|data|vbscript):/i.test(gem.src)) {
+            return toast('Media URL must be a relative path or an http(s) URL.', 'error');
+        }
+        if (gem.src && /^[a-z][a-z0-9+.-]*:\/\//i.test(gem.src)) {
+            let ok = false;
+            try { const u = new URL(gem.src); ok = (u.protocol === 'http:' || u.protocol === 'https:'); } catch (_) {}
+            if (!ok) return toast('Media URL must be a relative path or an http(s) URL.', 'error');
         }
 
         // Stable id: keep existing on edit, otherwise derive from title.

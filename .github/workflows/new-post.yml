@@ -8,26 +8,39 @@ on:
       slug:
         description: "Custom slug (optional, lowercase-dashes)"
         required: false
+permissions:
+  contents: write
+
 jobs:
   make:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Create post
+        env:
+          TITLE: ${{ github.event.inputs.title }}
+          SLUG: ${{ github.event.inputs.slug }}
         run: |
-          TITLE="${{ github.event.inputs.title }}"
-          SLUG="${{ github.event.inputs.slug }}"
           DATE=$(date -u +"%Y-%m-%d")
-          [ -z "$SLUG" ] && SLUG=$(echo "$TITLE" | tr '[:upper:]' '[:lower:]' | sed -e 's/[^a-z0-9 ]/-/g' -e 's/--*/-/g' -e 's/^-//' -e 's/-$//')
+          if [ -z "$SLUG" ]; then
+            SLUG=$(printf '%s' "$TITLE" | tr '[:upper:]' '[:lower:]' | sed -e 's/[^a-z0-9 ]/-/g' -e 's/--*/-/g' -e 's/^-//' -e 's/-$//')
+          fi
           mkdir -p posts
           FILE="posts/${SLUG}.md"
           sed "s/{{DATE}}/${DATE}/" posts/_template.md > "$FILE"
-          sed -i "s/Your Title/${TITLE}/" "$FILE"
+          python3 - "$TITLE" "$FILE" <<'PY'
+          import sys, pathlib
+          title, path = sys.argv[1], sys.argv[2]
+          p = pathlib.Path(path)
+          p.write_text(p.read_text().replace("Your Title", title))
+          PY
           echo "Created $FILE"
       - name: Commit
+        env:
+          TITLE: ${{ github.event.inputs.title }}
         run: |
           git config user.name "github-actions"
           git config user.email "actions@users.noreply.github.com"
           git add posts/*.md
-          git commit -m "new post: ${{ github.event.inputs.title }}" || echo "No changes"
+          git commit -m "new post: ${TITLE}" || echo "No changes"
           git push
