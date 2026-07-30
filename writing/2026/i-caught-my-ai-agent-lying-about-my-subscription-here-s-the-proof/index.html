@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>I Caught My AI Agent Lying About My Subscription (Here&#x27;s The Proof) - Saw Thura Zaw</title>
+    <meta name="description" content="How a 400 error with 6% subscription usage led to a multi-hour investigation across two parallel AI agents, a stale process, and a provider rewrite.">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/theme.css">
+    <link rel="stylesheet" href="/css/post.css">
+    <link rel="stylesheet" href="/css/fonts-post.css">
+    <style>
+        .main-content { max-width: 720px; padding-left: 40px; padding-right: 40px; }
+        .post-container { padding-left: 0; padding-right: 0; max-width: 100%; }
+        @media (max-width: 768px) {
+            html, body { overflow-x: hidden; }
+            .main-content {
+                max-width: 100vw;
+                width: 100%;
+                box-sizing: border-box;
+                padding: 24px 20px 80px 20px;
+                overflow-x: hidden;
+            }
+            .post-container {
+                padding: 0;
+                max-width: 100%;
+            }
+        }
+    </style>
+    <script>
+        (function() {
+            const isMobile = window.innerWidth <= 768;
+            let shouldUseDarkMode;
+            if (isMobile) {
+                shouldUseDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            } else {
+                const savedTheme = localStorage.getItem('darkMode');
+                shouldUseDarkMode = savedTheme !== 'false';
+            }
+            if (shouldUseDarkMode) {
+                document.documentElement.style.setProperty('--preload-dark-mode', '1');
+            }
+        })();
+    </script>
+</head>
+<body class="post-page">
+    <script>
+        const isMobile = window.innerWidth <= 768;
+        let shouldUseDarkMode;
+        if (isMobile) {
+            shouldUseDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        } else {
+            const savedTheme = localStorage.getItem('darkMode');
+            shouldUseDarkMode = savedTheme !== 'false';
+        }
+        if (shouldUseDarkMode) {
+            document.body.classList.add('dark-mode');
+        }
+    </script>
+    <div class="grid-container">
+        <main class="main-content">
+            <div class="post-container">
+                <a href="/writing" class="back-link">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+                    </svg>
+                    Back to writing
+                </a>
+                <div id="post-content"><article>
+  <header class="post-header">
+    
+    <h1 class="post-title">I Caught My AI Agent Lying About My Subscription (Here&#x27;s The Proof)</h1>
+    <div class="post-meta">
+      <span class="post-date" data-full-date="July 30, 2026" data-iso="2026-07-30">July 30, 2026</span>
+      <span class="post-tag"><a href="/writing?tag=ai">#AI</a></span>
+    </div>
+  </header>
+  <div class="post-content"><h1>The Case of the Phantom Extra Usage</h1>
+<p><em>How a 400 error with 6% subscription usage led to a multi-hour investigation across two parallel AI agents, a stale process, and a provider rewrite.</em></p>
+<h2>TL;DR</h2>
+<p>Hermes — my agent runtime that wraps Claude Code — was silently billing every request to a separate “extra usage” credit pool instead of my Claude Pro subscription, even while my weekly plan usage sat at 6%. The root cause wasn’t a rate limit, a burst window, or a leaked API key. It was Hermes’s native <code>anthropic</code> provider making direct OAuth-token HTTP calls to <code>api.anthropic.com</code> — a path that, per Hermes’s own docs, only draws from purchased extra-usage credits and is gated to Claude Max, not Pro. The fix was building a new <code>claude-code-cli</code> provider that spawns the actual local <code>claude</code> binary as a subprocess instead of hitting the API directly, so the request goes through the same authenticated CLI session I use every day — and inherits my Pro subscription’s quota instead of bypassing it.</p>
+<p>This is the full log of how that got diagnosed, including the wrong turns.</p>
+<h2>The trigger</h2>
+<p>I run Hermes as an agent layer on top of Claude Code CLI, authenticated with my own Claude Pro subscription — no separate API key. Mid-session, a task failed with:</p>
+<pre><code>API call failed (attempt 1/3): BadRequestError [HTTP 400]
+🔌 Provider: anthropic  Model: claude-sonnet-5
+🌐 Endpoint: https://api.anthropic.com
+📝 Error: HTTP 400: You're out of extra usage. Add more at claude.ai/settings/usage and keep going.
+</code></pre>
+<p>The confusing part: <code>claude.ai/settings/usage</code> showed my weekly plan usage at roughly 6%. Nowhere close to exhausted. So why was I being told to buy more usage?</p>
+<h2>First theory: stray API key shadowing the subscription</h2>
+<p>The most common cause of “subscription usage silently routes to pay-as-you-go” is an <code>ANTHROPIC_API_KEY</code> environment variable taking precedence over an OAuth login — this is a documented, reproducible pattern in Claude Code’s auth precedence order (env var &gt; OAuth session), and it’s bitten enough people that it has multiple open GitHub issues against <code>anthropics/claude-code</code>.</p>
+<p>Checked for it directly:</p>
+<pre><code class="language-bash">echo $ANTHROPIC_API_KEY          # empty
+grep -rn &quot;ANTHROPIC_API_KEY&quot; ~/.zshrc ~/.bashrc ~/.profile ~/.bash_profile   # nothing
+cat ~/.claude/settings.json      # normal config — plugins, theme, voice mode, no injected key
+</code></pre>
+<p>No env var, no <code>apiKeyHelper</code> override. Ruled out. Whatever was happening, it wasn’t the classic stray-key bug.</p>
+<h2>Second theory: shared pool, 5-hour burst limit</h2>
+<p>Claude subscriptions are governed by two separate meters:</p>
+<ul>
+<li>A <strong>weekly percentage</strong> (what shows at <code>claude.ai/settings/usage</code>) — the long-term budget.</li>
+<li>A <strong>rolling 5-hour window</strong> — a short-term burst throttle sitting underneath the weekly number. Community-measured estimates put Claude Pro at roughly <strong>~44,000 tokens per 5-hour window, or ~10–45 prompts</strong>, depending on model and task weight. This window is independent of the weekly %, meaning it’s entirely possible to be at 6% weekly and still hit the short-term ceiling if requests land in a tight burst.<br>
+The theory: Hermes’s subagents, retries, and background orchestration all count against the same 5-hour bucket, and a burst of that activity tripped the short-term limit, which then fell through to pay-as-you-go extra usage as designed behavior for OAuth accounts.</li>
+</ul>
+<p>This explanation was <strong>wrong</strong>, but it took an actual credential-pool inspection to prove it.</p>
+<h2>The real diagnosis: pulling the credential record</h2>
+<p>Rather than keep theorizing, the next step was pulling the actual auth configuration Hermes uses:</p>
+<pre><code class="language-bash">which hermes                          # /Users/irrssue/.local/bin/hermes
+find ~ -maxdepth 4 -iname &quot;*hermes*&quot;  # ~/.hermes/hermes-agent
+ 
+cat ~/.hermes/config.yaml             # model.provider: anthropic
+cat ~/.hermes/.env                    # no ANTHROPIC_API_KEY — only terminal/browser/telegram settings
+cat ~/.hermes/auth.json               # the actual answer
+</code></pre>
+<p><code>auth.json</code> → <code>credential_pool.anthropic[0]</code>:</p>
+<pre><code class="language-json">{
+  &quot;source&quot;: &quot;claude_code&quot;,
+  &quot;auth_type&quot;: &quot;oauth&quot;,
+  &quot;label&quot;: &quot;claude_code&quot;,
+  &quot;last_status&quot;: &quot;exhausted&quot;,
+  &quot;last_error&quot;: &quot;400 invalid_request_error — You're out of extra usage...&quot;
+}
+</code></pre>
+<p>This confirmed Hermes was sourcing the <strong>same OAuth credentials</strong> as <code>~/.claude/.credentials.json</code> — the exact same login as native Claude Code. Also confirmed independently: <code>claude auth status --text</code> reported a healthy <code>Login method: Claude Pro account</code>.</p>
+<p>So the “burst window” theory looked initially plausible — same credentials, same account, so surely the same billing pool. <strong>It wasn’t.</strong></p>
+<h2>Why “same OAuth credentials” doesn’t mean “same billing pool”</h2>
+<p>Here’s the part that actually broke the earlier reasoning: authenticating with the same OAuth token does not guarantee the same request path. Two different code paths can both present a Pro-account OAuth token and still get billed completely differently, depending on <em>how</em> the request is made:</p>
+<ol>
+<li><strong>Native <code>claude</code> CLI</strong> — the binary itself, run locally, talking to Anthropic’s backend the way Claude Code always has. Draws on the Pro subscription’s included quota normally.</li>
+<li><strong>Hermes’s native <code>anthropic</code> provider</strong> — a separate code path making its own OAuth-token HTTP calls directly to <code>https://api.anthropic.com</code>, bypassing the local CLI binary entirely.<br>
+Per Hermes’s own documentation and a related open GitHub issue on this exact behavior: <strong>that direct-OAuth-HTTP path only draws from purchased “extra usage” credits, and is explicitly gated to Claude Max — “Claude Pro subscribers cannot use this path.”</strong> On a Pro account, that path either fails outright or, per the referenced bug, silently falls through to pay-per-token billing.</li>
+</ol>
+<p>That’s the actual mechanism. Not a burst limit. Not a leaked key. <strong>A structurally separate request path that was never entitled to bill against a Pro plan in the first place</strong>, dressed up in the same OAuth token so it looked, from the credential pool, like it should have worked.</p>
+<h2>The fix: a subprocess provider instead of a direct API path</h2>
+<p>The fix (implemented via Claude Code, running in parallel with Hermes) was a new provider, <code>claude-code-cli</code>, that makes Hermes <strong>spawn the local <code>claude</code> binary as a subprocess</strong> instead of calling the API directly:</p>
+<p><strong>New files:</strong></p>
+<ul>
+<li><code>agent/claude_code_cli_client.py</code> — the transport, an OpenAI-compatible facade over <code>claude -p --output-format json</code></li>
+<li><code>plugins/model-providers/claude-code-cli/__init__.py</code> — provider profile</li>
+<li><code>tests/agent/test_claude_code_cli_client.py</code> — 26 tests<br>
+<strong>Design details worth recording:</strong></li>
+<li>The CLI is driven purely as a model backend, not as an agent: <code>--tools &quot;&quot;</code> disables Claude Code’s built-in tools (Hermes advertises its own tools in-prompt and parses <code>&lt;tool_call&gt;</code> blocks back out — the same pattern used for its Copilot ACP backend). <code>--setting-sources &quot;&quot; --strict-mcp-config</code> keep <code>CLAUDE.md</code>, hooks, and MCP servers out of the transport, so the subprocess stays a clean model call.</li>
+<li><strong><code>--bare</code> was deliberately avoided.</strong> Its own help text states OAuth and keychain credentials are never read in that mode — it forces <code>ANTHROPIC_API_KEY</code>, which would have recreated the exact billing problem being fixed. On top of that, the client actively <strong>strips <code>ANTHROPIC_API_KEY</code>/<code>ANTHROPIC_AUTH_TOKEN</code> from the child process’s environment</strong>, so a stray key elsewhere in the shell can’t silently reroute this onto pay-as-you-go billing.</li>
+<li>Replacing Claude Code’s default agentic system prompt with a minimal one cut per-call overhead from <strong>~10,400 tokens to 185 tokens</strong> — a roughly 98% reduction in fixed overhead per call, independent of the billing fix, which stretches the 5-hour window further regardless of which pool it’s billed against.</li>
+<li>Three places in the codebase were hardcoded to a different backend (Copilot) at their shared root and got fixed generally rather than patched with a one-off conditional: the two <code>external_process</code> auth functions became table-driven, streaming/Responses-API gating now routes through a single <code>is_local_subprocess_backend()</code> predicate, and auth-status reporting dispatches on <code>auth_type</code> instead of provider name (it had been reporting “logged out” for a working backend).<br>
+<strong>Initial verification (in-process, not yet through the live Hermes gateway):</strong></li>
+<li><code>hermes -z &quot;17 times 23&quot;</code> → <code>391</code> (correct)</li>
+<li>A tool-calling round trip: read a file via Hermes’s own tools, reported contents correctly</li>
+<li>The real binary invocation was captured by wrapping <code>claude</code> in a spy script and inspecting the actual <code>argv</code> — confirmed it execs <code>claude</code>, not an HTTP call</li>
+<li>249 tests passing, <code>ruff</code> clean</li>
+</ul>
+<h2>The catch: a stale process undermined the first “it’s fixed” claim</h2>
+<p>The first report of success didn’t hold up under a second, independent check (from Hermes itself, running in parallel). Here’s the exact sequence that revealed the gap:</p>
+<table>
+<thead>
+<tr>
+<th>Event</th>
+<th>Timestamp</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hermes process (pid 63088) started</td>
+<td>03:26:31</td>
+</tr>
+<tr>
+<td><code>config.yaml</code> edited — provider switched to <code>claude-code-cli</code></td>
+<td>03:30:30</td>
+</tr>
+<tr>
+<td>Plugin code written</td>
+<td>03:39:14</td>
+</tr>
+<tr>
+<td>Code committed on branch <code>claude-code-cli-transport</code></td>
+<td>03:49:32</td>
+</tr>
+</tbody>
+</table>
+<p>Hermes’s provider discovery runs once per process (a module-level <code>_discovered</code> flag), and is <strong>not re-scanned mid-session</strong>. Every one of the changes above — the config edit, the new plugin files, the commit — happened <em>after</em> the running process had already loaded its provider registry.</p>
+<p>The empirical proof came from the actual session log, not from re-reading the config:</p>
+<pre><code>~/.hermes/logs/agent.log
+07:37:37 ... provider=anthropic base_url=https://api.anthropic.com
+</code></pre>
+<p>Every request in that live session — including the most recent one — was still hitting <code>api.anthropic.com</code> under the old <code>anthropic</code> provider. Zero occurrences of the new transport firing. The 249 passing tests and the spy-script confirmation were real, but validated <strong>out-of-process</strong> (standalone test runs), not through the actual running Hermes gateway that was serving real tasks.</p>
+<p>Verdict at that point: the fix was correctly built and committed, but not yet live. Classic stale-process problem — a restart was required to pick up both the config change and the new plugin code.</p>
+<h2>After restart: confirmed live</h2>
+<p>Restarting the Hermes gateway picked up both the edited config and the new plugin. The session banner on restart:</p>
+<pre><code>✨ Session reset! Starting fresh.
+ 
+◆ Model: claude-sonnet-5
+◆ Provider: claude-code-cli
+◆ Context: 1.0M tokens (detected)
+</code></pre>
+<p><code>Provider: claude-code-cli</code> — no longer <code>anthropic</code>. This is the first confirmation, from a fresh process, that the correct provider actually loaded.</p>
+<h2>What’s still worth verifying (and why)</h2>
+<p>A provider label in a session banner confirms the <em>code path selected</em>, not necessarily the <em>billing outcome</em>. Given that the earlier “it’s fixed” claim didn’t survive a log check, the appropriate level of trust here is: confirmed the mechanism is active, not yet confirmed the billing behaves as expected under real load. The remaining step is running a representative task through the new session and comparing <code>claude.ai/settings/usage</code> before and after:</p>
+<ul>
+<li><strong>Expected if the fix works:</strong> weekly plan % moves, extra-usage balance stays flat.</li>
+<li><strong>If extra usage still moves:</strong> something in the subprocess path is still falling through to the old billing route, and this write-up would need a correction.<br>
+Also flagged for cleanup: a standing decision Hermes had saved to its own memory mid-investigation — to route “substantive work” through manual <code>claude -p</code> calls because it believed the <code>claude-code-cli</code> path was Max-only and unusable — was recorded after a clarifying question timed out with no real user response. That decision is now built on an outdated premise and needs to be explicitly overwritten rather than left as a persisted preference for future sessions to inherit.</li>
+</ul>
+<h2>Known unresolved items from the build</h2>
+<ul>
+<li><strong>23 pre-existing test failures</strong> in the vendored Hermes install were confirmed unrelated to this change (identical failures reproduced on a clean tree via <code>git stash</code>). 17 are in <code>tests/agent/</code> (mock-shape drift against <code>test_anthropic_adapter.py</code> and credential-pool tests), 6 are in <code>tests/hermes_cli/</code> (umask/WSL/uv environment assumptions). Left untouched deliberately, since <code>hermes update</code> would discard any local fix to a vendored install.</li>
+<li>The new work sits on branch <code>claude-code-cli-transport</code>, committed cleanly — but a decision on merging/keeping it persistent against future <code>hermes update</code> runs is still open. A config backup exists at <code>~/.hermes/config.yaml.bak.pre-claude-cli</code>.</li>
+</ul>
+<h2>Takeaways</h2>
+<ol>
+<li><strong>Same OAuth token ≠ same billing path.</strong> Two code paths can both authenticate as the same account and still hit entirely different billing pools, depending on whether the request goes through the actual local CLI or a separate direct-API code path layered on top of the same credentials.</li>
+<li><strong>A provider name in a banner or config file is a claim, not a proof.</strong> The only thing that actually settled this was grepping the live request log for the provider string that fired on real calls — not re-reading <code>config.yaml</code>, not trusting a prior session’s self-report.</li>
+<li><strong>Process staleness is an easy trap in agent runtimes with lazy, once-per-process provider discovery.</strong> A correct fix, correctly committed, can still be inert in a running process until restarted — and “it’s fixed” claims from a long-running agent should be treated skeptically until verified against that session’s own logs.</li>
+<li><strong>Cutting the fixed per-call system-prompt overhead (10,400 → 185 tokens) was a free win</strong> independent of the billing fix, and stretches the 5-hour burst window regardless of which pool ends up paying for it.</li>
+</ol>
+<hr>
+<p><em>Written up as a build log for <a href="https://irrssue.com" target="_blank" rel="noopener noreferrer">irrssue.com</a> — part of the homelab/AI-tooling series.</em></p>
+</div>
+</article></div>
+            </div>
+        </main>
+    </div>
+
+    <nav class="mobile-nav">
+        <a href="/" class="mobile-nav-item">
+            <svg class="mobile-nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+            </svg>
+        </a>
+        <a href="/writing" class="mobile-nav-item active">
+            <svg class="mobile-nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+            </svg>
+        </a>
+        <a href="/bookmarks" class="mobile-nav-item">
+            <svg class="mobile-nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z"/>
+            </svg>
+        </a>
+        <a href="/gems" class="mobile-nav-item">
+            <svg class="mobile-nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M6 2l-4 6 10 14L22 8l-4-6H6zm.24 2h11.52l2.4 3.6H3.84L6.24 4zM4.6 9.6h4.07l2.33 8.16L4.6 9.6zm6.16 0h2.48l-1.24 8.68L10.76 9.6zm4.57 0h4.07l-6.4 8.16L15.33 9.6z"/>
+            </svg>
+        </a>
+        <a href="mailto:liam@irrssue.com" class="mobile-nav-item">
+            <svg class="mobile-nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+            </svg>
+        </a>
+        <button class="mobile-nav-item theme-toggle" id="themeToggle" aria-label="Toggle theme">
+            <svg class="mobile-nav-icon sun-icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.166a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.834 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM7.758 17.303a.75.75 0 00-1.061-1.06l-1.591 1.59a.75.75 0 001.06 1.061l1.591-1.59zM6 12a.75.75 0 01-.75.75H3a.75.75 0 010-1.5h2.25A.75.75 0 016 12zM6.697 7.757a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 00-1.061 1.06l1.59 1.591z"/>
+            </svg>
+            <svg class="mobile-nav-icon moon-icon" viewBox="0 0 24 24" fill="currentColor" style="display: none;">
+                <path d="M9.528 1.718a.75.75 0 01.162.819A8.97 8.97 0 009 6a9 9 0 009 9 8.97 8.97 0 003.463-.69.75.75 0 01.981.98 10.503 10.503 0 01-9.694 6.46c-5.799 0-10.5-4.701-10.5-10.5 0-4.368 2.667-8.112 6.46-9.694a.75.75 0 01.818.162z"/>
+            </svg>
+        </button>
+    </nav>
+
+    <script src="/javascript/script.js" defer></script>
+    <script src="/javascript/post.js" defer></script>
+</body>
+</html>
