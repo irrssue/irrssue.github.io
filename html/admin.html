@@ -1456,7 +1456,8 @@
             }
 
             const posts = await Promise.all(mdFiles.map(async f => {
-                const text = await fetch(f.download_url).then(r => r.text());
+                const fileData = await ghGet('posts/' + encodeURIComponent(f.name));
+                const text = b64decode(fileData.content);
                 const fm   = parseFrontMatter(text);
                 return { filename: f.name, sha: f.sha, ...fm };
             }));
