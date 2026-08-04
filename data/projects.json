@@ -1,11 +1,5 @@
 [
   {
-    "name": "Wind Chime",
-    "url": "https://irrssue.com/windchime/",
-    "description": "A place to take a break to",
-    "external": true
-  },
-  {
     "name": "Minimal HackerNews",
     "url": "https://news.irrssue.com",
     "description": "Hackernews reimagined",
