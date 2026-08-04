@@ -41,8 +41,6 @@ const PixelWave = (() => {
     canvas.style.width = w + 'px';
     canvas.style.height = h + 'px';
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    // this site has a light theme too — white squares vanish on white
-    cfg.color = document.body.classList.contains('dark-mode') ? '255,255,255' : '0,0,0';
     ctx.fillStyle = 'rgb(' + cfg.color + ')';
 
     step = cfg.cell + cfg.gap;
@@ -149,12 +147,6 @@ const PixelWave = (() => {
     if (document.hidden) { cancelAnimationFrame(raf); raf = 0; clearTimeout(timer); drawIdle(); }
     else schedule();
   });
-
-  // theme toggle flips body.dark-mode — repaint with the readable colour
-  new MutationObserver(() => {
-    cfg.color = document.body.classList.contains('dark-mode') ? '255,255,255' : '0,0,0';
-    ctx.fillStyle = 'rgb(' + cfg.color + ')';
-  }).observe(document.body, { attributes: true, attributeFilter: ['class'] });
 
   build();
   if (!reduced) { timer = setTimeout(run, 1200); }

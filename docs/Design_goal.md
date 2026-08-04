@@ -266,12 +266,11 @@ bottom:          14px
 border-radius:   22px
 padding:         8px 14px
 backdrop-filter: blur(20px)
-grid-columns:    5 (desktop), 4 (mobile — theme toggle hidden)
+grid-columns:    5
 item padding:    10px 13px
 item radius:     14px
 icon size:       17px × 17px
-background:      rgba(30, 30, 30, 0.95)  light mode
-                 rgba(40, 40, 40, 0.95)  dark mode
+background:      rgba(40, 40, 40, 0.95)
 hover pill:      rgba(255, 255, 255, 0.15)
 active dot:      3px × 3px, bottom: -3px, rgba(255,255,255,0.8)
 ```
@@ -308,10 +307,9 @@ active dot:      3px × 3px, bottom: -3px, rgba(255,255,255,0.8)
 
 ```
 index.html          — Main page HTML
-main.css            — Imports: css/styles.css, css/theme.css, css/post.css
+main.css            — Imports: css/styles.css, css/post.css
 css/styles.css      — Main stylesheet (layout, components, responsive)
-css/theme.css       — Dark mode overrides + theme toggle
-javascript/script.js — Theme, mobile nav, bookmarks, search logic
+javascript/script.js — Mobile nav, bookmarks, search logic
 ```
 
 ---

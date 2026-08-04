@@ -1,24 +1,6 @@
 // Simple navigation highlighting
 document.addEventListener('DOMContentLoaded', function () {
     const navLinks = document.querySelectorAll('.mobile-nav a');
-    const themeToggle = document.getElementById('themeToggle');
-    const sunIcon = themeToggle.querySelector('.sun-icon');
-    const moonIcon = themeToggle.querySelector('.moon-icon');
-
-    // Update theme toggle icons based on current mode
-    function updateThemeIcons() {
-        const isDarkMode = document.body.classList.contains('dark-mode');
-        if (isDarkMode) {
-            sunIcon.style.display = 'none';
-            moonIcon.style.display = 'block';
-        } else {
-            sunIcon.style.display = 'block';
-            moonIcon.style.display = 'none';
-        }
-    }
-
-    // Initialize icons on page load
-    updateThemeIcons();
 
     // Navigation functionality
     navLinks.forEach(link => {
@@ -95,40 +77,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (currentActive) {
                     updateHoverPillPosition(currentActive);
                 }
-            }
-        });
-    }
-
-    // Theme toggle functionality
-    const isMobile = () => window.innerWidth <= 768;
-
-    themeToggle.addEventListener('click', function () {
-        // Only allow manual toggle on desktop
-        if (!isMobile()) {
-            document.body.classList.toggle('dark-mode');
-
-            // Save theme preference to localStorage
-            const isDarkMode = document.body.classList.contains('dark-mode');
-            localStorage.setItem('darkMode', isDarkMode);
-
-            // Update icons
-            updateThemeIcons();
-        }
-    });
-
-    // Listen for system theme changes on mobile
-    if (window.matchMedia) {
-        const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');
-
-        darkModeQuery.addEventListener('change', (e) => {
-            // Only apply system preference on mobile
-            if (isMobile()) {
-                if (e.matches) {
-                    document.body.classList.add('dark-mode');
-                } else {
-                    document.body.classList.remove('dark-mode');
-                }
-                updateThemeIcons();
             }
         });
     }

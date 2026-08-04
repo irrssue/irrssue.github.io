@@ -6,28 +6,8 @@
 <title>Resume — Saw Thura Zaw</title>
 <meta name="description" content="Resume of Saw Thura Zaw (irrssue).">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-<script>
-  // Apply dark mode class as early as possible to prevent flash (matches every other page)
-  (function() {
-    const isMobile = window.innerWidth <= 768;
-    const shouldUseDarkMode = isMobile
-      ? window.matchMedia('(prefers-color-scheme: dark)').matches
-      : localStorage.getItem('darkMode') !== 'false';
-    if (shouldUseDarkMode) {
-      document.documentElement.classList.add('dark-mode-preload');
-    }
-  })();
-</script>
 <style>
   :root{
-    --bg:#ffffff;
-    --fg:#2b2926;
-    --dim:#6b655c;
-    --line:rgba(43,41,38,0.13);
-    --accent:oklch(0.6 0.125 58);
-  }
-  html.dark-mode-preload,
-  body.dark-mode{
     --bg:#000000;
     --fg:#f3efe8;
     --dim:#8b847a;
