@@ -241,7 +241,7 @@ a {
 .main-content {
     grid-column: 1;
     padding: 50px 40px 100px 40px;
-    max-width: 686px;
+    max-width: 549px;
     min-width: 0;
     margin-left: auto;
     margin-right: auto;
