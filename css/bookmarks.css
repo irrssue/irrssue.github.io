@@ -25,54 +25,6 @@
     max-width: 520px;
 }
 
-.bk-counts {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 14px;
-    margin-top: 16px;
-    font-family: 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
-    font-size: 0.65rem;
-    color: #737373;
-    letter-spacing: 0.06em;
-}
-
-.bk-counts b {
-    font-weight: 500;
-    margin-right: 3px;
-    color: #e5e5e5;
-}
-
-.bk-chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-top: 20px;
-}
-
-.bk-chip {
-    font-family: 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
-    font-size: 0.62rem;
-    padding: 4px 10px;
-    border: 1px solid #d5d5d5;
-    border-radius: 999px;
-    cursor: pointer;
-    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
-    letter-spacing: 0.02em;
-    color: #737373;
-    border-color: rgba(255, 255, 255, 0.12);
-}
-
-.bk-chip:hover {
-    border-color: rgba(255, 255, 255, 0.3);
-    color: #a3a3a3;
-}
-
-.bk-chip.on {
-    background: #fff;
-    color: #000;
-    border-color: #fff;
-}
-
 /* ── Month groups ──────────────────────────────── */
 .bk-month {
     margin-bottom: 8px;
@@ -103,7 +55,7 @@
 /* ── Bookmark items ────────────────────────────── */
 .bk-item {
     display: grid;
-    grid-template-columns: 52px 1fr auto;
+    grid-template-columns: 52px 1fr;
     gap: 16px;
     padding: 12px 0;
     border-bottom: 1px solid rgba(0, 0, 0, 0.06);
@@ -161,24 +113,8 @@
     letter-spacing: 0.02em;
 }
 
-.bk-item-tag {
-    font-family: 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
-    font-size: 0.6rem;
-    color: #aaa;
-    cursor: pointer;
-    letter-spacing: 0.04em;
-    transition: color 0.15s ease;
-    white-space: nowrap;
-    padding-top: 2px;
-}
-
-.bk-item-tag:hover {
-    color: #a3a3a3;
-}
-
 /* ── States ──────────────────────────────────────── */
 .bk-loading,
-.bk-empty,
 .bk-error {
     text-align: center;
     padding: 3rem 0;
@@ -203,10 +139,6 @@
     }
 
     .bk-item-date {
-        display: none;
-    }
-
-    .bk-item-tag {
         display: none;
     }
 }

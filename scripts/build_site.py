@@ -188,32 +188,9 @@ def render_projects() -> str:
     return "\n".join(items)
 
 
-def render_header(heading: str, sub: str, entries: list[dict], noun: str, since: str) -> str:
-    """The shared bk-header: title, blurb, counts and tag chips."""
-    tags: dict[str, int] = {}
-    for entry in entries:
-        if entry["tag"]:
-            key = entry["tag"].lower()
-            tags[key] = tags.get(key, 0) + 1
-    ranked = sorted(tags.items(), key=lambda kv: -kv[1])
-
-    counts = "".join(
-        f"<span><b>{b}</b> {rest}</span>"
-        for b, rest in (
-            (len(entries), noun if len(entries) == 1 else noun + "s"),
-            (len(ranked), "tag" if len(ranked) == 1 else "tags"),
-            ("since", since),
-        )
-    )
-    chips = '<span class="bk-chip on" data-tag="">all</span>' + "".join(
-        f'<span class="bk-chip" data-tag="{e(t)}">{e(t)} · {c}</span>' for t, c in ranked
-    )
-    return (
-        f'<div class="bk-heading">{e(heading)}</div>'
-        f'<div class="bk-sub">{e(sub)}</div>'
-        f'<div class="bk-counts">{counts}</div>'
-        f'<div class="bk-chips">{chips}</div>'
-    )
+def render_header(heading: str, sub: str) -> str:
+    """The shared bk-header: title and blurb."""
+    return f'<div class="bk-heading">{e(heading)}</div><div class="bk-sub">{e(sub)}</div>'
 
 
 def render_months(entries: list[dict], noun: str) -> str:
@@ -238,16 +215,10 @@ def render_months(entries: list[dict], noun: str) -> str:
                 body += f'<div class="bk-item-desc">{e(it["desc"])}</div>'
             if it.get("src"):
                 body += f'<div class="bk-item-src">{e(it["src"])}</div>'
-            tag = (
-                f'<span class="bk-item-tag" data-tag="{e(it["tag"].lower())}">'
-                f'{e(it["tag"])}</span>'
-                if it["tag"]
-                else "<span></span>"
-            )
             rows.append(
-                f'<div class="bk-item" data-tag="{e(it["tag"].lower())}">'
+                f'<div class="bk-item">'
                 f'<span class="bk-item-date">{it["date"].strftime("%b %-d")}</span>'
-                f'<div class="bk-item-body">{body}</div>{tag}</div>'
+                f'<div class="bk-item-body">{body}</div></div>'
             )
         months.append(
             f'<div class="bk-month" data-month="{key}">'
@@ -318,13 +289,7 @@ def main() -> None:
     inject(
         WRITING_DIR / "index.html",
         "writing-header",
-        render_header(
-            "Writing.",
-            "Things I found in life as in blog format",
-            entries,
-            "essay",
-            posts[-1]["date"].strftime("%b %Y") if posts else "",
-        ),
+        render_header("Writing.", "Things I found in life as in blog format"),
     )
     inject(WRITING_DIR / "index.html", "writing-list", render_months(entries, "essay"))
 
@@ -332,13 +297,7 @@ def main() -> None:
     inject(
         ROOT / "bookmarks" / "index.html",
         "bookmarks-header",
-        render_header(
-            "Bookmarks",
-            "Articles and pages worth keeping. Updated as I find things.",
-            marks,
-            "link",
-            str(marks[-1]["date"].year) if marks else "—",
-        ),
+        render_header("Bookmarks", "Articles and pages worth keeping. Updated as I find things."),
     )
     inject(ROOT / "bookmarks" / "index.html", "bookmarks-list", render_months(marks, "link"))
 
