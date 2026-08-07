@@ -33,18 +33,7 @@ body {
     color: rgb(163, 163, 163);
 }
 
-/* Ambient pixel flip wave background. z-index 0, not -1: at -1 it renders
-   behind the body background and disappears. */
-#pixel-wave {
-    position: fixed;
-    inset: 0;
-    z-index: 0;
-    pointer-events: none;
-}
-
 .grid-container {
-    position: relative;
-    z-index: 1;
     display: grid;
     grid-template-columns: 1fr;
     gap: 0;
