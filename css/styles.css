@@ -392,11 +392,19 @@ a {
     min-width: 0;
 }
 
+.hero-name-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 15px;
+}
+
 .hero-name {
     font-size: clamp(1.68rem, 3.84vw + 0.96rem, 2.4rem);
     font-weight: 600;
     color: #ffffff;
-    margin-bottom: 15px;
+    margin-bottom: 0;
     margin-top: 0;
     line-height: 1.2;
 }
@@ -433,8 +441,8 @@ a {
     display: flex;
     gap: 20px;
     align-items: center;
-    justify-content: center;
-    margin-top: 14px;
+    justify-content: flex-end;
+    flex-shrink: 0;
 }
 
 .social-icon {
@@ -1068,7 +1076,7 @@ mark {
 
     .hero-name {
         font-size: clamp(1.44rem, 5.76vw + 0.48rem, 1.92rem);
-        margin-bottom: 15px;
+        margin-bottom: 0;
         margin-top: 0;
     }
 
