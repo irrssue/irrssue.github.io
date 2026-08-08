@@ -246,7 +246,7 @@ a {
 
 /* Content sections for demonstration */
 .content-section {
-    margin-bottom: 60px;
+    margin-bottom: 42px;
     color: rgb(115, 115, 115);
     text-decoration: none;
 }
@@ -1105,7 +1105,7 @@ mark {
 }
 
 .folders-section {
-    margin-top: 60px;
+    margin-top: 42px;
     margin-bottom: 60px;
 }
 
@@ -1330,7 +1330,7 @@ mark {
 /* Folders + Finder Mobile */
 @media (max-width: 768px) {
     .folders-section {
-        margin-top: 48px;
+        margin-top: 42px;
         margin-bottom: 40px;
     }
 
