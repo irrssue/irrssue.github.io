@@ -1120,9 +1120,21 @@ mark {
 }
 
 .folder-group {
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+}
+
+/* Hand-drawn hop from the folder down to its newest item */
+.folder-arrow {
+    position: absolute;
+    left: -8px;
+    top: 22px;
+    width: 60px;
+    height: 92px;
+    color: rgba(255, 255, 255, 0.5);
+    pointer-events: none;
 }
 
 .folder-latest {
