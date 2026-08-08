@@ -66,7 +66,7 @@ import * as THREE from 'three';
             brickMat
         ];
 
-        var block = new THREE.Mesh(new THREE.BoxGeometry(2.6, 2.6, 2.6), materials);
+        var block = new THREE.Mesh(new THREE.BoxGeometry(1.1, 0.4, 0.22), materials);
         block.rotation.set(0.12, -0.35, 0);
         scene.add(block);
 
