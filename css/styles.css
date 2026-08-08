@@ -1129,13 +1129,13 @@ mark {
 }
 
 .folder-icon {
-    width: 84px;
+    width: 50px;
     height: auto;
     filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.45));
 }
 
 .folder-icon--sm {
-    width: 58px;
+    width: 35px;
 }
 
 .folder-label {
@@ -1243,7 +1243,7 @@ mark {
 }
 
 .file-icon {
-    width: 20px;
+    width: 12px;
     height: auto;
     flex-shrink: 0;
 }
@@ -1328,7 +1328,7 @@ mark {
     }
 
     .folder-icon {
-        width: 68px;
+        width: 41px;
     }
 
     .finder {
@@ -1340,6 +1340,6 @@ mark {
     }
 
     .folder-icon--sm {
-        width: 50px;
+        width: 30px;
     }
 }
