@@ -1114,8 +1114,26 @@ mark {
     margin: 0;
     padding: 0;
     display: flex;
-    justify-content: center;
-    gap: 44px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 28px;
+}
+
+.folder-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.folder-latest {
+    list-style: none;
+    margin: 0;
+    padding: 0 0 0 34px;
+}
+
+.folder-latest .folder-icon--sm {
+    width: 14px;
+    filter: none;
 }
 
 .folder {

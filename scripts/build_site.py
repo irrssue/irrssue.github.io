@@ -165,19 +165,32 @@ def render_post_page(post: dict) -> str:
     )
 
 
+def render_file_row(url: str, title: str, icon: str, external: bool = False) -> str:
+    """One icon + title line, as used in the Finder list and under a home folder."""
+    attrs = ' target="_blank" rel="noopener noreferrer"' if external else ""
+    return (
+        f'<li class="writing-post-item">'
+        f'<a href="{e(url)}" class="writing-post-link"{attrs}>{icon}'
+        f"<span>{e(title)}</span></a></li>"
+    )
+
+
 def render_home_list(posts: list[dict]) -> str:
     items = [
-        f'<li class="writing-post-item">'
-        f'<a href="{p["url"]}" class="writing-post-link">{FILE_ICON}'
-        f"<span>{e(p['title'])}</span></a></li>"
+        render_file_row(p["url"], p["title"], FILE_ICON)
         for p in posts[:MAX_HOME_POSTS]
     ]
     return "\n".join(items)
 
 
+def load_projects() -> list[dict]:
+    """data/projects.json is the source of truth for the projects folder."""
+    return json.loads((DATA_DIR / "projects.json").read_text(encoding="utf-8"))
+
+
 def render_projects() -> str:
-    """data/projects.json is the source of truth; this just bakes it into HTML."""
-    projects = json.loads((DATA_DIR / "projects.json").read_text(encoding="utf-8"))
+    """Bakes data/projects.json into the Finder grid."""
+    projects = load_projects()
     items = []
     for p in projects:
         external = p.get("external")
@@ -288,6 +301,26 @@ def main() -> None:
 
     inject(ROOT / "index.html", "recent-posts", render_home_list(posts))
     inject(ROOT / "index.html", "projects", render_projects())
+
+    # The home page also shows the newest post / first project under each folder.
+    if posts:
+        inject(
+            ROOT / "index.html",
+            "latest-post",
+            render_file_row(posts[0]["url"], posts[0]["title"], FILE_ICON),
+        )
+    first_project = next(iter(load_projects()), None)
+    if first_project:
+        inject(
+            ROOT / "index.html",
+            "latest-project",
+            render_file_row(
+                first_project["url"],
+                first_project["name"],
+                FOLDER_ICON_SM,
+                bool(first_project.get("external")),
+            ),
+        )
 
     entries = [dict(p, desc=p["excerpt"]) for p in posts]
     inject(
