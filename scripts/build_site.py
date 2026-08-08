@@ -29,10 +29,14 @@ WRITING_DIR = ROOT / "writing"
 DATA_DIR = ROOT / "data"
 TEMPLATE = (ROOT / "scripts" / "post_template.html").read_text(encoding="utf-8")
 
-EXTERNAL_ICON = (
-    '<svg class="external-icon" viewBox="0 0 24 24" fill="currentColor">'
-    '<path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 '
-    '2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>'
+# Both reference the <symbol> sprite at the bottom of index.html
+FILE_ICON = (
+    '<svg class="file-icon" viewBox="0 0 48 60" aria-hidden="true">'
+    '<use href="#ic-file"></use></svg>'
+)
+FOLDER_ICON_SM = (
+    '<svg class="folder-icon folder-icon--sm" viewBox="0 0 64 52" aria-hidden="true">'
+    '<use href="#ic-folder"></use></svg>'
 )
 
 MAX_HOME_POSTS = 3
@@ -163,8 +167,9 @@ def render_post_page(post: dict) -> str:
 
 def render_home_list(posts: list[dict]) -> str:
     items = [
-        f'<li class="writing-post-item reveal-item">'
-        f'<a href="{p["url"]}" class="writing-post-link">{e(p["title"])}</a></li>'
+        f'<li class="writing-post-item">'
+        f'<a href="{p["url"]}" class="writing-post-link">{FILE_ICON}'
+        f"<span>{e(p['title'])}</span></a></li>"
         for p in posts[:MAX_HOME_POSTS]
     ]
     return "\n".join(items)
@@ -178,11 +183,10 @@ def render_projects() -> str:
         external = p.get("external")
         attrs = ' target="_blank" rel="noopener noreferrer"' if external else ""
         items.append(
-            '<li class="project-item reveal-item">'
-            f'<a href="{e(p["url"])}" class="project-link{" external" if external else ""}"{attrs}>'
+            '<li class="project-item">'
+            f'<a href="{e(p["url"])}" class="project-link"{attrs}>'
+            f"{FOLDER_ICON_SM}"
             f'<span class="project-name">{e(p["name"])}</span>'
-            f'<span class="project-description">{e(p.get("description", ""))}</span>'
-            f'{EXTERNAL_ICON if external else ""}'
             "</a></li>"
         )
     return "\n".join(items)

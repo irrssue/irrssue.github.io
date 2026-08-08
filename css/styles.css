@@ -1086,44 +1086,139 @@ mark {
     }
 }
 
-/* Writing Section (homepage) */
-.writing-section {
+/* Folders (homepage entry points) */
+.icon-sprite {
+    position: absolute;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+}
+
+.folders-section {
     margin-top: 60px;
     margin-bottom: 60px;
 }
 
-.writing-heading {
-    font-size: clamp(0.9rem, 1.5vw + 0.5rem, 1.05rem);
-    font-weight: 600;
-    margin-bottom: 12px;
+.folder-row {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 44px;
 }
 
-.writing-heading-link {
-    text-decoration: none;
-    display: inline-flex;
+.folder {
+    display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 4px;
-    transition: opacity 0.2s ease;
+    gap: 10px;
+    padding: 10px 14px;
+    border: 0;
+    border-radius: 12px;
+    background: none;
+    color: rgb(163, 163, 163);
+    font: inherit;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.folder:hover,
+.folder:focus-visible {
+    background-color: rgba(255, 255, 255, 0.06);
+    transform: translateY(-2px);
+}
+
+.folder-icon {
+    width: 84px;
+    height: auto;
+    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.45));
+}
+
+.folder-icon--sm {
+    width: 58px;
+}
+
+.folder-label {
+    font-size: clamp(0.9rem, 1.5vw + 0.5rem, 1.05rem);
+    font-weight: 600;
+    color: rgb(250, 250, 250);
+}
+
+/* Finder-style modal */
+.finder {
+    margin: auto; /* the global reset kills the UA's centering */
+    width: min(560px, calc(100vw - 32px));
+    max-height: min(70vh, 620px);
+    padding: 0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 14px;
+    background: #1c1c1c;
+    color: rgb(163, 163, 163);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+    overflow: auto;
+    overscroll-behavior: contain;
+}
+
+.finder::backdrop {
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(10px);
+}
+
+.finder-bar {
+    position: sticky;
+    top: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 16px;
+    background: rgba(28, 28, 28, 0.92);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.finder-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: rgb(250, 250, 250);
+}
+
+.finder-close {
+    width: 26px;
+    height: 26px;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    color: rgb(220, 220, 220);
+    font-size: 1rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.finder-close:hover {
+    background: rgba(255, 255, 255, 0.16);
+}
+
+.finder-all {
+    display: block;
+    padding: 4px 20px 20px;
+    font-size: 0.9rem;
+    text-decoration: none;
     color: rgb(163, 163, 163);
 }
 
-.writing-heading-link:hover {
-    opacity: 0.7;
-}
-
-.writing-arrow {
-    font-weight: 400;
-    font-size: 1.1em;
-    opacity: 0.5;
+.finder-all:hover {
+    color: rgb(250, 250, 250);
 }
 
 .writing-list {
     list-style: none;
-    padding: 0;
+    padding: 12px 12px 8px;
     margin: 0;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 2px;
 }
 
 .writing-post-item {
@@ -1131,101 +1226,65 @@ mark {
 }
 
 .writing-post-link {
-    display: block;
-    font-size: clamp(0.9rem, 1.5vw + 0.5rem, 1.05rem);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.95rem;
     font-weight: 500;
     text-decoration: none;
-    padding: 2px 12px;
+    padding: 8px 10px;
     border-radius: 8px;
-    margin-left: -12px;
     transition: background-color 0.2s ease;
     color: rgb(250, 250, 250);
 }
 
 .writing-post-link:hover {
-    background-color: rgba(255, 255, 255, 0.05);
+    background-color: rgba(255, 255, 255, 0.07);
 }
 
-@media (max-width: 768px) {
-    .writing-section {
-        margin-top: 60px;
-        margin-bottom: 40px;
-    }
+.file-icon {
+    width: 20px;
+    height: auto;
+    flex-shrink: 0;
 }
 
-/* Projects Section */
-.projects-section {
-    margin-top: 60px;
-    margin-bottom: 60px;
-}
-
-.projects-heading {
-    font-size: clamp(0.9rem, 1.5vw + 0.5rem, 1.05rem);
-    font-weight: 600;
-    margin-bottom: 12px;
-    color: rgb(163, 163, 163);
-}
-
-.projects-list {
+/* Projects grid inside the Finder modal */
+.projects-grid {
     list-style: none;
-    padding: 0;
     margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
+    padding: 20px 16px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 8px;
 }
 
 .project-item {
     margin: 0;
-    position: relative;
 }
-
 
 .project-link {
     display: flex;
-    align-items: baseline;
-    gap: 12px;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 6px;
     border-radius: 10px;
-    transition: background-color 0.2s ease;
+    text-align: center;
     text-decoration: none;
+    transition: background-color 0.2s ease;
     color: rgb(163, 163, 163);
 }
 
 .project-link:hover {
-    background-color: rgba(255, 255, 255, 0.05);
+    background-color: rgba(255, 255, 255, 0.07);
 }
 
 .project-name {
-    font-weight: 600;
-    font-size: clamp(0.9rem, 1.5vw + 0.5rem, 1.05rem);
-    flex-shrink: 0;
-    color: #ffffff;
-}
-
-.project-separator {
-    font-weight: 400;
-    flex-shrink: 0;
-    color: rgb(120, 120, 120);
-}
-
-.project-description {
-    font-size: clamp(0.9rem, 1.5vw + 0.5rem, 1.05rem);
-    font-weight: 400;
-    color: rgb(163, 163, 163);
-}
-
-.external-icon {
-    width: 16px;
-    height: 16px;
-    margin-left: 6px;
-    flex-shrink: 0;
-    opacity: 0.6;
-    transition: opacity 0.2s ease;
-    color: rgb(163, 163, 163);
-}
-
-.project-link:hover .external-icon {
-    opacity: 1;
+    font-size: 0.85rem;
+    font-weight: 500;
+    line-height: 1.3;
+    color: rgb(250, 250, 250);
+    overflow-wrap: anywhere;
 }
 
 /* Link Preview Card */
@@ -1257,41 +1316,30 @@ mark {
     display: block;
 }
 
-/* Projects Section Mobile */
+/* Folders + Finder Mobile */
 @media (max-width: 768px) {
-    .projects-section {
-        margin-top: 60px;
+    .folders-section {
+        margin-top: 48px;
         margin-bottom: 40px;
     }
 
-    .projects-heading {
-        font-size: clamp(0.875rem, 2.2vw + 0.4rem, 1rem);
-        margin-bottom: 0;
+    .folder-row {
+        gap: 24px;
     }
 
-    .projects-list {
-        gap: 0;
+    .folder-icon {
+        width: 68px;
     }
 
-    .project-item::before {
-        left: -12px;
+    .finder {
+        max-height: 78vh;
     }
 
-    .project-link {
-        padding: 6px 12px 6px 0;
-        flex-wrap: nowrap;
+    .projects-grid {
+        grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
     }
 
-    .project-name {
-        font-size: clamp(0.875rem, 2.2vw + 0.4rem, 1rem);
-    }
-
-    .project-description {
-        font-size: clamp(0.875rem, 2.2vw + 0.4rem, 1rem);
-    }
-
-    .external-icon {
-        width: 14px;
-        height: 14px;
+    .folder-icon--sm {
+        width: 50px;
     }
 }
