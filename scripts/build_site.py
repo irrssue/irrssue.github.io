@@ -29,14 +29,10 @@ WRITING_DIR = ROOT / "writing"
 DATA_DIR = ROOT / "data"
 TEMPLATE = (ROOT / "scripts" / "post_template.html").read_text(encoding="utf-8")
 
-# Both reference the <symbol> sprite at the bottom of index.html
-FILE_ICON = (
-    '<svg class="file-icon" viewBox="0 0 48 60" aria-hidden="true">'
-    '<use href="#ic-file"></use></svg>'
-)
-FOLDER_ICON_SM = (
-    '<svg class="folder-icon folder-icon--sm" viewBox="0 0 64 52" aria-hidden="true">'
-    '<use href="#ic-folder"></use></svg>'
+EXTERNAL_ICON = (
+    '<svg class="external-icon" viewBox="0 0 24 24" fill="currentColor">'
+    '<path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 '
+    '2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>'
 )
 
 MAX_HOME_POSTS = 3
@@ -165,41 +161,28 @@ def render_post_page(post: dict) -> str:
     )
 
 
-def render_file_row(url: str, title: str, icon: str, external: bool = False) -> str:
-    """One icon + title line, as used in the Finder list and under a home folder."""
-    attrs = ' target="_blank" rel="noopener noreferrer"' if external else ""
-    return (
-        f'<li class="writing-post-item">'
-        f'<a href="{e(url)}" class="writing-post-link"{attrs}>{icon}'
-        f"<span>{e(title)}</span></a></li>"
-    )
-
-
 def render_home_list(posts: list[dict]) -> str:
     items = [
-        render_file_row(p["url"], p["title"], FILE_ICON)
+        f'<li class="writing-post-item reveal-item">'
+        f'<a href="{p["url"]}" class="writing-post-link">{e(p["title"])}</a></li>'
         for p in posts[:MAX_HOME_POSTS]
     ]
     return "\n".join(items)
 
 
-def load_projects() -> list[dict]:
-    """data/projects.json is the source of truth for the projects folder."""
-    return json.loads((DATA_DIR / "projects.json").read_text(encoding="utf-8"))
-
-
 def render_projects() -> str:
-    """Bakes data/projects.json into the Finder grid."""
-    projects = load_projects()
+    """data/projects.json is the source of truth; this just bakes it into HTML."""
+    projects = json.loads((DATA_DIR / "projects.json").read_text(encoding="utf-8"))
     items = []
     for p in projects:
         external = p.get("external")
         attrs = ' target="_blank" rel="noopener noreferrer"' if external else ""
         items.append(
-            '<li class="project-item">'
-            f'<a href="{e(p["url"])}" class="project-link"{attrs}>'
-            f"{FOLDER_ICON_SM}"
+            '<li class="project-item reveal-item">'
+            f'<a href="{e(p["url"])}" class="project-link{" external" if external else ""}"{attrs}>'
             f'<span class="project-name">{e(p["name"])}</span>'
+            f'<span class="project-description">{e(p.get("description", ""))}</span>'
+            f'{EXTERNAL_ICON if external else ""}'
             "</a></li>"
         )
     return "\n".join(items)
@@ -301,26 +284,6 @@ def main() -> None:
 
     inject(ROOT / "index.html", "recent-posts", render_home_list(posts))
     inject(ROOT / "index.html", "projects", render_projects())
-
-    # The home page also shows the newest post / first project under each folder.
-    if posts:
-        inject(
-            ROOT / "index.html",
-            "latest-post",
-            render_file_row(posts[0]["url"], posts[0]["title"], FILE_ICON),
-        )
-    first_project = next(iter(load_projects()), None)
-    if first_project:
-        inject(
-            ROOT / "index.html",
-            "latest-project",
-            render_file_row(
-                first_project["url"],
-                first_project["name"],
-                FOLDER_ICON_SM,
-                bool(first_project.get("external")),
-            ),
-        )
 
     entries = [dict(p, desc=p["excerpt"]) for p in posts]
     inject(

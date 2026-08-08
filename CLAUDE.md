@@ -30,7 +30,7 @@ The front page should follow a minimal single-column layout inspired by https://
 - Prefer `rem` units for sizing, `em` for component-relative spacing
 
 ## Code Rules
-- Vanilla HTML/CSS/JS by default. External libraries (e.g. three.js via CDN import map) are allowed when a feature genuinely needs them (e.g. 3D visuals) — no npm/build step, load via CDN, keep it self-hosted-feeling and lightweight
+- No frameworks or libraries unless absolutely necessary
 - Semantic HTML (`<article>`, `<section>`, `<nav>`, `<header>`, `<main>`, `<footer>`)
 - Keep the codebase flat and simple — easy for a future developer (or future me) to read and extend
 - If adding a new page, follow the same HTML structure as existing pages

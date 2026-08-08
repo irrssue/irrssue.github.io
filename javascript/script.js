@@ -81,21 +81,3 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 });
-
-// Warm the browser cache for /gems photos on every page load, so they're
-// already loaded by the time the user visits the Gems page. Runs at idle
-// priority to not compete with the current page's own assets.
-(function preloadGemPhotos() {
-    const load = () => {
-        fetch('/data/gems.json')
-            .then(r => r.ok ? r.json() : [])
-            .then(gems => {
-                (Array.isArray(gems) ? gems : []).forEach(g => {
-                    if (g.type === 'photo' && g.src) new Image().src = g.src;
-                });
-            })
-            .catch(() => {});
-    };
-    if ('requestIdleCallback' in window) requestIdleCallback(load);
-    else setTimeout(load, 1000);
-})();
