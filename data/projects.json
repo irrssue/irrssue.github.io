@@ -52,5 +52,11 @@
     "url": "https://irrssue.com/solarsystem/",
     "description": "a view to mesmerize to",
     "external": true
+  },
+  {
+    "name": "Snapsher",
+    "url": "https://snapsher.com",
+    "description": "File Transfer on steroid",
+    "external": true
   }
 ]
