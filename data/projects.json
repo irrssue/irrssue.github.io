@@ -1,5 +1,11 @@
 [
   {
+    "name": "Snapsher",
+    "url": "https://snapsher.com",
+    "description": "File Transfer on steroid",
+    "external": true
+  },
+  {
     "name": "Minimal HackerNews",
     "url": "https://news.irrssue.com",
     "description": "Hackernews reimagined",
@@ -51,12 +57,6 @@
     "name": "Solar System",
     "url": "https://irrssue.com/solarsystem/",
     "description": "a view to mesmerize to",
-    "external": true
-  },
-  {
-    "name": "Snapsher",
-    "url": "https://snapsher.com",
-    "description": "File Transfer on steroid",
     "external": true
   }
 ]
