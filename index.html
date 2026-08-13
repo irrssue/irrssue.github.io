@@ -36,7 +36,7 @@
             }
 
             function removeIntro() {
-                document.body.classList.remove('intro-active');
+                document.body.classList.remove('intro-active', 'intro-revealing');
                 if (overlay && overlay.parentNode) overlay.remove();
             }
 
@@ -56,6 +56,7 @@
             window.setTimeout(function () { revealWord(2); }, 800);
             window.setTimeout(function () { revealWord(3); }, 1200);
             window.setTimeout(function () {
+                document.body.classList.add('intro-revealing');
                 overlay.classList.add('intro-overlay--leaving');
             }, 1500);
             window.setTimeout(removeIntro, 2500);

@@ -2,11 +2,10 @@
     --main-text-color: rgb(163, 163, 163);
     --intro-canvas: #f7f6f4;
     --intro-ink: #4a4a4a;
-    --intro-curtain: #000000;
     --intro-ease: cubic-bezier(0.76, 0, 0.24, 1);
 }
 
-/* Reference-style words preloader: a quiet white canvas, compact greetings, then a black curved wipe. */
+/* Reference-style words preloader: a quiet white canvas, compact greetings, then a rising curved canvas reveal. */
 .intro-overlay {
     position: fixed;
     inset: 0;
@@ -14,7 +13,7 @@
     display: grid;
     place-items: center;
     overflow: hidden;
-    background: var(--intro-canvas);
+    background: transparent;
     color: var(--intro-ink);
     isolation: isolate;
     -webkit-font-smoothing: antialiased;
@@ -22,7 +21,7 @@
 
 .intro-overlay__word-stage {
     position: relative;
-    z-index: 1;
+    z-index: 3;
     width: min(100% - 2rem, 34rem);
     height: 2.25rem;
     overflow: hidden;
@@ -59,12 +58,29 @@
     z-index: 2;
     width: 160vw;
     height: 150vh;
-    top: 100%;
+    top: -50vh;
     left: 50%;
-    border-radius: 50% 50% 0 0 / 7% 7% 0 0;
-    background: var(--intro-curtain);
+    border-radius: 0 0 50% 50% / 0 0 7% 7%;
+    background: var(--intro-canvas);
     transform: translateX(-50%);
     transition: top 1.02s var(--intro-ease);
+}
+
+/* The portfolio starts beneath the canvas and emerges as its curved lower edge rises. */
+body .grid-container {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.82s ease, transform 1.02s var(--intro-ease);
+}
+
+body.intro-active .grid-container {
+    opacity: 0;
+    transform: translateY(1.25rem);
+}
+
+body.intro-revealing .grid-container {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 body.intro-active {
@@ -81,6 +97,12 @@ body.intro-active .mobile-nav {
     pointer-events: none;
 }
 
+body.intro-active.intro-revealing .mobile-nav {
+    transform: translateX(-50%);
+    opacity: 1;
+    pointer-events: auto;
+}
+
 .intro-overlay.intro-overlay--leaving {
     pointer-events: none;
 }
@@ -91,7 +113,7 @@ body.intro-active .mobile-nav {
 }
 
 .intro-overlay.intro-overlay--leaving .intro-overlay__curtain {
-    top: -45vh;
+    top: -150vh;
 }
 
 @media (max-width: 480px) {
