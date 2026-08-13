@@ -23,7 +23,7 @@
     position: relative;
     z-index: 3;
     width: min(100% - 2rem, 34rem);
-    height: 2.25rem;
+    height: 2.65rem;
     overflow: hidden;
 }
 
@@ -46,6 +46,13 @@
 .intro-overlay__word.is-visible {
     opacity: 1;
     transform: translateY(0);
+}
+
+.intro-overlay__word--burmese {
+    font-family: Padauk, 'Noto Sans Myanmar', 'Myanmar Text', Arial, sans-serif;
+    font-size: clamp(1.5rem, 3.1vw, 2.2rem);
+    letter-spacing: 0;
+    line-height: 1.15;
 }
 
 .intro-overlay__word.is-past {
@@ -118,7 +125,7 @@ body.intro-active.intro-revealing .mobile-nav {
 
 @media (max-width: 480px) {
     .intro-overlay__word-stage {
-        height: 1.75rem;
+        height: 2.1rem;
     }
 
     .intro-overlay__word {
