@@ -12,20 +12,19 @@
 <body>
     <noscript><style>.intro-overlay { display: none !important; }</style></noscript>
     <div class="intro-overlay" id="introOverlay" aria-hidden="true">
-        <p class="intro-overlay__counter" aria-hidden="true">01 / 04</p>
-        <div class="intro-overlay__word-stack">
+        <div class="intro-overlay__word-stage">
             <span class="intro-overlay__word is-visible">Hello</span>
-            <span class="intro-overlay__word">Bonjour</span>
-            <span class="intro-overlay__word">Mingalaba</span>
-            <span class="intro-overlay__word">Welcome</span>
+            <span class="intro-overlay__word">bonjour</span>
+            <span class="intro-overlay__word">やあ</span>
+            <span class="intro-overlay__word">ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ ਜੀ</span>
         </div>
-        <p class="intro-overlay__signature" aria-hidden="true">irrssue.com</p>
+        <div class="intro-overlay__curtain" aria-hidden="true"></div>
     </div>
     <script>
         (function () {
             var overlay = document.getElementById('introOverlay');
             var words = Array.prototype.slice.call(overlay.querySelectorAll('.intro-overlay__word'));
-            var seenKey = 'irrssue-intro-v2';
+            var seenKey = 'irrssue-intro-v3';
             var hasReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
             var isSeen = false;
 
@@ -33,39 +32,33 @@
                 isSeen = sessionStorage.getItem(seenKey) === '1';
                 sessionStorage.setItem(seenKey, '1');
             } catch (error) {
-                // Keep the welcome sequence available when storage is unavailable.
+                // Keep the first-visit sequence available when storage is unavailable.
             }
 
-            function dismissIntro() {
-                if (!overlay || overlay.classList.contains('intro-overlay--leaving')) return;
-                overlay.classList.add('intro-overlay--leaving');
+            function removeIntro() {
                 document.body.classList.remove('intro-active');
+                if (overlay && overlay.parentNode) overlay.remove();
+            }
 
-                window.setTimeout(function () {
-                    if (overlay && overlay.parentNode) overlay.remove();
-                }, 900);
+            function revealWord(index) {
+                words[index - 1].classList.remove('is-visible');
+                words[index - 1].classList.add('is-past');
+                words[index].classList.add('is-visible');
             }
 
             if (isSeen || hasReducedMotion) {
-                window.setTimeout(dismissIntro, 30);
+                window.setTimeout(removeIntro, 0);
                 return;
             }
 
             document.body.classList.add('intro-active');
-
-            words.forEach(function (word, index) {
-                if (index !== 0) word.classList.remove('is-visible');
-            });
-
-            words.slice(1).forEach(function (word, index) {
-                window.setTimeout(function () {
-                    words[index].classList.remove('is-visible');
-                    words[index].classList.add('is-past');
-                    word.classList.add('is-visible');
-                }, 520 * (index + 1));
-            });
-
-            window.setTimeout(dismissIntro, 2700);
+            window.setTimeout(function () { revealWord(1); }, 400);
+            window.setTimeout(function () { revealWord(2); }, 800);
+            window.setTimeout(function () { revealWord(3); }, 1200);
+            window.setTimeout(function () {
+                overlay.classList.add('intro-overlay--leaving');
+            }, 1500);
+            window.setTimeout(removeIntro, 2500);
         })();
     </script>
 

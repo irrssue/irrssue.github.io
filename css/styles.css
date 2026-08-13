@@ -1,33 +1,31 @@
 :root {
     --main-text-color: rgb(163, 163, 163);
-    --intro-canvas: #f3f1ed;
-    --intro-ink: #171717;
-    --intro-muted: #77736e;
+    --intro-canvas: #f7f6f4;
+    --intro-ink: #4a4a4a;
+    --intro-curtain: #000000;
     --intro-ease: cubic-bezier(0.76, 0, 0.24, 1);
 }
 
-/* Welcome sequence — a portfolio-specific, Skiper-inspired words preloader. */
+/* Reference-style words preloader: a quiet white canvas, compact greetings, then a black curved wipe. */
 .intro-overlay {
     position: fixed;
     inset: 0;
     z-index: 10000;
     display: grid;
-    grid-template-columns: minmax(1.25rem, 1fr) minmax(0, 14rem) minmax(1.25rem, 1fr);
-    grid-template-rows: minmax(1.25rem, 1fr) auto minmax(1.25rem, 1fr);
+    place-items: center;
     overflow: hidden;
     background: var(--intro-canvas);
     color: var(--intro-ink);
     isolation: isolate;
     -webkit-font-smoothing: antialiased;
-    transition: transform 0.86s var(--intro-ease), border-radius 0.86s var(--intro-ease);
 }
 
-.intro-overlay__word-stack {
+.intro-overlay__word-stage {
     position: relative;
-    grid-column: 2;
-    grid-row: 2;
-    width: 100%;
-    height: clamp(4.5rem, 12vw, 8.5rem);
+    z-index: 1;
+    width: min(100% - 2rem, 34rem);
+    height: 2.25rem;
+    overflow: hidden;
 }
 
 .intro-overlay__word {
@@ -35,53 +33,38 @@
     inset: 0;
     display: grid;
     place-items: center;
-    font-family: 'Instrument Serif', Georgia, serif;
-    font-size: clamp(4.5rem, 12vw, 8.5rem);
-    font-weight: 400;
-    line-height: 0.84;
-    letter-spacing: -0.065em;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+    font-weight: 700;
+    letter-spacing: -0.06em;
+    line-height: 1;
     opacity: 0;
-    transform: translateY(110%) rotate(3deg);
-    transform-origin: 50% 100%;
-    transition: opacity 0.16s linear, transform 0.58s var(--intro-ease);
+    transform: translateY(105%);
+    transition: transform 0.48s var(--intro-ease), opacity 0.12s linear;
     white-space: nowrap;
 }
 
 .intro-overlay__word.is-visible {
     opacity: 1;
-    transform: translateY(0) rotate(0);
+    transform: translateY(0);
 }
 
 .intro-overlay__word.is-past {
     opacity: 0;
-    transform: translateY(-105%) rotate(-2deg);
+    transform: translateY(-105%);
 }
 
-.intro-overlay__counter,
-.intro-overlay__signature {
-    align-self: end;
-    margin: 0;
-    font-family: 'JetBrains Mono', 'SFMono-Regular', Consolas, monospace;
-    font-size: 0.625rem;
-    font-weight: 400;
-    letter-spacing: 0.08em;
-    line-height: 1;
-    text-transform: uppercase;
-    color: var(--intro-muted);
-}
-
-.intro-overlay__counter {
-    grid-column: 1;
-    grid-row: 3;
-    justify-self: start;
-    margin: 0 0 1.5rem 1.5rem;
-}
-
-.intro-overlay__signature {
-    grid-column: 3;
-    grid-row: 3;
-    justify-self: end;
-    margin: 0 1.5rem 1.5rem 0;
+.intro-overlay__curtain {
+    position: absolute;
+    z-index: 2;
+    width: 160vw;
+    height: 150vh;
+    top: 100%;
+    left: 50%;
+    border-radius: 50% 50% 0 0 / 7% 7% 0 0;
+    background: var(--intro-curtain);
+    transform: translateX(-50%);
+    transition: top 1.02s var(--intro-ease);
 }
 
 body.intro-active {
@@ -99,36 +82,31 @@ body.intro-active .mobile-nav {
 }
 
 .intro-overlay.intro-overlay--leaving {
-    border-radius: 0 0 50% 50% / 0 0 14% 14%;
     pointer-events: none;
-    transform: translateY(-100%);
+}
+
+.intro-overlay.intro-overlay--leaving .intro-overlay__word {
+    opacity: 0;
+    transform: translateY(-150%);
+}
+
+.intro-overlay.intro-overlay--leaving .intro-overlay__curtain {
+    top: -45vh;
 }
 
 @media (max-width: 480px) {
-    .intro-overlay {
-        grid-template-columns: 1rem minmax(0, 1fr) 1rem;
-    }
-
-    .intro-overlay__word-stack {
-        height: clamp(4rem, 19vw, 5rem);
+    .intro-overlay__word-stage {
+        height: 1.75rem;
     }
 
     .intro-overlay__word {
-        font-size: clamp(4rem, 19vw, 5rem);
-    }
-
-    .intro-overlay__counter {
-        margin: 0 0 1rem 1rem;
-    }
-
-    .intro-overlay__signature {
-        margin: 0 1rem 1rem 0;
+        font-size: clamp(1.5rem, 8vw, 2rem);
     }
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .intro-overlay,
-    .intro-overlay__word {
+    .intro-overlay__word,
+    .intro-overlay__curtain {
         transition-duration: 0.01ms;
     }
 }

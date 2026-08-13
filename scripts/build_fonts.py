@@ -32,20 +32,16 @@ CSS_DIR = ROOT / "css"
 def hero_text() -> str:
     """Every glyph the homepage's display fonts draw, read from the page itself.
 
-    Nothing else on the site sets these families, so whatever index.html puts
-    in the hero <h1> and the intro overlay is the complete charset.
+    The rotating hero name is the only homepage text that uses these decorative
+    self-hosted display faces. The intro uses the system sans-serif stack.
     """
     html = (ROOT / "index.html").read_text(encoding="utf-8")
     parts = []
-    patterns = (
-        r'<[^>]*class="[^"]*\bhero-name\b[^"]*"[^>]*>([^<]+)<',
-        r'<[^>]*class="[^"]*\bintro-overlay__word\b[^"]*"[^>]*>([^<]+)<',
-    )
-    for pattern in patterns:
-        matches = re.findall(pattern, html)
-        if not matches:
-            raise SystemExit(f"index.html: no match for {pattern!r}")
-        parts.extend(match.strip() for match in matches)
+    pattern = r'<[^>]*class="[^"]*\bhero-name\b[^"]*"[^>]*>([^<]+)<'
+    matches = re.findall(pattern, html)
+    if not matches:
+        raise SystemExit(f"index.html: no match for {pattern!r}")
+    parts.extend(match.strip() for match in matches)
     return "".join(parts)
 
 # Chrome UA makes Google serve woff2 rather than legacy formats.
