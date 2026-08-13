@@ -37,14 +37,15 @@ def hero_text() -> str:
     """
     html = (ROOT / "index.html").read_text(encoding="utf-8")
     parts = []
-    for pattern in (
-        r'class="hero-name"[^>]*>([^<]+)<',
-        r'class="intro-overlay__word"[^>]*>([^<]+)<',
-    ):
-        m = re.search(pattern, html)
-        if not m:
+    patterns = (
+        r'<[^>]*class="[^"]*\bhero-name\b[^"]*"[^>]*>([^<]+)<',
+        r'<[^>]*class="[^"]*\bintro-overlay__word\b[^"]*"[^>]*>([^<]+)<',
+    )
+    for pattern in patterns:
+        matches = re.findall(pattern, html)
+        if not matches:
             raise SystemExit(f"index.html: no match for {pattern!r}")
-        parts.append(m.group(1).strip())
+        parts.extend(match.strip() for match in matches)
     return "".join(parts)
 
 # Chrome UA makes Google serve woff2 rather than legacy formats.

@@ -1,5 +1,136 @@
 :root {
     --main-text-color: rgb(163, 163, 163);
+    --intro-canvas: #f3f1ed;
+    --intro-ink: #171717;
+    --intro-muted: #77736e;
+    --intro-ease: cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+/* Welcome sequence — a portfolio-specific, Skiper-inspired words preloader. */
+.intro-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: grid;
+    grid-template-columns: minmax(1.25rem, 1fr) minmax(0, 14rem) minmax(1.25rem, 1fr);
+    grid-template-rows: minmax(1.25rem, 1fr) auto minmax(1.25rem, 1fr);
+    overflow: hidden;
+    background: var(--intro-canvas);
+    color: var(--intro-ink);
+    isolation: isolate;
+    -webkit-font-smoothing: antialiased;
+    transition: transform 0.86s var(--intro-ease), border-radius 0.86s var(--intro-ease);
+}
+
+.intro-overlay__word-stack {
+    position: relative;
+    grid-column: 2;
+    grid-row: 2;
+    width: 100%;
+    height: clamp(4.5rem, 12vw, 8.5rem);
+}
+
+.intro-overlay__word {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    font-family: 'Instrument Serif', Georgia, serif;
+    font-size: clamp(4.5rem, 12vw, 8.5rem);
+    font-weight: 400;
+    line-height: 0.84;
+    letter-spacing: -0.065em;
+    opacity: 0;
+    transform: translateY(110%) rotate(3deg);
+    transform-origin: 50% 100%;
+    transition: opacity 0.16s linear, transform 0.58s var(--intro-ease);
+    white-space: nowrap;
+}
+
+.intro-overlay__word.is-visible {
+    opacity: 1;
+    transform: translateY(0) rotate(0);
+}
+
+.intro-overlay__word.is-past {
+    opacity: 0;
+    transform: translateY(-105%) rotate(-2deg);
+}
+
+.intro-overlay__counter,
+.intro-overlay__signature {
+    align-self: end;
+    margin: 0;
+    font-family: 'JetBrains Mono', 'SFMono-Regular', Consolas, monospace;
+    font-size: 0.625rem;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    line-height: 1;
+    text-transform: uppercase;
+    color: var(--intro-muted);
+}
+
+.intro-overlay__counter {
+    grid-column: 1;
+    grid-row: 3;
+    justify-self: start;
+    margin: 0 0 1.5rem 1.5rem;
+}
+
+.intro-overlay__signature {
+    grid-column: 3;
+    grid-row: 3;
+    justify-self: end;
+    margin: 0 1.5rem 1.5rem 0;
+}
+
+body.intro-active {
+    overflow: hidden;
+}
+
+body .mobile-nav {
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s ease;
+}
+
+body.intro-active .mobile-nav {
+    transform: translateX(-50%) translateY(140%);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.intro-overlay.intro-overlay--leaving {
+    border-radius: 0 0 50% 50% / 0 0 14% 14%;
+    pointer-events: none;
+    transform: translateY(-100%);
+}
+
+@media (max-width: 480px) {
+    .intro-overlay {
+        grid-template-columns: 1rem minmax(0, 1fr) 1rem;
+    }
+
+    .intro-overlay__word-stack {
+        height: clamp(4rem, 19vw, 5rem);
+    }
+
+    .intro-overlay__word {
+        font-size: clamp(4rem, 19vw, 5rem);
+    }
+
+    .intro-overlay__counter {
+        margin: 0 0 1rem 1rem;
+    }
+
+    .intro-overlay__signature {
+        margin: 0 1rem 1rem 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .intro-overlay,
+    .intro-overlay__word {
+        transition-duration: 0.01ms;
+    }
 }
 
 html {

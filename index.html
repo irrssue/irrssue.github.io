@@ -10,72 +10,62 @@
     <link rel="stylesheet" href="css/fonts-hero.css">
 </head>
 <body>
-    <!-- Intro overlay: shows "Hello" on a full-screen themed backdrop, then fades away -->
-    <style>
-        .intro-overlay {
-            position: fixed;
-            inset: 0;
-            z-index: 9999;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: #000000;
-            color: #ffffff;
-            opacity: 1;
-            transition: opacity 0.7s ease;
-            -webkit-font-smoothing: antialiased;
-        }
-        .intro-overlay__word {
-            font-family: 'Instrument Serif', serif;
-            font-size: clamp(2.5rem, 9vw, 5.5rem);
-            font-weight: 400;
-            letter-spacing: 0.01em;
-            opacity: 0;
-            transform: translateY(8px);
-            animation: intro-word-in 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-        @keyframes intro-word-in {
-            to { opacity: 1; transform: translateY(0); }
-        }
-        /* Lock scroll while the overlay is up */
-        body.intro-active { overflow: hidden; }
-        /* Nav hides under the page while the intro plays, then pops up into place */
-        body .mobile-nav {
-            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s ease;
-        }
-        body.intro-active .mobile-nav {
-            transform: translateX(-50%) translateY(140%);
-            opacity: 0;
-            pointer-events: none;
-        }
-        /* Hidden + removed-from-flow once it has faded out */
-        .intro-overlay.intro-hidden { opacity: 0; pointer-events: none; }
-        @media (prefers-reduced-motion: reduce) {
-            .intro-overlay__word { animation: none; opacity: 1; transform: none; }
-        }
-    </style>
+    <noscript><style>.intro-overlay { display: none !important; }</style></noscript>
     <div class="intro-overlay" id="introOverlay" aria-hidden="true">
-        <span class="intro-overlay__word">Hello</span>
+        <p class="intro-overlay__counter" aria-hidden="true">01 / 04</p>
+        <div class="intro-overlay__word-stack">
+            <span class="intro-overlay__word is-visible">Hello</span>
+            <span class="intro-overlay__word">Bonjour</span>
+            <span class="intro-overlay__word">Mingalaba</span>
+            <span class="intro-overlay__word">Welcome</span>
+        </div>
+        <p class="intro-overlay__signature" aria-hidden="true">irrssue.com</p>
     </div>
     <script>
-        (function() {
-            var seenKey = 'introSeen';
+        (function () {
             var overlay = document.getElementById('introOverlay');
-            if (localStorage.getItem(seenKey)) {
-                overlay.remove();
+            var words = Array.prototype.slice.call(overlay.querySelectorAll('.intro-overlay__word'));
+            var seenKey = 'irrssue-intro-v2';
+            var hasReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            var isSeen = false;
+
+            try {
+                isSeen = sessionStorage.getItem(seenKey) === '1';
+                sessionStorage.setItem(seenKey, '1');
+            } catch (error) {
+                // Keep the welcome sequence available when storage is unavailable.
+            }
+
+            function dismissIntro() {
+                if (!overlay || overlay.classList.contains('intro-overlay--leaving')) return;
+                overlay.classList.add('intro-overlay--leaving');
+                document.body.classList.remove('intro-active');
+
+                window.setTimeout(function () {
+                    if (overlay && overlay.parentNode) overlay.remove();
+                }, 900);
+            }
+
+            if (isSeen || hasReducedMotion) {
+                window.setTimeout(dismissIntro, 30);
                 return;
             }
-            localStorage.setItem(seenKey, '1');
 
             document.body.classList.add('intro-active');
-            // Hold "Hello" for 2s, then fade out and remove from the page
-            setTimeout(function() {
-                overlay.classList.add('intro-hidden');
-                document.body.classList.remove('intro-active');
-                overlay.addEventListener('transitionend', function() {
-                    overlay.remove();
-                }, { once: true });
-            }, 2000);
+
+            words.forEach(function (word, index) {
+                if (index !== 0) word.classList.remove('is-visible');
+            });
+
+            words.slice(1).forEach(function (word, index) {
+                window.setTimeout(function () {
+                    words[index].classList.remove('is-visible');
+                    words[index].classList.add('is-past');
+                    word.classList.add('is-visible');
+                }, 520 * (index + 1));
+            });
+
+            window.setTimeout(dismissIntro, 2700);
         })();
     </script>
 
