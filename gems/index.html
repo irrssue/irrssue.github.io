@@ -44,7 +44,7 @@
     height:100dvh;
     overflow-y:scroll;
     scroll-snap-type:y mandatory;
-    scroll-behavior:smooth;
+    scroll-behavior:auto;
     scrollbar-width:none;
   }
   .scroller::-webkit-scrollbar{display:none;}
@@ -619,6 +619,47 @@ function buildGem(g, i){
 
 const scroller = document.getElementById("scroller");
 
+/* ---- inertial wheel scrolling ---- */
+function enableInertialScroll(){
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+  const friction = 0.14;
+  let target = scroller.scrollTop;
+  let frame;
+
+  const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+  const maxScroll = () => Math.max(scroller.scrollHeight - scroller.clientHeight, 0);
+
+  function step(){
+    const distance = target - scroller.scrollTop;
+    scroller.scrollTop += distance * friction;
+
+    if(Math.abs(distance) > 0.5){
+      frame = requestAnimationFrame(step);
+    } else {
+      scroller.scrollTop = target;
+      frame = undefined;
+    }
+  }
+
+  function queueMomentum(){
+    if(!frame) frame = requestAnimationFrame(step);
+  }
+
+  scroller.addEventListener("wheel", event => {
+    if(event.ctrlKey || Math.abs(event.deltaX) > Math.abs(event.deltaY)) return;
+
+    event.preventDefault();
+    const multiplier = event.deltaMode === WheelEvent.DOM_DELTA_LINE ? 16 : 1;
+    target = clamp(target + event.deltaY * multiplier, 0, maxScroll());
+    queueMomentum();
+  }, {passive:false});
+
+  scroller.addEventListener("scroll", () => {
+    if(!frame) target = scroller.scrollTop;
+  }, {passive:true});
+}
+
 /* ---- draw the dark static maps ---- */
 function drawMap(canvas, seed){
   const dpr = Math.min(window.devicePixelRatio||1, 2);
@@ -697,6 +738,8 @@ function render(){
 }
 
 /* ---- load gems from the CMS data file ---- */
+enableInertialScroll();
+
 fetch("../data/gems.json")
   .then(r => r.ok ? r.json() : [])
   .then(data => { GEMS = Array.isArray(data) ? data : []; render(); })
