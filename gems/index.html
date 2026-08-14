@@ -199,6 +199,41 @@
     text-transform:uppercase; color:var(--faint);
   }
 
+  /* ---------- photo stack · inspired by Skiper UI's Card stack with GSAP and rotate ---------- */
+  .photo-stack{
+    height:calc(var(--photo-count, 1) * 100dvh);
+    position:relative;
+    scroll-snap-align:start;
+    scroll-snap-stop:always;
+  }
+  .photo-stack__sticky{
+    position:sticky; top:0; height:100dvh; overflow:hidden;
+    display:grid; place-items:center; padding:84px 7vw 84px;
+  }
+  .photo-stack__deck{
+    position:relative; width:100%; max-width:1320px;
+    height:calc(100dvh - 168px);
+  }
+  .stack-card{
+    position:absolute; inset:0; display:grid; place-items:center;
+    z-index:var(--stack-z, 1); opacity:var(--stack-opacity, 0);
+    transform:translate3d(0, var(--stack-y, 108%), 0) scale(var(--stack-scale, 1)) rotate(var(--stack-rotate, 0deg));
+    transform-origin:50% 56%; will-change:transform, opacity;
+    pointer-events:none;
+  }
+  .stack-card[data-active]{ pointer-events:auto; }
+  .stack-card .stage{
+    display:grid; grid-template-columns:1.34fr 1fr; gap:6.5vw; align-items:center;
+    width:100%; max-width:1320px;
+  }
+  .stack-card .stack-copy{
+    opacity:var(--stack-copy-opacity, 1);
+    transform:translateY(var(--stack-copy-y, 0));
+    transition:opacity 180ms cubic-bezier(.23,1,.32,1), transform 180ms cubic-bezier(.23,1,.32,1);
+    will-change:transform, opacity;
+  }
+  .stack-card .media{ transform-origin:50% 56%; }
+
   /* ---------- mobile ---------- */
   @media (max-width:768px){
     /* Center the whole stack in the viewport; bottom padding clears the
@@ -260,7 +295,40 @@
     .info .desc{ grid-area:desc; max-width:none; font-size:11.9px; }
     .info .meta{ grid-area:meta; align-self:start; }
     .info .info-foot{ grid-area:map; margin:0; align-self:start; justify-self:end; }
-    .gem .map{ width:104px; height:104px; }
+    .gem .map, .stack-card .map{ width:104px; height:104px; }
+
+    .photo-stack__sticky{ padding:54px 0 84px; }
+    .photo-stack__deck{ width:100%; height:100%; }
+    .stack-card .stage{
+      grid-template-columns:1fr auto;
+      column-gap:14px; row-gap:12px;
+      max-width:none; width:100%; align-items:start; padding:0 10px;
+      grid-template-areas:
+        "title  eyebrow"
+        "media  media"
+        "desc   desc"
+        "meta   map";
+    }
+    .stack-card .info{ display:contents; }
+    .stack-card .info .title{ grid-area:title; font-size:clamp(19.6px,2.24vw,30.8px); align-self:center; }
+    .stack-card .info .eyebrow{ grid-area:eyebrow; justify-self:end; align-self:center; }
+    .stack-card .media{
+      grid-area:media; width:calc(100% + 20px) !important; margin:0 -10px;
+      aspect-ratio:auto !important; max-height:none; min-height:0;
+      background:transparent; box-shadow:none; border:none; border-radius:0;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .stack-card .media img{
+      width:auto; height:auto; max-width:100%; max-height:calc(100dvh - 24rem); object-fit:contain;
+    }
+    .stack-card .info .desc{ grid-area:desc; max-width:none; font-size:11.9px; }
+    .stack-card .info .meta{ grid-area:meta; align-self:start; }
+    .stack-card .info .info-foot{ grid-area:map; margin:0; align-self:start; justify-self:end; }
+    .stack-card .stack-copy > *{
+      opacity:var(--stack-copy-opacity, 1);
+      transform:translateY(var(--stack-copy-y, 0));
+      transition:opacity 180ms cubic-bezier(.23,1,.32,1), transform 180ms cubic-bezier(.23,1,.32,1);
+    }
   }
 </style>
 </head>
@@ -287,10 +355,10 @@ const ORIENT = {
 
 const pad = n => String(n+1).padStart(2,"0");
 
-function mediaEl(g, i){
+function mediaEl(g, i, stacked=false){
   const o = ORIENT[g.orient] || ORIENT.landscape;
   const frame = document.createElement("div");
-  frame.className = "media reveal d2";
+  frame.className = stacked ? "media" : "media reveal d2";
   frame.style.width = o.w;
   frame.style.aspectRatio = o.ar;
   if(g.type === "video"){
@@ -307,10 +375,10 @@ function mediaEl(g, i){
     img.src = g.src;
     img.alt = g.title;
     img.decoding = "async";
-    // First photo loads immediately (it's on screen); the rest stay lazy.
-    if(i === 0){
+    // Every stacked image needs to be ready before it can slide into the pinned frame.
+    if(i === 0 || stacked){
       img.loading = "eager";
-      img.setAttribute("fetchpriority", "high");
+      if(i === 0) img.setAttribute("fetchpriority", "high");
     } else {
       img.loading = "lazy";
     }
@@ -330,11 +398,12 @@ function safeUrl(raw){
   catch(_){ return null; }
 }
 
-function mapEl(g){
+function mapEl(g, stacked=false){
   // A link when a valid Google Maps URL is present, otherwise a plain div.
   const maps = g.maps ? safeUrl(g.maps) : null;
   const m = document.createElement(maps ? "a" : "div");
-  m.className = "map reveal d3";
+  m.className = stacked ? "map" : "map reveal d3";
+  m.dataset.gemId = g.id;
   if(maps){
     m.href = maps;
     m.target = "_blank";
@@ -346,9 +415,9 @@ function mapEl(g){
   return m;
 }
 
-function metaEl(g){
+function metaEl(g, stacked=false){
   const m = document.createElement("div");
-  m.className = "meta reveal d3";
+  m.className = stacked ? "meta stack-copy" : "meta reveal d3";
   m.innerHTML = `
     <div class="mrow"><span class="ml">Camera</span><span class="mv">${g.camera}</span></div>
     <div class="mrow"><span class="ml">Lens</span><span class="mv">${g.lens}</span></div>
@@ -356,22 +425,94 @@ function metaEl(g){
   return m;
 }
 
-function infoBlock(g, i){
+function infoBlock(g, i, stacked=false){
   const info = document.createElement("div");
   info.className = "info";
+  const copyClass = stacked ? "stack-copy" : "reveal d1";
+  const descClass = stacked ? "stack-copy" : "reveal d2";
+  const footClass = stacked ? "stack-copy" : "reveal d3";
   info.innerHTML =
-    `<div class="eyebrow reveal d1"><span class="idx">${pad(i)}</span><span class="type">${g.type}</span></div>
-     <h2 class="title reveal d1">${g.title}</h2>
-     <p class="desc reveal d2">${g.desc}</p>`;
-  info.appendChild(metaEl(g));
+    `<div class="eyebrow ${copyClass}"><span class="idx">${pad(i)}</span><span class="type">${g.type}</span></div>
+     <h2 class="title ${copyClass}">${g.title}</h2>
+     <p class="desc ${descClass}">${g.desc}</p>`;
+  info.appendChild(metaEl(g, stacked));
   const foot = document.createElement("div");
-  foot.className = "info-foot reveal d3";
+  foot.className = `info-foot ${footClass}`;
   const wrap = document.createElement("div"); wrap.className = "mapwrap";
-  wrap.appendChild(mapEl(g));
+  wrap.appendChild(mapEl(g, stacked));
   wrap.insertAdjacentHTML("beforeend", `<span class="place">${g.place}</span>`);
   foot.appendChild(wrap);
   info.appendChild(foot);
   return info;
+}
+
+function buildPhotoStack(photos){
+  const stack = document.createElement("section");
+  stack.className = "photo-stack";
+  stack.style.setProperty("--photo-count", photos.length);
+  stack.setAttribute("aria-label", "Photo stories");
+
+  const sticky = document.createElement("div");
+  sticky.className = "photo-stack__sticky";
+  const deck = document.createElement("div");
+  deck.className = "photo-stack__deck";
+
+  photos.forEach((g, i) => {
+    const card = document.createElement("article");
+    card.className = "stack-card";
+    card.dataset.index = i;
+    card.style.setProperty("--stack-z", i + 1);
+
+    const stage = document.createElement("div");
+    stage.className = "stage";
+    stage.appendChild(mediaEl(g, i, true));
+    stage.appendChild(infoBlock(g, i, true));
+    card.appendChild(stage);
+    deck.appendChild(card);
+  });
+
+  sticky.appendChild(deck);
+  stack.appendChild(sticky);
+  return stack;
+}
+
+function setupPhotoStack(stack){
+  const cards = [...stack.querySelectorAll(".stack-card")];
+  if(!cards.length) return;
+
+  let frame;
+  const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+  const mix = (from, to, amount) => from + (to - from) * amount;
+
+  function updateStack(){
+    frame = undefined;
+    const unit = Math.max(scroller.clientHeight, 1);
+    const progress = clamp((scroller.scrollTop - stack.offsetTop) / unit, 0, cards.length - 1);
+    const activeIndex = Math.min(Math.round(progress), cards.length - 1);
+
+    cards.forEach((card, index) => {
+      const entering = index === 0 ? 1 : clamp(progress - (index - 1), 0, 1);
+      const leaving = clamp(progress - index, 0, 1);
+      const visibility = clamp(entering * (1 - leaving), 0, 1);
+      const y = index === 0 ? 0 : mix(108, 0, entering);
+
+      card.style.setProperty("--stack-y", `${y}%`);
+      card.style.setProperty("--stack-scale", mix(1, 0.72, leaving));
+      card.style.setProperty("--stack-rotate", `${mix(0, 5, leaving)}deg`);
+      card.style.setProperty("--stack-opacity", visibility);
+      card.style.setProperty("--stack-copy-opacity", visibility);
+      card.style.setProperty("--stack-copy-y", `${mix(1.1, 0, visibility)}rem`);
+      card.toggleAttribute("data-active", index === activeIndex);
+    });
+  }
+
+  function requestStackUpdate(){
+    if(!frame) frame = requestAnimationFrame(updateStack);
+  }
+
+  scroller.addEventListener("scroll", requestStackUpdate, {passive:true});
+  addEventListener("resize", requestStackUpdate);
+  requestStackUpdate();
 }
 
 function buildGem(g, i){
@@ -419,7 +560,8 @@ function drawMap(canvas, seed){
 function hash(str){ let h=2166136261; for(let i=0;i<str.length;i++){ h^=str.charCodeAt(i); h=Math.imul(h,16777619);} return h>>>0; }
 function paintMaps(){
   document.querySelectorAll(".map").forEach((m,i)=>{
-    const c = m.querySelector("canvas"); if(c) drawMap(c, hash(GEMS[i%GEMS.length].id)+i*97);
+    const gem = GEMS.find(g => g.id === m.dataset.gemId) || GEMS[i % GEMS.length];
+    const c = m.querySelector("canvas"); if(c && gem) drawMap(c, hash(gem.id)+i*97);
   });
 }
 window.addEventListener("resize", ()=>{ clearTimeout(window.__rz); window.__rz=setTimeout(paintMaps,150); });
@@ -432,12 +574,20 @@ function render(){
     return;
   }
 
-  GEMS.forEach((g,i)=> scroller.appendChild(buildGem(g,i)));
+  const photos = GEMS.filter(g => g.type === "photo");
+  const nonPhotos = GEMS.filter(g => g.type !== "photo");
+
+  if(photos.length){
+    const photoStack = buildPhotoStack(photos);
+    scroller.appendChild(photoStack);
+    setupPhotoStack(photoStack);
+  }
+  nonPhotos.forEach((g,i)=> scroller.appendChild(buildGem(g,i)));
   paintMaps();
 
   // active gem tracking + counter
   const ratios = new Map();
-  const allGems = [...document.querySelectorAll(".gem")];
+  const allGems = [...document.querySelectorAll(".photo-stack, .gem")];
   function applyActive(){
     let best=allGems[0], bv=-1;
     allGems.forEach(g=>{ const r=ratios.get(g)||0; if(r>bv){bv=r;best=g;} });
