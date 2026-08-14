@@ -226,35 +226,39 @@
   .stack-card[data-active]{ pointer-events:auto; }
   .stack-card:focus-visible{ outline:2px solid var(--accent); outline-offset:0.5rem; }
   .stack-card .media{
-    width:min(86vw, 1280px) !important; height:min(78dvh, 760px);
-    max-height:none; aspect-ratio:auto !important; transform-origin:50% 56%;
+    width:auto !important; height:auto; max-height:none; aspect-ratio:auto !important;
+    overflow:visible; border:0; background:transparent; box-shadow:none; transform-origin:50% 56%;
   }
-  .stack-card .media img{ width:100%; height:100%; object-fit:cover; }
+  .stack-card .media img{
+    width:auto; height:auto; max-width:86vw; max-height:min(78dvh, 760px);
+    object-fit:contain; border-radius:30%;
+  }
 
   /* ---------- photo details modal ---------- */
   .gem-detail-modal{
-    width:min(92vw, 32rem); max-height:min(78dvh, 44rem); margin:auto;
+    width:min(76vw, 16rem); max-height:min(62dvh, 22rem); margin:auto;
     padding:0; overflow:hidden; color:var(--fg); background:rgba(18,16,13,0.98);
-    border:1px solid var(--line); border-radius:0.9rem; box-shadow:0 1.5rem 5rem rgba(0,0,0,0.65);
+    border:1px solid var(--line); border-radius:0.65rem; box-shadow:0 1.5rem 5rem rgba(0,0,0,0.65);
   }
   .gem-detail-modal::backdrop{ background:rgba(0,0,0,0.7); backdrop-filter:blur(0.35rem); }
   .gem-detail-modal[open]{ animation:detail-in 180ms cubic-bezier(.23,1,.32,1); }
-  .gem-detail-card{ position:relative; padding:2.8rem 2rem 2rem; }
+  .gem-detail-card{ position:relative; padding:1.9rem 1rem 1rem; }
   .gem-detail-close{
-    position:absolute; top:0.85rem; left:0.85rem; width:1.1rem; height:1.1rem;
-    display:grid; place-items:center; padding:0; border:0; border-radius:50%;
-    color:rgba(40,10,8,0.94); background:#ff5f57; cursor:pointer;
+    position:absolute; top:0.6rem; left:0.6rem; width:0.75rem; height:0.75rem;
+    display:block; padding:0; border:0; border-radius:50%;
+    background:#ff5f57; cursor:pointer;
     transition:transform 150ms cubic-bezier(.23,1,.32,1), filter 150ms cubic-bezier(.23,1,.32,1);
   }
   .gem-detail-close:hover{ transform:scale(1.12); filter:brightness(1.08); }
-  .gem-detail-close span{ font-family:Arial,sans-serif; font-size:0.75rem; line-height:1; }
   .gem-detail-kicker{ margin:0 0 0.45rem; font-size:0.6rem; letter-spacing:0.22em; text-transform:uppercase; color:var(--accent); }
   .gem-detail-title{ margin:0; color:var(--fg); font-family:'Fraunces',serif; font-size:clamp(1.8rem,5vw,2.5rem); font-weight:400; line-height:1; }
-  .gem-detail-desc{ margin:1rem 0 0; color:var(--desc); font-family:'Fraunces',serif; font-size:1rem; line-height:1.45; }
-  .gem-detail-meta{ margin-top:1.5rem; }
-  .gem-detail-meta .mrow{ grid-template-columns:4.5rem 1fr; }
-  .gem-detail-map{ width:100%; height:10rem; margin-top:1.5rem; border-radius:0.5rem; }
-  .gem-detail-place{ display:block; margin-top:0.55rem; font-size:0.63rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--dim); }
+  .gem-detail-desc{ margin:0.7rem 0 0; color:var(--desc); font-family:'Fraunces',serif; font-size:0.78rem; line-height:1.4; }
+  .gem-detail-meta{ margin-top:1rem; gap:0.4rem; }
+  .gem-detail-meta .mrow{ grid-template-columns:3.8rem 1fr; gap:0.5rem; }
+  .gem-detail-meta .ml{ font-size:0.48rem; }
+  .gem-detail-meta .mv{ font-size:0.59rem; }
+  .gem-detail-map{ width:100%; height:6rem; margin-top:1rem; border-radius:0.35rem; }
+  .gem-detail-place{ display:block; margin-top:0.4rem; font-size:0.5rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--dim); }
   @keyframes detail-in{ from{opacity:0;transform:translateY(0.5rem) scale(0.98);} to{opacity:1;transform:none;} }
 
   /* ---------- mobile ---------- */
@@ -321,10 +325,11 @@
     .gem .map, .stack-card .map{ width:104px; height:104px; }
 
     .photo-stack__sticky{ padding:2rem 0 6.8rem; }
-    .stack-card .media{ width:100% !important; height:calc(100dvh - 10rem); border:0; }
-    .gem-detail-modal{ width:min(92vw, 28rem); max-height:calc(100dvh - 4rem); }
-    .gem-detail-card{ padding:2.6rem 1.2rem 1.2rem; }
-    .gem-detail-map{ height:8.5rem; }
+    .stack-card .media{ width:auto !important; height:auto; border:0; }
+    .stack-card .media img{ max-width:100%; max-height:calc(100dvh - 10rem); }
+    .gem-detail-modal{ width:min(76vw, 16rem); max-height:calc(100dvh - 4rem); }
+    .gem-detail-card{ padding:1.9rem 1rem 1rem; }
+    .gem-detail-map{ height:6rem; }
   }
 </style>
 </head>
@@ -464,7 +469,6 @@ function openGemDetails(g, trigger){
   close.className = "gem-detail-close";
   close.type = "button";
   close.setAttribute("aria-label", "Close photo details");
-  close.innerHTML = "<span>×</span>";
   close.addEventListener("click", () => dialog.close());
   card.appendChild(close);
 
