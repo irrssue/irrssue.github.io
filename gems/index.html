@@ -173,6 +173,8 @@
   @media (prefers-reduced-motion:reduce){
     .scroller{scroll-behavior:auto;}
     .reveal{opacity:1 !important;transform:none !important;transition:none;}
+    .stack-card{transition:none;}
+    .gem-detail-modal[open]{animation:none;}
     .map .pin::after{animation:none;}
     .cue .arrow{animation:none;}
   }
@@ -208,31 +210,52 @@
   }
   .photo-stack__sticky{
     position:sticky; top:0; height:100dvh; overflow:hidden;
-    display:grid; place-items:center; padding:84px 7vw 84px;
+    display:grid; place-items:center; padding:3.5rem 7vw 6.8rem;
   }
   .photo-stack__deck{
-    position:relative; width:100%; max-width:1320px;
-    height:calc(100dvh - 168px);
+    position:relative; width:100%; height:100%; display:grid; place-items:center;
   }
   .stack-card{
     position:absolute; inset:0; display:grid; place-items:center;
     z-index:var(--stack-z, 1); opacity:var(--stack-opacity, 0);
+    border:0; padding:0; background:transparent; color:inherit;
     transform:translate3d(0, var(--stack-y, 108%), 0) scale(var(--stack-scale, 1)) rotate(var(--stack-rotate, 0deg));
     transform-origin:50% 56%; will-change:transform, opacity;
-    pointer-events:none;
+    pointer-events:none; cursor:zoom-in;
   }
   .stack-card[data-active]{ pointer-events:auto; }
-  .stack-card .stage{
-    display:grid; grid-template-columns:1.34fr 1fr; gap:6.5vw; align-items:center;
-    width:100%; max-width:1320px;
+  .stack-card:focus-visible{ outline:2px solid var(--accent); outline-offset:0.5rem; }
+  .stack-card .media{
+    width:min(86vw, 1280px) !important; height:min(78dvh, 760px);
+    max-height:none; aspect-ratio:auto !important; transform-origin:50% 56%;
   }
-  .stack-card .stack-copy{
-    opacity:var(--stack-copy-opacity, 1);
-    transform:translateY(var(--stack-copy-y, 0));
-    transition:opacity 180ms cubic-bezier(.23,1,.32,1), transform 180ms cubic-bezier(.23,1,.32,1);
-    will-change:transform, opacity;
+  .stack-card .media img{ width:100%; height:100%; object-fit:cover; }
+
+  /* ---------- photo details modal ---------- */
+  .gem-detail-modal{
+    width:min(92vw, 32rem); max-height:min(78dvh, 44rem); margin:auto;
+    padding:0; overflow:hidden; color:var(--fg); background:rgba(18,16,13,0.98);
+    border:1px solid var(--line); border-radius:0.9rem; box-shadow:0 1.5rem 5rem rgba(0,0,0,0.65);
   }
-  .stack-card .media{ transform-origin:50% 56%; }
+  .gem-detail-modal::backdrop{ background:rgba(0,0,0,0.7); backdrop-filter:blur(0.35rem); }
+  .gem-detail-modal[open]{ animation:detail-in 180ms cubic-bezier(.23,1,.32,1); }
+  .gem-detail-card{ position:relative; padding:2.8rem 2rem 2rem; }
+  .gem-detail-close{
+    position:absolute; top:0.85rem; left:0.85rem; width:1.1rem; height:1.1rem;
+    display:grid; place-items:center; padding:0; border:0; border-radius:50%;
+    color:rgba(40,10,8,0.94); background:#ff5f57; cursor:pointer;
+    transition:transform 150ms cubic-bezier(.23,1,.32,1), filter 150ms cubic-bezier(.23,1,.32,1);
+  }
+  .gem-detail-close:hover{ transform:scale(1.12); filter:brightness(1.08); }
+  .gem-detail-close span{ font-family:Arial,sans-serif; font-size:0.75rem; line-height:1; }
+  .gem-detail-kicker{ margin:0 0 0.45rem; font-size:0.6rem; letter-spacing:0.22em; text-transform:uppercase; color:var(--accent); }
+  .gem-detail-title{ margin:0; color:var(--fg); font-family:'Fraunces',serif; font-size:clamp(1.8rem,5vw,2.5rem); font-weight:400; line-height:1; }
+  .gem-detail-desc{ margin:1rem 0 0; color:var(--desc); font-family:'Fraunces',serif; font-size:1rem; line-height:1.45; }
+  .gem-detail-meta{ margin-top:1.5rem; }
+  .gem-detail-meta .mrow{ grid-template-columns:4.5rem 1fr; }
+  .gem-detail-map{ width:100%; height:10rem; margin-top:1.5rem; border-radius:0.5rem; }
+  .gem-detail-place{ display:block; margin-top:0.55rem; font-size:0.63rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--dim); }
+  @keyframes detail-in{ from{opacity:0;transform:translateY(0.5rem) scale(0.98);} to{opacity:1;transform:none;} }
 
   /* ---------- mobile ---------- */
   @media (max-width:768px){
@@ -297,38 +320,11 @@
     .info .info-foot{ grid-area:map; margin:0; align-self:start; justify-self:end; }
     .gem .map, .stack-card .map{ width:104px; height:104px; }
 
-    .photo-stack__sticky{ padding:54px 0 84px; }
-    .photo-stack__deck{ width:100%; height:100%; }
-    .stack-card .stage{
-      grid-template-columns:1fr auto;
-      column-gap:14px; row-gap:12px;
-      max-width:none; width:100%; align-items:start; padding:0 10px;
-      grid-template-areas:
-        "title  eyebrow"
-        "media  media"
-        "desc   desc"
-        "meta   map";
-    }
-    .stack-card .info{ display:contents; }
-    .stack-card .info .title{ grid-area:title; font-size:clamp(19.6px,2.24vw,30.8px); align-self:center; }
-    .stack-card .info .eyebrow{ grid-area:eyebrow; justify-self:end; align-self:center; }
-    .stack-card .media{
-      grid-area:media; width:calc(100% + 20px) !important; margin:0 -10px;
-      aspect-ratio:auto !important; max-height:none; min-height:0;
-      background:transparent; box-shadow:none; border:none; border-radius:0;
-      display:flex; align-items:center; justify-content:center;
-    }
-    .stack-card .media img{
-      width:auto; height:auto; max-width:100%; max-height:calc(100dvh - 24rem); object-fit:contain;
-    }
-    .stack-card .info .desc{ grid-area:desc; max-width:none; font-size:11.9px; }
-    .stack-card .info .meta{ grid-area:meta; align-self:start; }
-    .stack-card .info .info-foot{ grid-area:map; margin:0; align-self:start; justify-self:end; }
-    .stack-card .stack-copy > *{
-      opacity:var(--stack-copy-opacity, 1);
-      transform:translateY(var(--stack-copy-y, 0));
-      transition:opacity 180ms cubic-bezier(.23,1,.32,1), transform 180ms cubic-bezier(.23,1,.32,1);
-    }
+    .photo-stack__sticky{ padding:2rem 0 6.8rem; }
+    .stack-card .media{ width:100% !important; height:calc(100dvh - 10rem); border:0; }
+    .gem-detail-modal{ width:min(92vw, 28rem); max-height:calc(100dvh - 4rem); }
+    .gem-detail-card{ padding:2.6rem 1.2rem 1.2rem; }
+    .gem-detail-map{ height:8.5rem; }
   }
 </style>
 </head>
@@ -446,6 +442,78 @@ function infoBlock(g, i, stacked=false){
   return info;
 }
 
+function detailMetaEl(g){
+  const meta = document.createElement("div");
+  meta.className = "meta gem-detail-meta";
+  meta.innerHTML = `
+    <div class="mrow"><span class="ml">Camera</span><span class="mv">${g.camera}</span></div>
+    <div class="mrow"><span class="ml">Lens</span><span class="mv">${g.lens}</span></div>
+    <div class="mrow"><span class="ml">Exposure</span><span class="mv">ISO ${g.iso} · ${g.aperture} · ${g.shutter}s</span></div>`;
+  return meta;
+}
+
+function openGemDetails(g, trigger){
+  const dialog = document.createElement("dialog");
+  dialog.className = "gem-detail-modal";
+  dialog.setAttribute("aria-label", `${g.title} photo details`);
+
+  const card = document.createElement("div");
+  card.className = "gem-detail-card";
+
+  const close = document.createElement("button");
+  close.className = "gem-detail-close";
+  close.type = "button";
+  close.setAttribute("aria-label", "Close photo details");
+  close.innerHTML = "<span>×</span>";
+  close.addEventListener("click", () => dialog.close());
+  card.appendChild(close);
+
+  const kicker = document.createElement("p");
+  kicker.className = "gem-detail-kicker";
+  kicker.textContent = "Photo details";
+  card.appendChild(kicker);
+
+  const title = document.createElement("h2");
+  title.className = "gem-detail-title";
+  title.textContent = g.title;
+  card.appendChild(title);
+
+  if(g.desc){
+    const desc = document.createElement("p");
+    desc.className = "gem-detail-desc";
+    desc.textContent = g.desc;
+    card.appendChild(desc);
+  }
+
+  card.appendChild(detailMetaEl(g));
+
+  const map = mapEl(g, true);
+  map.classList.add("gem-detail-map");
+  card.appendChild(map);
+
+  const place = document.createElement("span");
+  place.className = "gem-detail-place";
+  place.textContent = g.place || "Location unavailable";
+  card.appendChild(place);
+
+  dialog.appendChild(card);
+  dialog.addEventListener("click", event => {
+    if(event.target === dialog) dialog.close();
+  });
+  dialog.addEventListener("close", () => {
+    dialog.remove();
+    trigger.focus();
+  }, {once:true});
+
+  document.body.appendChild(dialog);
+  dialog.showModal();
+  close.focus();
+  requestAnimationFrame(() => {
+    const canvas = map.querySelector("canvas");
+    if(canvas) drawMap(canvas, hash(g.id));
+  });
+}
+
 function buildPhotoStack(photos){
   const stack = document.createElement("section");
   stack.className = "photo-stack";
@@ -458,16 +526,15 @@ function buildPhotoStack(photos){
   deck.className = "photo-stack__deck";
 
   photos.forEach((g, i) => {
-    const card = document.createElement("article");
+    const card = document.createElement("button");
     card.className = "stack-card";
+    card.type = "button";
+    card.disabled = i !== 0;
     card.dataset.index = i;
     card.style.setProperty("--stack-z", i + 1);
-
-    const stage = document.createElement("div");
-    stage.className = "stage";
-    stage.appendChild(mediaEl(g, i, true));
-    stage.appendChild(infoBlock(g, i, true));
-    card.appendChild(stage);
+    card.setAttribute("aria-label", `Open details for ${g.title}`);
+    card.appendChild(mediaEl(g, i, true));
+    card.addEventListener("click", () => openGemDetails(g, card));
     deck.appendChild(card);
   });
 
@@ -500,8 +567,7 @@ function setupPhotoStack(stack){
       card.style.setProperty("--stack-scale", mix(1, 0.72, leaving));
       card.style.setProperty("--stack-rotate", `${mix(0, 5, leaving)}deg`);
       card.style.setProperty("--stack-opacity", visibility);
-      card.style.setProperty("--stack-copy-opacity", visibility);
-      card.style.setProperty("--stack-copy-y", `${mix(1.1, 0, visibility)}rem`);
+      card.disabled = index !== activeIndex;
       card.toggleAttribute("data-active", index === activeIndex);
     });
   }
