@@ -519,9 +519,17 @@ function openGemDetails(g, trigger){
 }
 
 function buildPhotoStack(photos){
+  // Hold each photo for over half a viewport before its one-viewport transition.
+  const holdLength = 0.55;
+  const transitionLength = 1;
+  const sceneLength = holdLength + transitionLength;
+
   const stack = document.createElement("section");
   stack.className = "photo-stack";
   stack.style.setProperty("--photo-count", photos.length);
+  stack.style.height = `${photos.length * sceneLength * 100}dvh`;
+  stack.dataset.holdLength = holdLength;
+  stack.dataset.sceneLength = sceneLength;
   stack.setAttribute("aria-label", "Photo stories");
 
   const sticky = document.createElement("div");
@@ -551,19 +559,27 @@ function setupPhotoStack(stack){
   const cards = [...stack.querySelectorAll(".stack-card")];
   if(!cards.length) return;
 
+  const holdLength = Number.parseFloat(stack.dataset.holdLength || "0.55");
+  const sceneLength = Number.parseFloat(stack.dataset.sceneLength || "1.55");
   let frame;
   const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
   const mix = (from, to, amount) => from + (to - from) * amount;
+  const transitionStart = index => index * sceneLength + holdLength;
 
   function updateStack(){
     frame = undefined;
     const unit = Math.max(scroller.clientHeight, 1);
-    const progress = clamp((scroller.scrollTop - stack.offsetTop) / unit, 0, cards.length - 1);
-    const activeIndex = Math.min(Math.round(progress), cards.length - 1);
+    const maxProgress = (cards.length - 1) * sceneLength + holdLength;
+    const progress = clamp((scroller.scrollTop - stack.offsetTop) / unit, 0, maxProgress);
+    let activeIndex = 0;
+
+    for(let index = 0; index < cards.length - 1; index += 1){
+      if(progress >= transitionStart(index) + 0.5) activeIndex = index + 1;
+    }
 
     cards.forEach((card, index) => {
-      const entering = index === 0 ? 1 : clamp(progress - (index - 1), 0, 1);
-      const leaving = clamp(progress - index, 0, 1);
+      const entering = index === 0 ? 1 : clamp(progress - transitionStart(index - 1), 0, 1);
+      const leaving = index === cards.length - 1 ? 0 : clamp(progress - transitionStart(index), 0, 1);
       const visibility = clamp(entering * (1 - leaving), 0, 1);
       const y = index === 0 ? 0 : mix(108, 0, entering);
 
