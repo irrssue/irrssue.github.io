@@ -35,6 +35,55 @@ function showRelativeDate() {
     el.textContent = getRelativeTime(date);
 }
 
+function initialiseReadingProgress() {
+    const postContent = document.querySelector('.post-content');
+    if (!postContent) return;
+
+    const progress = document.createElement('div');
+    progress.className = 'reading-progress';
+    progress.setAttribute('aria-hidden', 'true');
+
+    const track = document.createElement('div');
+    track.className = 'reading-progress__track';
+
+    for (let index = 0; index < 17; index += 1) {
+        const tick = document.createElement('span');
+        tick.className = 'reading-progress__tick';
+        track.appendChild(tick);
+    }
+
+    const marker = document.createElement('span');
+    marker.className = 'reading-progress__marker';
+    track.appendChild(marker);
+    progress.appendChild(track);
+    document.body.appendChild(progress);
+
+    let animationFrame;
+
+    function updateProgress() {
+        animationFrame = undefined;
+
+        const scrollableHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const percentage = scrollableHeight > 0
+            ? Math.min(Math.max(window.scrollY / scrollableHeight, 0), 1)
+            : 0;
+        const travelDistance = Math.max(track.clientWidth - marker.offsetWidth, 0);
+
+        marker.style.setProperty('--reading-progress-x', `${percentage * travelDistance}px`);
+        progress.classList.add('is-ready');
+    }
+
+    function requestProgressUpdate() {
+        if (!animationFrame) {
+            animationFrame = window.requestAnimationFrame(updateProgress);
+        }
+    }
+
+    window.addEventListener('scroll', requestProgressUpdate, { passive: true });
+    window.addEventListener('resize', requestProgressUpdate);
+    requestProgressUpdate();
+}
+
 function highlightAndScrollToSearch() {
     const searchQuery = new URLSearchParams(window.location.search).get('search');
     if (!searchQuery) return;
@@ -73,4 +122,5 @@ function highlightAndScrollToSearch() {
 }
 
 showRelativeDate();
+initialiseReadingProgress();
 highlightAndScrollToSearch();
