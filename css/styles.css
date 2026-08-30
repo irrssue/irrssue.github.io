@@ -1450,3 +1450,10 @@ body.home .content-section .hero-portrait-col {
         width: calc(100% / 1.4);
     }
 }
+
+/* Homepage hero: the now-playing player takes a further 20% on top of the
+   column's zoom, so the transport controls and track text read larger than
+   the portrait above them. */
+body.home .content-section .now-playing {
+    zoom: 1.2;
+}
