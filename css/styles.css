@@ -382,6 +382,13 @@ a {
     background-color: transparent;
 }
 
+/* Homepage only: shrink the whole content column to 70% as one block,
+   so every element inside keeps its relative proportions. */
+body.home .main-content {
+    transform: scale(0.7);
+    transform-origin: top center;
+}
+
 /* Content sections for demonstration */
 .content-section {
     margin-bottom: 60px;
