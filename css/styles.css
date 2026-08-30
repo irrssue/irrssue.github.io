@@ -1150,8 +1150,17 @@ mark {
 
     .mobile-nav {
         grid-template-columns: repeat(5, 1fr);
-        width: 70vw;
-        min-width: 60vw;
+        padding: clamp(6px, 2vw, 8px) clamp(10px, 3.5vw, 14px);
+        gap: clamp(4px, 1.5vw, 6px);
+    }
+
+    .mobile-nav-item {
+        padding: clamp(7px, 2.5vw, 10px) clamp(9px, 3vw, 13px);
+    }
+
+    .mobile-nav-icon {
+        width: clamp(14px, 4.2vw, 17px);
+        height: clamp(14px, 4.2vw, 17px);
     }
 
     /* Hero Section Mobile */
