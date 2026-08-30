@@ -1210,13 +1210,16 @@ mark {
     }
 
     .hero-social {
-        gap: 16px;
+        /* 16px base, opened up a further 10% so the larger icons keep their
+           breathing room. */
+        gap: calc(16px * 1.1);
     }
 
     .social-icon {
-        /* 22px mobile base, scaled up 40% to match the desktop bump. */
-        width: calc(22px * 1.4);
-        height: calc(22px * 1.4);
+        /* 22px mobile base, scaled up 40% to match the desktop bump, then a
+           further 20% for legibility on a phone. */
+        width: calc(22px * 1.4 * 1.2);
+        height: calc(22px * 1.4 * 1.2);
     }
 }
 
