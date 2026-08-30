@@ -70,12 +70,6 @@ def parse_post(path: Path) -> dict | None:
         print(f"skip {path.name}: unparseable date {fm.get('date')!r}")
         return None
 
-    tag = fm.get("tag") or ""
-    if not tag and fm.get("tags"):
-        tags = fm["tags"]
-        tag = tags[0] if isinstance(tags, list) else tags
-    tag = str(tag).split(" ")[0] if tag else ""
-
     body = m.group(2)
     slug = path.stem
     return {
@@ -83,7 +77,6 @@ def parse_post(path: Path) -> dict | None:
         "title": str(fm.get("title") or "Untitled"),
         "date": date,
         "date_raw": str(fm.get("date", "")),
-        "tag": tag,
         "cover": fm.get("cover") or "",
         "excerpt": first_paragraph(body),  # meta description only
         "body": body,
@@ -128,11 +121,6 @@ def render_post_page(post: dict) -> str:
         if post["cover"]
         else ""
     )
-    tag = (
-        f'<a href="/writing?tag={e(post["tag"].lower())}">#{e(post["tag"])}</a>'
-        if post["tag"]
-        else ""
-    )
     full_date = post["date"].strftime("%B %-d, %Y")
     article = (
         '<article>\n'
@@ -142,7 +130,6 @@ def render_post_page(post: dict) -> str:
         '    <div class="post-meta">\n'
         f'      <span class="post-date" data-full-date="{e(full_date)}"'
         f' data-iso="{post["date"].strftime("%Y-%m-%d")}">{e(full_date)}</span>\n'
-        f'      <span class="post-tag">{tag}</span>\n'
         "    </div>\n"
         "  </header>\n"
         f'  <div class="post-content">{md.render(post["body"])}</div>\n'

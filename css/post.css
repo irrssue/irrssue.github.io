@@ -89,12 +89,6 @@
     opacity: 1;
 }
 
-.post-tag {
-    font-family: 'JetBrains Mono', monospace;
-    color: #585857;
-    font-size: 11px;
-}
-
 .post-content {
     line-height: 1.7;
     font-family: 'Inter', -apple-system, sans-serif;
@@ -253,11 +247,7 @@
     color: rgb(115, 115, 115);
 }
 
-.post-date, .post-tag {
-    color: #585857;
-}
-
-.post-content h1, .post-content h2, .post-content h3 {
+.post-date, .post-content h1, .post-content h2, .post-content h3 {
     color: #e2e2e1;
 }
 
@@ -321,11 +311,7 @@
         gap: 0.5rem;
     }
 
-    .post-tag {
-        font-size: 11px;
-    }
-
-    .post-content {
+        .post-content {
         font-size: 16px;
         line-height: 1.75;
     }
