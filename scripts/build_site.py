@@ -29,12 +29,6 @@ WRITING_DIR = ROOT / "writing"
 DATA_DIR = ROOT / "data"
 TEMPLATE = (ROOT / "scripts" / "post_template.html").read_text(encoding="utf-8")
 
-EXTERNAL_ICON = (
-    '<svg class="external-icon" viewBox="0 0 24 24" fill="currentColor">'
-    '<path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 '
-    '2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>'
-)
-
 MAX_HOME_POSTS = 3
 EXCERPT_LIMIT = 160
 
@@ -182,7 +176,6 @@ def render_projects() -> str:
             f'<a href="{e(p["url"])}" class="project-link{" external" if external else ""}"{attrs}>'
             f'<span class="project-name">{e(p["name"])}</span>'
             f'<span class="project-description">{e(p.get("description", ""))}</span>'
-            f'{EXTERNAL_ICON if external else ""}'
             "</a></li>"
         )
     return "\n".join(items)
