@@ -1150,6 +1150,8 @@ mark {
 
     .mobile-nav {
         grid-template-columns: repeat(5, 1fr);
+        width: 70vw;
+        min-width: 60vw;
     }
 
     /* Hero Section Mobile */
@@ -1353,17 +1355,7 @@ mark {
 }
 
 .external-icon {
-    width: 16px;
-    height: 16px;
-    margin-left: 6px;
-    flex-shrink: 0;
-    opacity: 0.6;
-    transition: opacity 0.2s ease;
-    color: rgb(163, 163, 163);
-}
-
-.project-link:hover .external-icon {
-    opacity: 1;
+    display: none;
 }
 
 /* Link Preview Card */
@@ -1417,19 +1409,20 @@ mark {
 
     .project-link {
         padding: 6px 12px 6px 0;
-        flex-wrap: nowrap;
+        flex-wrap: wrap;
+        align-items: center;
+        column-gap: 6px;
+        row-gap: 2px;
     }
 
     .project-name {
         font-size: clamp(0.875rem, 2.2vw + 0.4rem, 1rem);
+        order: 1;
     }
 
     .project-description {
         font-size: clamp(0.875rem, 2.2vw + 0.4rem, 1rem);
-    }
-
-    .external-icon {
-        width: 14px;
-        height: 14px;
+        order: 3;
+        flex-basis: 100%;
     }
 }
