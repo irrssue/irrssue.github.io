@@ -1434,3 +1434,19 @@ body::-webkit-scrollbar,
         padding: calc(50px / 0.7) calc(20px / 0.7) calc(100px / 0.7) calc(20px / 0.7);
     }
 }
+
+/* Homepage hero: the portrait + now-playing column reads 40% larger than the
+   rest of the scaled-down content column. `zoom` scales the whole block —
+   image, controls and track text together — while still reserving layout
+   space, so the hero text beside it never overlaps. */
+body.home .content-section .hero-portrait-col {
+    zoom: 1.4;
+}
+
+@media (max-width: 768px) {
+    /* The column goes full-width and horizontal here, so pre-divide the width
+       to keep it inside the viewport once zoomed. */
+    body.home .content-section .hero-portrait-col {
+        width: calc(100% / 1.4);
+    }
+}
