@@ -186,11 +186,16 @@ def render_header(heading: str, sub: str) -> str:
     return f'<div class="bk-heading">{e(heading)}</div><div class="bk-sub">{e(sub)}</div>'
 
 
-def render_months(entries: list[dict], noun: str) -> str:
-    """The shared month-grouped bk-item list. /writing and /bookmarks are the same shape."""
+def render_months(entries: list[dict], noun: str, period: str = "month") -> str:
+    """The shared date-grouped bk-item list. /writing and /bookmarks are the same shape.
+
+    period="month" groups by calendar month, period="year" by calendar year.
+    """
+    key_fmt = "%Y" if period == "year" else "%Y-%m"
+    label_fmt = "%Y" if period == "year" else "%B %Y"
     groups: dict[str, list[dict]] = {}
     for entry in entries:
-        groups.setdefault(entry["date"].strftime("%Y-%m"), []).append(entry)
+        groups.setdefault(entry["date"].strftime(key_fmt), []).append(entry)
 
     months = []
     for key in sorted(groups, reverse=True):
@@ -216,7 +221,7 @@ def render_months(entries: list[dict], noun: str) -> str:
         months.append(
             f'<div class="bk-month" data-month="{key}">'
             f'<div class="bk-month-header">'
-            f'<span class="bk-month-name">{items[0]["date"].strftime("%B %Y")}</span>'
+            f'<span class="bk-month-name">{items[0]["date"].strftime(label_fmt)}</span>'
             f'<span class="bk-month-count">· {len(items)} {noun}'
             f'{"" if len(items) == 1 else "s"}</span></div>{"".join(rows)}</div>'
         )
@@ -285,7 +290,11 @@ def main() -> None:
         "writing-header",
         render_header("Writing.", "Things I found in life as in blog format"),
     )
-    inject(WRITING_DIR / "index.html", "writing-list", render_months(entries, "essay"))
+    inject(
+        WRITING_DIR / "index.html",
+        "writing-list",
+        render_months(entries, "essay", period="year"),
+    )
 
     marks = bookmark_entries()
     inject(
