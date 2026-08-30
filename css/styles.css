@@ -1152,21 +1152,23 @@ mark {
     }
 
     .np-controls {
-        display: flex;
-        justify-content: space-between;
-        width: 60%;
-        padding: clamp(5px, 1.5vw, 6px) clamp(9px, 3vw, 12px);
-        gap: clamp(6px, 2vw, 8px);
+        display: inline-flex;
+        align-self: flex-start;
+        justify-content: center;
+        width: auto;
+        max-width: 100%;
+        padding: 4px 10px;
+        gap: 10px;
     }
 
     .np-btn {
-        width: clamp(18px, 5.4vw, 22px);
-        height: clamp(18px, 5.4vw, 22px);
+        width: 20px;
+        height: 20px;
     }
 
     .np-btn svg {
-        width: clamp(10px, 3vw, 12px);
-        height: clamp(10px, 3vw, 12px);
+        width: 11px;
+        height: 11px;
     }
 
     .np-track {
