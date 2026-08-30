@@ -1440,6 +1440,59 @@ body::-webkit-scrollbar,
     }
 }
 
+/* ── Homepage mobile type ────────────────────────────────────────────────
+   The column's 0.7 zoom applies to text as well as layout, which left the
+   homepage reading at ~12px on a phone while the Writing page set the same
+   kind of list title at 1.26rem (.bk-item-title). Pre-divide the type by the
+   zoom factor so it renders at full size: the post and project titles land on
+   the Writing page's 1.26rem exactly, and the rest of the type is un-shrunk to
+   the size it is authored at. The portrait, player and social icons are left
+   alone — they keep the scale they were tuned to. */
+@media (max-width: 768px) {
+    /* Same rendered size as .bk-item-title on the Writing page. */
+    body.home .writing-post-link,
+    body.home .project-name,
+    body.home .project-description {
+        font-size: calc(1.26rem / 0.7);
+        line-height: 1.35;
+    }
+
+    body.home .hero-name {
+        font-size: calc(clamp(1.44rem, 5.76vw + 0.48rem, 1.92rem) / 0.7);
+    }
+
+    body.home .content-section p.hero-intro {
+        font-size: calc(19.5px / 0.7);
+    }
+
+    /* Section labels stay proportionally smaller than the titles below them. */
+    body.home .writing-heading {
+        font-size: calc(clamp(0.9rem, 1.5vw + 0.5rem, 1.05rem) / 0.7);
+        margin-bottom: calc(12px / 0.7);
+    }
+
+    body.home .projects-heading {
+        font-size: calc(clamp(0.875rem, 2.2vw + 0.4rem, 1rem) / 0.7);
+    }
+
+    /* Un-shrink the spacing that sets the rhythm around the larger type, so
+       the rows do not close up. Section margins are deliberately left scaled. */
+    body.home .writing-list {
+        gap: calc(4px / 0.7);
+    }
+
+    body.home .writing-post-link {
+        padding: calc(2px / 0.7) calc(12px / 0.7);
+        margin-left: calc(-12px / 0.7);
+    }
+
+    body.home .project-link {
+        padding: calc(6px / 0.7) calc(12px / 0.7) calc(6px / 0.7) 0;
+        column-gap: calc(6px / 0.7);
+        row-gap: calc(2px / 0.7);
+    }
+}
+
 /* Homepage hero: the portrait + now-playing column reads 40% larger than the
    rest of the scaled-down content column. `zoom` scales the whole block —
    image, controls and track text together — while still reserving layout
