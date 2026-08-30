@@ -133,18 +133,16 @@
     .bk-item-date {
         display: none;
     }
-}
 
-/* ── Writing list: larger titles on mobile ──────── */
-@media (max-width: 768px) {
-    .page-writing .bk-item-title {
+    .bk-item-title {
         font-size: 1.26rem;
         font-weight: 600;
         line-height: 1.35;
         letter-spacing: -0.01em;
     }
 
-    .page-writing .bk-item {
-        padding: 10px 0;
+    .bk-item-src {
+        font-size: 0.7rem;
+        margin-top: 6px;
     }
 }
