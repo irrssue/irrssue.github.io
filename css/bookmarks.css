@@ -37,12 +37,10 @@
     margin-top: 36px;
     margin-bottom: 10px;
     padding-bottom: 8px;
-    border-bottom: 1px solid #e5e5e5;
     font-family: Georgia, 'Times New Roman', serif;
     font-size: 1rem;
     font-weight: 400;
     color: #e5e5e5;
-    border-bottom-color: rgba(255, 255, 255, 0.1);
 }
 
 .bk-month-count {
@@ -58,13 +56,7 @@
     grid-template-columns: 52px 1fr;
     gap: 16px;
     padding: 12px 0;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
     align-items: baseline;
-    border-bottom-color: rgba(255, 255, 255, 0.06);
-}
-
-.bk-item:last-child {
-    border-bottom: none;
 }
 
 .bk-item-date {

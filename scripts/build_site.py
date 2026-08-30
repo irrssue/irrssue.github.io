@@ -239,7 +239,7 @@ def bookmark_entries() -> list[dict]:
                 "title": b.get("title") or "(untitled)",
                 "url": b.get("url") or "#",
                 "tag": b.get("tag") or "",
-                "desc": b.get("note") or b.get("description") or "",
+                "desc": "",  # lists stay titles-only, no preview lines
                 "src": host,
                 "external": True,
             }
