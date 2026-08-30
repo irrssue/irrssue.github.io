@@ -1355,7 +1355,17 @@ mark {
 }
 
 .external-icon {
-    display: none;
+    width: 16px;
+    height: 16px;
+    margin-left: 6px;
+    flex-shrink: 0;
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
+    color: rgb(163, 163, 163);
+}
+
+.project-link:hover .external-icon {
+    opacity: 1;
 }
 
 /* Link Preview Card */
@@ -1418,6 +1428,12 @@ mark {
     .project-name {
         font-size: clamp(0.875rem, 2.2vw + 0.4rem, 1rem);
         order: 1;
+    }
+
+    .external-icon {
+        order: 2;
+        width: 14px;
+        height: 14px;
     }
 
     .project-description {
