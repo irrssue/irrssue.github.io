@@ -553,8 +553,10 @@ body.home .main-content {
 }
 
 .social-icon {
-    width: 28px;
-    height: 28px;
+    /* 28px base, scaled up 40%. The svg inside is 100%/100%, so sizing the
+       link box is all that's needed. */
+    width: calc(28px * 1.4);
+    height: calc(28px * 1.4);
     transition: color 0.3s ease, transform 0.2s ease;
     display: flex;
     align-items: center;
@@ -1212,8 +1214,9 @@ mark {
     }
 
     .social-icon {
-        width: 22px;
-        height: 22px;
+        /* 22px mobile base, scaled up 40% to match the desktop bump. */
+        width: calc(22px * 1.4);
+        height: calc(22px * 1.4);
     }
 }
 
