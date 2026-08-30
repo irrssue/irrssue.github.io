@@ -1206,7 +1206,9 @@ mark {
     .content-section p.hero-intro,
     .hero-intro {
         font-size: 19.5px;
-        margin-bottom: 20px;
+        /* 20px base, opened up 20% so the social icons sit further below the
+           hero copy on a phone. */
+        margin-bottom: calc(20px * 1.2);
     }
 
     .hero-social {
