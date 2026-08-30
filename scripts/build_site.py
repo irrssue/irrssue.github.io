@@ -302,7 +302,11 @@ def main() -> None:
         "bookmarks-header",
         render_header("Bookmarks", "Articles and pages worth keeping. Updated as I find things."),
     )
-    inject(ROOT / "bookmarks" / "index.html", "bookmarks-list", render_months(marks, "link"))
+    inject(
+        ROOT / "bookmarks" / "index.html",
+        "bookmarks-list",
+        render_months(marks, "link", period="year"),
+    )
 
     for year_dir in WRITING_DIR.iterdir():
         if not year_dir.is_dir() or not re.fullmatch(r"\d{4}", year_dir.name):
