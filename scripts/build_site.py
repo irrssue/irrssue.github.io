@@ -85,7 +85,7 @@ def parse_post(path: Path) -> dict | None:
         "date_raw": str(fm.get("date", "")),
         "tag": tag,
         "cover": fm.get("cover") or "",
-        "excerpt": fm.get("summary") or first_paragraph(body),
+        "excerpt": first_paragraph(body),  # meta description only
         "body": body,
         "url": f"/writing/{date.year}/{slug}",
     }
@@ -278,7 +278,8 @@ def main() -> None:
     inject(ROOT / "index.html", "recent-posts", render_home_list(posts))
     inject(ROOT / "index.html", "projects", render_projects())
 
-    entries = [dict(p, desc=p["excerpt"]) for p in posts]
+    # The writing list is titles only — no excerpt lines under the post title.
+    entries = [dict(p, desc="") for p in posts]
     inject(
         WRITING_DIR / "index.html",
         "writing-header",

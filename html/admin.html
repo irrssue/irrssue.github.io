@@ -1547,7 +1547,7 @@
         if (!title) return toast('Title is required.', 'error');
         if (tag.includes(' ')) return toast('Tag must be a single word.', 'error');
 
-        const content = `---\ntitle: "${title}"\ndate: "${date}"\ntag: "${tag}"\nsummary: ""\ncover: ""\ndraft: ${draft}\n---\n\n${body}`;
+        const content = `---\ntitle: "${title}"\ndate: "${date}"\ntag: "${tag}"\ncover: ""\ndraft: ${draft}\n---\n\n${body}`;
 
         try {
             if (editingPost) {

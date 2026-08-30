@@ -2,7 +2,6 @@
 title: "Your Title"
 date: "{{DATE}}"
 tag: "Web"
-summary: ""
 cover: ""
 draft: true
 ---
