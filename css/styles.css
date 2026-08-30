@@ -1395,3 +1395,19 @@ mark {
         flex-basis: 100%;
     }
 }
+
+/* Hide scrollbars everywhere (mobile and desktop) while keeping scrolling fully functional. */
+html,
+body,
+* {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+*::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    display: none;
+}
