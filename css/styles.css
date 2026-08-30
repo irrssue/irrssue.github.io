@@ -383,11 +383,17 @@ a {
 }
 
 /* Homepage only: shrink the whole content column to 70% as one block,
-   so every element inside keeps its relative proportions. */
+   so every element inside keeps its relative proportions.
+
+   `zoom`, not `transform: scale()`: zoom participates in layout, so the
+   column still resolves its own width against the viewport and the document
+   height matches what is actually drawn. `transform` does neither — it needed
+   an over-wide box to compensate, and a box wider than the viewport cannot be
+   centred by auto margins, so on phones the whole column was scaled about a
+   point right of centre and hung off the right edge. */
 body.home .main-content {
-    transform: scale(0.7);
-    transform-origin: top center;
-    /* Pre-divide the box by the scale factor so, once scaled, the column
+    zoom: 0.7;
+    /* Pre-divide the lengths by the zoom factor so, once zoomed, the column
        renders at the same 686px width and 40px gutters as the writing and
        bookmarks pages. */
     max-width: calc(686px / 0.7);
@@ -1013,7 +1019,7 @@ mark {
 .mobile-nav {
     display: grid;
     position: fixed;
-    bottom: 14px;
+    bottom: calc(14px + env(safe-area-inset-bottom, 0px));
     left: 50%;
     transform: translateX(-50%);
     backdrop-filter: blur(20px);
@@ -1424,14 +1430,13 @@ body::-webkit-scrollbar,
     display: none;
 }
 
-/* Homepage mobile: same pre-division so the scaled column still spans the
-   viewport with the shared 20px gutters. Overflow from the oversized layout
-   box is absorbed by body { overflow-x: hidden }. */
+/* Homepage mobile: the column already fills the viewport, so only the gutters
+   need pre-dividing to land on the shared 20px. The extra bottom padding keeps
+   the last project clear of the floating nav and the home-indicator inset. */
 @media (max-width: 768px) {
     body.home .main-content {
-        width: calc(100% / 0.7);
-        max-width: calc(100% / 0.7);
         padding: calc(50px / 0.7) calc(20px / 0.7) calc(100px / 0.7) calc(20px / 0.7);
+        padding-bottom: calc((100px + env(safe-area-inset-bottom, 0px)) / 0.7);
     }
 }
 
@@ -1441,14 +1446,6 @@ body::-webkit-scrollbar,
    space, so the hero text beside it never overlaps. */
 body.home .content-section .hero-portrait-col {
     zoom: 1.4;
-}
-
-@media (max-width: 768px) {
-    /* The column goes full-width and horizontal here, so pre-divide the width
-       to keep it inside the viewport once zoomed. */
-    body.home .content-section .hero-portrait-col {
-        width: calc(100% / 1.4);
-    }
 }
 
 /* Homepage hero: the now-playing player takes a further 20% on top of the
