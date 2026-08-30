@@ -1206,9 +1206,7 @@ mark {
     .content-section p.hero-intro,
     .hero-intro {
         font-size: 19.5px;
-        /* 20px base, opened up 20% so the social icons sit further below the
-           hero copy on a phone. */
-        margin-bottom: calc(20px * 1.2);
+        margin-bottom: 20px;
     }
 
     .hero-social {
@@ -1473,6 +1471,9 @@ body::-webkit-scrollbar,
 
     body.home .content-section p.hero-intro {
         font-size: calc(19.5px / 0.7);
+        /* Gap down to the social icons: the authored 20px, opened up 20%, and
+           pre-divided by the column zoom so it actually renders at 24px. */
+        margin-bottom: calc(20px * 1.2 / 0.7);
     }
 
     /* Section labels stay proportionally smaller than the titles below them. */
