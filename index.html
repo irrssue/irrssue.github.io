@@ -73,11 +73,15 @@
                         <img src="images/profile.webp" alt="Thura Zaw" class="hero-portrait" width="120" height="120">
                           <div class="now-playing">
                             <div class="np-controls">
-                                <button class="np-btn" id="npPlayBtn" aria-label="Play">
+                                <button type="button" class="np-btn" id="npBackBtn" aria-label="Previous track">
+                                    <svg viewBox="0 0 10 10"><rect x="1" y="1" width="1.3" height="8" fill="currentColor"/><polygon points="9,1 9,9 2.3,5" fill="currentColor"/></svg>
+                                </button>
+                                <button type="button" class="np-btn" id="npPlayBtn" aria-label="Play">
                                     <svg viewBox="0 0 10 10"><polygon points="2,1 2,9 9,5" fill="currentColor"/></svg>
                                 </button>
-                                <span class="np-dot"></span>
-                                <button type="button" class="np-label" id="npLabelBtn" aria-label="Play">Play</button>
+                                <button type="button" class="np-btn" id="npNextBtn" aria-label="Next track">
+                                    <svg viewBox="0 0 10 10"><polygon points="1,1 1,9 7.7,5" fill="currentColor"/><rect x="7.7" y="1" width="1.3" height="8" fill="currentColor"/></svg>
+                                </button>
                             </div>
                             <div class="np-track">
                                 <b id="npTitle">—</b>

@@ -78,14 +78,6 @@
             setSvgIcon(btn, state);
             btn.setAttribute('aria-label', state ? 'Pause' : 'Play');
         }
-        var dot = document.querySelector('.np-dot');
-        if (dot) dot.classList.toggle('np-dot--active', state);
-        var label = document.getElementById('npLabelBtn');
-        if (label) {
-            label.textContent = state ? 'Skip' : 'Play';
-            label.setAttribute('aria-label', state ? 'Skip to next track' : 'Play');
-            label.classList.toggle('np-label--active', state);
-        }
     }
 
     function playNext() {
@@ -99,6 +91,14 @@
             }
             myIndex = 0;
         }
+        updateDisplay();
+        player.loadVideoById(myPlaylist[myIndex].id);
+    }
+
+    function playPrev() {
+        if (!myPlaylist.length) return;
+        myIndex--;
+        if (myIndex < 0) myIndex = myPlaylist.length - 1;
         updateDisplay();
         player.loadVideoById(myPlaylist[myIndex].id);
     }
@@ -182,11 +182,19 @@
             });
         }
 
-        var label = document.getElementById('npLabelBtn');
-        if (label) {
-            label.addEventListener('click', function () {
+        var nextBtn = document.getElementById('npNextBtn');
+        if (nextBtn) {
+            nextBtn.addEventListener('click', function () {
                 if (!player || !playing) return;
                 playNext();
+            });
+        }
+
+        var backBtn = document.getElementById('npBackBtn');
+        if (backBtn) {
+            backBtn.addEventListener('click', function () {
+                if (!player || !playing) return;
+                playPrev();
             });
         }
     });

@@ -428,7 +428,8 @@ a {
 .np-controls {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    justify-content: center;
+    gap: 10px;
     padding: 4px 9px 4px 9px;
     border-radius: 999px;
     border: 1px solid rgba(0, 0, 0, 0.1);
@@ -459,46 +460,6 @@ a {
 .np-btn svg {
     width: 10px;
     height: 10px;
-}
-
-@keyframes np-pulse {
-    0%, 100% { opacity: 1; box-shadow: 0 0 6px rgba(74, 222, 128, 0.5); }
-    50%       { opacity: 0.5; box-shadow: 0 0 3px rgba(74, 222, 128, 0.15); }
-}
-
-.np-dot {
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-    background: #4ade80;
-    flex-shrink: 0;
-    box-shadow: 0 0 6px rgba(74, 222, 128, 0.5);
-}
-
-.np-dot--active {
-    animation: np-pulse 2s ease-in-out infinite;
-}
-
-.np-label {
-    font-family: "JetBrains Mono", "SF Mono", "Fira Mono", monospace;
-    font-size: 10px;
-    letter-spacing: 0.8px;
-    text-transform: uppercase;
-    background: none;
-    border: 0;
-    padding: 0;
-    margin: 0;
-    cursor: default;
-    font-weight: inherit;
-    color: #737373;
-}
-
-.np-label--active {
-    cursor: pointer;
-}
-
-.np-label--active:hover {
-    color: #fff;
 }
 
 .np-track {
@@ -1192,6 +1153,7 @@ mark {
 
     .np-controls {
         display: flex;
+        justify-content: space-between;
         width: 60%;
         padding: 6px 12px;
         gap: 8px;
