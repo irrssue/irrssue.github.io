@@ -387,6 +387,11 @@ a {
 body.home .main-content {
     transform: scale(0.7);
     transform-origin: top center;
+    /* Pre-divide the box by the scale factor so, once scaled, the column
+       renders at the same 686px width and 40px gutters as the writing and
+       bookmarks pages. */
+    max-width: calc(686px / 0.7);
+    padding: calc(50px / 0.7) calc(40px / 0.7) calc(100px / 0.7) calc(40px / 0.7);
 }
 
 /* Content sections for demonstration */
@@ -1417,4 +1422,15 @@ body::-webkit-scrollbar,
     width: 0;
     height: 0;
     display: none;
+}
+
+/* Homepage mobile: same pre-division so the scaled column still spans the
+   viewport with the shared 20px gutters. Overflow from the oversized layout
+   box is absorbed by body { overflow-x: hidden }. */
+@media (max-width: 768px) {
+    body.home .main-content {
+        width: calc(100% / 0.7);
+        max-width: calc(100% / 0.7);
+        padding: calc(50px / 0.7) calc(20px / 0.7) calc(100px / 0.7) calc(20px / 0.7);
+    }
 }
