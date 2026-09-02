@@ -408,6 +408,12 @@ body.home .main-content {
        well off the left edge while the right side stays put. Still
        pre-divided by the zoom factor, so it renders as 90px. */
     padding-left: calc(90px / 0.7);
+    /* Drop the right auto margin so the column is no longer centred in its
+       grid track: with only the left margin left on `auto`, it absorbs all the
+       slack and the column slides right, hard against the ring column. The
+       padding above is untouched — this moves the box, not its gutters. */
+    margin-right: 0;
+    margin-left: auto;
 }
 
 /* Content sections for demonstration */
