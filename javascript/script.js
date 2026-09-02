@@ -1,85 +1,61 @@
-// Simple navigation highlighting
+/* ------------------------------------------------------------------
+   Top hamburger navigation
+
+   One pill at the top of every page that expands into the menu card.
+   The markup is identical on every page, so the link for the page the
+   visitor is on is marked here rather than hand-edited into each file.
+   ------------------------------------------------------------------ */
 document.addEventListener('DOMContentLoaded', function () {
-    const navLinks = document.querySelectorAll('.mobile-nav a');
+    const nav = document.querySelector('.site-nav');
+    if (!nav) return;
 
-    // Navigation functionality
-    navLinks.forEach(link => {
-        link.addEventListener('click', function (e) {
-            const href = this.getAttribute('href');
+    const toggle = nav.querySelector('.site-nav__toggle');
+    const panel = nav.querySelector('.site-nav__panel');
+    if (!toggle || !panel) return;
 
-            // Only prevent default for anchor links (starting with #)
-            if (href && href.startsWith('#')) {
-                e.preventDefault();
-            }
-
-            // Remove active class from all links
-            navLinks.forEach(l => l.classList.remove('active'));
-
-            // Add active class to clicked link
-            this.classList.add('active');
-        });
+    // Highlight the current page. "/" only matches the homepage; every
+    // other entry also covers its sub-pages (e.g. /writing/2026/a-post).
+    const path = location.pathname.replace(/index\.html$/, '');
+    nav.querySelectorAll('.site-nav__link').forEach(function (link) {
+        const href = link.getAttribute('href');
+        const isCurrent = href === '/'
+            ? path === '/'
+            : path === href || path.indexOf(href + '/') === 0;
+        if (isCurrent) {
+            link.classList.add('is-current');
+            link.setAttribute('aria-current', 'page');
+        }
     });
 
-    // Sliding hover pill effect for mobile nav
-    const mobileNav = document.querySelector('.mobile-nav');
-    const navItems = document.querySelectorAll('.mobile-nav-item');
-
-    if (mobileNav && navItems.length > 0) {
-        function updateHoverPillPosition(element) {
-            const navRect = mobileNav.getBoundingClientRect();
-            const itemRect = element.getBoundingClientRect();
-
-            // Calculate position relative to the nav container
-            const left = itemRect.left - navRect.left;
-            const top = itemRect.top - navRect.top;
-            const width = itemRect.width;
-            const height = itemRect.height;
-
-            mobileNav.style.setProperty('--hover-left', left + 'px');
-            mobileNav.style.setProperty('--hover-top', top + 'px');
-            mobileNav.style.setProperty('--hover-width', width + 'px');
-            mobileNav.style.setProperty('--hover-height', height + 'px');
-        }
-
-        // Initialize pill position to the active item
-        const activeItem = document.querySelector('.mobile-nav-item.active');
-        if (activeItem) {
-            updateHoverPillPosition(activeItem);
-        }
-
-        navItems.forEach(item => {
-            item.addEventListener('mouseenter', function () {
-                updateHoverPillPosition(this);
-                // Force reflow
-                void mobileNav.offsetWidth;
-                mobileNav.classList.add('nav-hover-active');
-            });
-        });
-
-        mobileNav.addEventListener('mouseleave', function () {
-            mobileNav.classList.remove('nav-hover-active');
-
-            // Wait for transition to finish then smoothly reset position to active item
-            setTimeout(() => {
-                const currentActive = document.querySelector('.mobile-nav-item.active');
-                if (currentActive) {
-                    mobileNav.style.setProperty('transition', 'none');
-                    updateHoverPillPosition(currentActive);
-                    void mobileNav.offsetWidth;
-                    mobileNav.style.removeProperty('transition');
-                }
-            }, 250); // wait roughly same duration as CSS transition
-        });
-
-        window.addEventListener('resize', function () {
-            if (!mobileNav.classList.contains('nav-hover-active')) {
-                const currentActive = document.querySelector('.mobile-nav-item.active');
-                if (currentActive) {
-                    updateHoverPillPosition(currentActive);
-                }
-            }
-        });
+    function setOpen(open) {
+        nav.classList.toggle('is-open', open);
+        toggle.setAttribute('aria-expanded', String(open));
+        toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
     }
+
+    toggle.addEventListener('click', function (event) {
+        event.stopPropagation();
+        setOpen(!nav.classList.contains('is-open'));
+    });
+
+    // Tapping anywhere else, or Escape, puts the menu away again.
+    document.addEventListener('click', function (event) {
+        if (nav.classList.contains('is-open') && !nav.contains(event.target)) {
+            setOpen(false);
+        }
+    });
+
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape' && nav.classList.contains('is-open')) {
+            setOpen(false);
+            toggle.focus();
+        }
+    });
+
+    // In-page links (and mailto) should close the menu behind them.
+    panel.addEventListener('click', function (event) {
+        if (event.target.closest('a')) setOpen(false);
+    });
 });
 
 /* ------------------------------------------------------------------
