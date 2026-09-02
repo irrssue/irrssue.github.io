@@ -1680,3 +1680,181 @@ body.home .content-section .hero-portrait-col {
 body.home .content-section .now-playing {
     zoom: 1.2;
 }
+
+/* ── Homepage project showcase ────────────────────────────────────────────
+   A second column beside the hero holding slow-drifting screenshots of the
+   projects. It scrolls on its own, stops when you point at it, and names the
+   card under the cursor. Desktop only: below 1080px the column would crowd the
+   text, and the same projects are already listed as text on the left. */
+
+.project-showcase {
+    display: none;
+}
+
+@media (min-width: 1080px) {
+    /* Two columns: the existing content column on the left, the screenshot
+       column on the right. `1fr 0.9fr` keeps the reading column the wider of
+       the two while still giving the cards room to overlap and tilt. */
+    body.home .grid-container {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr);
+    }
+
+    body.home .project-showcase {
+        display: block;
+        grid-column: 2;
+        position: relative;
+    }
+
+    /* Sticky so the cards stay alongside the whole column — hero, writing and
+       projects — rather than scrolling away after the first screen. */
+    .project-showcase__viewport {
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        overflow: hidden;
+        /* Fade the cards out at the top and bottom edges instead of cutting
+           them off on a hard line. */
+        -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 14%, #000 86%, transparent 100%);
+        mask-image: linear-gradient(to bottom, transparent 0, #000 14%, #000 86%, transparent 100%);
+    }
+
+    .project-showcase__track {
+        --card-width: clamp(260px, 32vw, 500px);
+        /* Negative, so consecutive cards overlap and the column reads as a
+           loose stack of photos rather than a list of tiles. */
+        --card-gap: clamp(-56px, -2.6vw, -20px);
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        /* Breathing room at the window edge; cards with a positive --x still
+           run past it, the way the reference stack does. */
+        padding-right: clamp(16px, 2.4vw, 44px);
+        /* The card list is emitted twice, and every card carries the same
+           bottom margin, so half the track's height is exactly one full pass —
+           translating by -50% loops with no seam. */
+        animation: project-showcase-scroll 90s linear infinite;
+        will-change: transform;
+    }
+
+    @keyframes project-showcase-scroll {
+        from { transform: translateY(0); }
+        to   { transform: translateY(-50%); }
+    }
+
+    /* Point anywhere in the column and the drift stops. `focus-within` does the
+       same for keyboard users tabbing through the cards. */
+    .project-showcase__viewport:hover .project-showcase__track,
+    .project-showcase__viewport:focus-within .project-showcase__track {
+        animation-play-state: paused;
+    }
+
+    .pcard {
+        position: relative;
+        flex: 0 0 auto;
+        /* --w varies the size card to card so the stack is not a single
+           repeated tile width. */
+        width: calc(var(--card-width) * var(--w, 1));
+        margin: 0 0 var(--card-gap) 0;
+        border-radius: 12px;
+        /* --x nudges each card in and out from the right edge and --r tilts it;
+           both are set per card in the markup so the stack reads as scattered
+           by hand rather than stacked in a straight line. */
+        transform: translateX(var(--x, 0)) rotate(var(--r, 0deg));
+        transition: transform 0.55s cubic-bezier(0.2, 0.7, 0.2, 1),
+                    opacity 0.35s ease;
+    }
+
+    .pcard__shot {
+        display: block;
+        width: 100%;
+        height: auto;
+        aspect-ratio: 16 / 10;
+        object-fit: cover;
+        object-position: top center;
+        border-radius: 12px;
+        background-color: #0b0b0b;
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55);
+        transition: box-shadow 0.55s cubic-bezier(0.2, 0.7, 0.2, 1);
+    }
+
+    /* Everything else recedes so the card being pointed at is unmistakable. */
+    .project-showcase__track:hover .pcard,
+    .project-showcase__track:focus-within .pcard {
+        opacity: 0.35;
+    }
+
+    .project-showcase__track .pcard:hover,
+    .project-showcase__track .pcard:focus-visible {
+        opacity: 1;
+        z-index: 3;
+        /* Straightens out of its tilt, pulls back in from the window edge —
+           so a card that was half off-screen is fully readable — and lifts. */
+        transform: translateX(0) rotate(0deg) scale(1.04);
+    }
+
+    .pcard:hover .pcard__shot,
+    .pcard:focus-visible .pcard__shot {
+        box-shadow: 0 26px 60px rgba(0, 0, 0, 0.7);
+    }
+
+    .pcard:focus-visible {
+        outline: none;
+    }
+
+    .pcard:focus-visible .pcard__shot {
+        outline: 2px solid #ffffff;
+        outline-offset: 4px;
+    }
+
+    /* The card's alt text, shown as a pill only while it is hovered. */
+    .pcard__label {
+        position: absolute;
+        left: 14px;
+        right: 14px;
+        bottom: 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        padding: 8px 14px;
+        border-radius: 10px;
+        background-color: rgba(10, 10, 10, 0.86);
+        -webkit-backdrop-filter: blur(6px);
+        backdrop-filter: blur(6px);
+        color: rgb(163, 163, 163);
+        font-size: 0.8rem;
+        line-height: 1.35;
+        opacity: 0;
+        transform: translateY(6px);
+        pointer-events: none;
+        transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .pcard__label b {
+        color: #ffffff;
+        font-weight: 600;
+    }
+
+    .pcard__label span:empty {
+        display: none;
+    }
+
+    .pcard:hover .pcard__label,
+    .pcard:focus-visible .pcard__label {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* No drift for anyone who has asked motion to stop — the cards stay put and
+   still respond to hover. */
+@media (prefers-reduced-motion: reduce) {
+    .project-showcase__track {
+        animation: none !important;
+    }
+
+    .pcard,
+    .pcard__shot,
+    .pcard__label {
+        transition-duration: 0.01ms !important;
+    }
+}

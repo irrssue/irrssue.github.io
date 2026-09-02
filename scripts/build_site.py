@@ -168,6 +168,53 @@ def render_projects() -> str:
     return "\n".join(items)
 
 
+# Card placement for the homepage showcase column: how far each card sits from
+# the column's right edge and how much it is tilted. The pattern repeats every
+# six cards so any number of projects reads as an organic, hand-scattered stack
+# rather than a straight column.
+CARD_OFFSETS = ["6%", "-10%", "14%", "-4%", "18%", "-14%"]
+CARD_ANGLES = ["-5deg", "3.5deg", "-2.5deg", "4.5deg", "-4deg", "2deg"]
+CARD_SCALES = ["1", "0.87", "1.05", "0.93", "1", "0.9"]
+
+
+def render_project_cards() -> str:
+    """The slow-scrolling screenshot column beside the homepage hero.
+
+    The list is emitted twice — the second pass is an inert copy — so the track
+    can loop by translating exactly half its height with no visible seam.
+    """
+    projects = [
+        p
+        for p in json.loads((DATA_DIR / "projects.json").read_text(encoding="utf-8"))
+        if p.get("image")
+    ]
+
+    def card(p: dict, index: int, clone: bool) -> str:
+        alt = p["name"]
+        if p.get("description"):
+            alt += f' — {p["description"]}'
+        style = (
+            f'--x:{CARD_OFFSETS[index % len(CARD_OFFSETS)]};'
+            f'--r:{CARD_ANGLES[index % len(CARD_ANGLES)]};'
+            f'--w:{CARD_SCALES[index % len(CARD_SCALES)]}'
+        )
+        inert = ' aria-hidden="true" tabindex="-1"' if clone else ""
+        return (
+            f'<a class="pcard" href="{e(p["url"])}" target="_blank" '
+            f'rel="noopener noreferrer" style="{style}"{inert}>'
+            f'<img class="pcard__shot" src="{e(p["image"])}" alt="{e("" if clone else alt)}" '
+            f'width="1000" height="625" loading="lazy" decoding="async">'
+            f'<span class="pcard__label" aria-hidden="true">'
+            f'<b>{e(p["name"])}</b>'
+            f'<span>{e(p.get("description", ""))}</span>'
+            f"</span></a>"
+        )
+
+    first = [card(p, i, False) for i, p in enumerate(projects)]
+    second = [card(p, i, True) for i, p in enumerate(projects)]
+    return "\n".join(first + second)
+
+
 def render_header(heading: str, sub: str) -> str:
     """The shared bk-header: title and blurb."""
     return f'<div class="bk-heading">{e(heading)}</div><div class="bk-sub">{e(sub)}</div>'
@@ -269,6 +316,7 @@ def main() -> None:
 
     inject(ROOT / "index.html", "recent-posts", render_home_list(posts))
     inject(ROOT / "index.html", "projects", render_projects())
+    inject(ROOT / "index.html", "project-cards", render_project_cards())
 
     # The writing list is titles only — no excerpt lines under the post title.
     entries = [dict(p, desc="") for p in posts]

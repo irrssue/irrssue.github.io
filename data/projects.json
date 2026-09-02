@@ -3,60 +3,70 @@
     "name": "Snapsher",
     "url": "https://snapsher.com",
     "description": "A social-media that doesn't burn you out.",
-    "external": true
+    "external": true,
+    "image": "previews/projects/snapsher.webp"
   },
   {
     "name": "Minimal HackerNews",
     "url": "https://news.irrssue.com",
     "description": "Hackernews reimagined",
-    "external": true
+    "external": true,
+    "image": "previews/projects/minimal-hackernews.webp"
   },
   {
     "name": "Homelab",
     "url": "https://github.com/irrssue/homelab",
     "description": "The start of my hobby into self hosting",
-    "external": true
+    "external": true,
+    "image": "previews/projects/homelab.webp"
   },
   {
     "name": "Thura Zaw",
     "url": "https://irrssue.github.io/",
     "description": "Private playground",
-    "external": true
+    "external": true,
+    "image": "previews/projects/thura-zaw.webp"
   },
   {
     "name": "Baremail",
     "url": "https://mail.irrssue.com/",
     "description": "the minimal version of gmail",
-    "external": true
+    "external": true,
+    "image": "previews/projects/baremail.webp"
   },
   {
     "name": "Conflict Map",
     "url": "https://github.com/irrssue/conflict-map.git",
     "description": "interactive conflict map",
-    "external": true
+    "external": true,
+    "image": "previews/projects/conflict-map.webp"
   },
   {
     "name": "Mood Receipt",
     "url": "https://irrssue.com/mood-receipt/",
     "description": "shareable what's up in receipt format",
-    "external": true
+    "external": true,
+    "image": "previews/projects/mood-receipt.webp"
   },
   {
     "name": "Thadar.com",
     "url": "https://thadar.com/",
     "description": "A minimal Student management platform",
-    "external": true
+    "external": true,
+    "image": "previews/projects/thadar.webp"
   },
   {
     "name": "Draw Something",
     "url": "https://irrssue.com/drawsomething/",
     "description": "Idk, just draw something, that it.",
-    "external": true
+    "external": true,
+    "image": "previews/projects/draw-something.webp"
   },
   {
     "name": "Solar System",
     "url": "https://irrssue.com/solarsystem/",
     "description": "a view to mesmerize to",
-    "external": true
+    "external": true,
+    "image": "previews/projects/solar-system.webp"
   }
 ]
