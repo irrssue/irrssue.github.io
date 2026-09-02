@@ -527,6 +527,14 @@ a {
 /* Main Content Area */
 .main-content {
     grid-column: 1;
+    /* The column is its own grid so its content can sit in the vertical middle
+       of the cell rather than hanging from the top. `safe` centring only
+       applies while the content is shorter than the 100vh floor below; once a
+       page is taller than the viewport it falls back to start alignment, so a
+       long page can never overflow off the top where it would be unreachable. */
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-content: safe center;
     padding: 96px 40px 60px 40px;
     max-width: 686px;
     min-width: 0;
