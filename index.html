@@ -43,6 +43,13 @@
                 if (overlay && overlay.parentNode) overlay.remove();
             }
 
+            // Lets other homepage scripts (the project ring's entrance, for
+            // one — see javascript/project-reveal.js) start their own motion
+            // relative to the overlay instead of guessing its timing.
+            function announceEnding() {
+                document.dispatchEvent(new CustomEvent('intro:ending'));
+            }
+
             function revealWord(index) {
                 words[index - 1].classList.remove('is-visible');
                 words[index - 1].classList.add('is-past');
@@ -51,6 +58,7 @@
 
             if (isSeen || hasReducedMotion) {
                 window.setTimeout(removeIntro, 0);
+                window.setTimeout(announceEnding, 0);
                 return;
             }
 
@@ -63,6 +71,11 @@
                 document.body.classList.add('intro-revealing');
                 overlay.classList.add('intro-overlay--leaving');
             }, 1750);
+            // The curtain (.intro-overlay__curtain) takes 1.02s to rise clear
+            // once it starts leaving above; announce at 90% of that so
+            // anything waiting on the overlay starts just ahead of the page
+            // rather than only once it's fully gone.
+            window.setTimeout(announceEnding, 1750 + 0.9 * 1020);
             window.setTimeout(removeIntro, 2750);
         })();
     </script>

@@ -16,6 +16,13 @@
    Nothing here is load-bearing: without JS, or in a browser old enough
    not to have Element.animate, the cards are simply visible from the
    first paint.
+
+   Held until the intro overlay says it's nearly done: the ring sits right
+   where the overlay's curtain covers, so starting the cards while it's
+   still fully drawn would just mean animating under something opaque.
+   The overlay (inline script in index.html) fires 'intro:ending' at 90%
+   through its own close, which is also the fallback for a visitor who
+   has already seen it this session — see that script for the timing.
    ------------------------------------------------------------------ */
 (function () {
     var ring = document.querySelector('.project-ring');
@@ -41,19 +48,28 @@
         });
     }
 
-    if (ring) {
-        // A small scale rather than a slide: the frame sits inside the ring's
-        // own tilted 3D transform, so a translateY here would read as sliding
-        // in some rotated direction rather than straight up the screen.
-        enter(
-            Array.prototype.slice.call(ring.querySelectorAll('.pcard__frame')),
-            [{ opacity: 0, transform: 'scale(0.92)' }, { opacity: 1, transform: 'scale(1)' }]
-        );
+    function reveal() {
+        if (ring) {
+            // A small scale rather than a slide: the frame sits inside the
+            // ring's own tilted 3D transform, so a translateY here would read
+            // as sliding in some rotated direction rather than straight up
+            // the screen.
+            enter(
+                Array.prototype.slice.call(ring.querySelectorAll('.pcard__frame')),
+                [{ opacity: 0, transform: 'scale(0.92)' }, { opacity: 1, transform: 'scale(1)' }]
+            );
+        }
+        if (rail) {
+            enter(
+                Array.prototype.slice.call(rail.querySelectorAll('.prail')),
+                [{ opacity: 0, transform: 'translateY(20px)' }, { opacity: 1, transform: 'none' }]
+            );
+        }
     }
-    if (rail) {
-        enter(
-            Array.prototype.slice.call(rail.querySelectorAll('.prail')),
-            [{ opacity: 0, transform: 'translateY(20px)' }, { opacity: 1, transform: 'none' }]
-        );
+
+    if (document.getElementById('introOverlay')) {
+        document.addEventListener('intro:ending', reveal, { once: true });
+    } else {
+        reveal();
     }
 }());
