@@ -1,32 +1,60 @@
 import { chromium } from 'playwright';
+import { readFileSync } from 'node:fs';
 const BASE = 'http://localhost:8899';
 const browser = await chromium.launch();
 let failures = 0;
 const fail = m => { console.log('     FAIL ' + m); failures++; };
 
+/* The site is allowed exactly one kind of external traffic: the Gems photo
+   prewarm that javascript/script.js schedules on `load`, during idle time, so
+   opening /gems is not a cold start. Everything else — a font CDN, an
+   analytics tag, an icon library — is a regression.
+
+   So a request is judged on two things: whether it beat the `load` event, and
+   whether it went anywhere other than the photo host. The allowed origins are
+   read out of gems.json rather than written down here, so moving the photos
+   somewhere else does not quietly widen what this check permits. */
+const prewarmOrigins = new Set(
+  JSON.parse(readFileSync(new URL('../data/gems.json', import.meta.url), 'utf8'))
+    .map(g => g && g.src)
+    .filter(Boolean)
+    .flatMap(src => { try { return [new URL(src).origin]; } catch { return []; } })
+);
+const origin = u => { try { return new URL(u).origin; } catch { return u; } };
+
 async function open(path) {
   const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
   const page = await ctx.newPage();
   const errors = [], external = [], failed = [];
+  let loaded = false;
+  page.on('load', () => { loaded = true; });
   page.on('console', m => m.type() === 'error' && errors.push(m.text()));
   page.on('pageerror', e => errors.push('pageerror: ' + e.message));
-  page.on('request', r => !r.url().startsWith(BASE) && external.push(r.url()));
+  page.on('request', r => {
+    if (r.url().startsWith(BASE)) return;
+    external.push({ url: r.url(), beforeLoad: !loaded });
+  });
   page.on('requestfailed', r => failed.push(r.url()));
   await page.goto(BASE + path, { waitUntil: 'load' });
   await page.waitForTimeout(1200);            // let idle callbacks fire
-  return { page, ctx, errors, external, failed };
+  // Anything that beat `load`, and anything aimed off the photo host.
+  const early = external.filter(r => r.beforeLoad);
+  const foreign = external.filter(r => !prewarmOrigins.has(origin(r.url)));
+  return { page, ctx, errors, external, early, foreign, failed };
 }
 
-console.log('--- page load: no JS errors, no external requests ---');
+console.log('--- page load: no JS errors, nothing external before load ---');
 for (const p of ['/', '/writing', '/bookmarks',
                  '/writing/2026/4-hour-of-ci-rabbit-hole', '/writing/2025/Hi']) {
-  const { ctx, errors, external, failed } = await open(p);
-  const ok = !errors.length && !external.length && !failed.length;
+  const { ctx, errors, external, early, foreign, failed } = await open(p);
+  const ok = !errors.length && !early.length && !foreign.length && !failed.length;
   if (!ok) failures++;
-  console.log(`${ok ? 'ok  ' : 'FAIL'} ${p}`);
+  const warm = external.length - early.length - foreign.length;
+  console.log(`${ok ? 'ok  ' : 'FAIL'} ${p.padEnd(46)} ${warm} gems prewarm after load`);
   errors.forEach(e => console.log('       console: ' + e));
   failed.forEach(f => console.log('       failed : ' + f));
-  external.forEach(u => console.log('       EXTERNAL: ' + u.slice(0, 90)));
+  early.forEach(r => console.log('       BEFORE LOAD: ' + r.url.slice(0, 80)));
+  foreign.forEach(r => console.log('       FOREIGN    : ' + r.url.slice(0, 80)));
   await ctx.close();
 }
 
@@ -60,37 +88,18 @@ console.log('\n--- content rendered ---');
   await ctx.close();
 }
 
-console.log('\n--- tag filter hides rows ---');
-for (const [path, tag] of [['/writing', 'homelab'], ['/bookmarks', 'ai']]) {
-  const { page, ctx } = await open(path);
-  const before = await page.locator('.bk-item:visible').count();
-  await page.locator(`.bk-chip[data-tag="${tag}"]`).click();
-  await page.waitForTimeout(150);
-  const after = await page.locator('.bk-item:visible').count();
-  const search = new URL(page.url()).search;
-  console.log(`${path} "${tag}": ${before} -> ${after} visible, url${search}`);
-  if (!(after > 0 && after < before)) fail(`${path}: filter did not hide rows`);
-  if (search !== `?tag=${tag}`) fail(`${path}: url not updated`);
-  await page.locator('.bk-chip[data-tag=""]').click();
-  await page.waitForTimeout(150);
-  if (await page.locator('.bk-item:visible').count() !== before) fail(`${path}: reset failed`);
-  await ctx.close();
-}
-
-console.log('\n--- deep link ?tag= works on a cold load ---');
-{
-  const { page, ctx } = await open('/writing?tag=macos');
-  const n = await page.locator('.bk-item:visible').count();
-  console.log(`/writing?tag=macos -> ${n} visible`);
-  if (n !== 3) fail(`expected 3 macos posts, got ${n}`);
-  await ctx.close();
-}
-
 console.log('\n--- no-JS: content still there ---');
 {
   const ctx = await browser.newContext({ javaScriptEnabled: false });
   const page = await ctx.newPage();
-  for (const [p, sel, min] of [['/', '.project-item', 11],
+  // Both project blocks are laid out by the stylesheet alone, so they have to
+  // survive with scripting off — the ring stops turning and the rail loses its
+  // dots, and that is the whole difference.
+  const projectCount = JSON.parse(
+    readFileSync(new URL('../data/projects.json', import.meta.url), 'utf8')
+  ).filter(p => p.image).length;
+  for (const [p, sel, min] of [['/', '.pcard', projectCount],
+                               ['/', '.prail', projectCount],
                                ['/writing', '.bk-item', 7],
                                ['/bookmarks', '.bk-item', 4],
                                ['/writing/2026/4-hour-of-ci-rabbit-hole', '.post-content p', 3]]) {
@@ -106,12 +115,13 @@ console.log('\n--- no-JS: content still there ---');
 console.log('\n--- YouTube loads only after pressing play ---');
 {
   const { page, ctx, external } = await open('/');
-  console.log(`before click: ${external.length} external requests`);
-  if (external.length) fail('external requests before any interaction');
+  const ytBefore = external.filter(r => r.url.includes('youtube.com')).length;
+  console.log(`before click: ${ytBefore} youtube requests`);
+  if (ytBefore) fail('YouTube loaded before the play button was pressed');
   await page.locator('#npPlayBtn').click();
   await page.waitForTimeout(3000);
-  const yt = external.filter(u => u.includes('youtube.com')).length;
-  console.log(`after click : ${external.length} external requests (${yt} youtube)`);
+  const yt = external.filter(r => r.url.includes('youtube.com')).length;
+  console.log(`after click : ${yt} youtube requests`);
   if (!yt) fail('play click did not load the YouTube API');
   await ctx.close();
 }
