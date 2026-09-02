@@ -1949,8 +1949,12 @@ body::-webkit-scrollbar,
 @media (max-width: 1079px) {
     .projects-rail {
         display: block;
-        /* Collapses with .content-section's bottom margin above it. */
-        margin-top: 56px;
+        /* No top margin of its own: the gap above is the hero section's
+           bottom margin. .main-content is a grid, so sibling margins add
+           rather than collapse — carrying a margin here as well would stack
+           the two into a gap twice the size of every other. Leaving it at 0
+           gives the same spacing whether or not they collapse. */
+        margin-top: 0;
     }
 
     .projects-rail__track {
