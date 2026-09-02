@@ -1960,7 +1960,7 @@ body::-webkit-scrollbar,
     .projects-rail__track {
         display: flex;
         gap: 14px;
-        overflow-x: auto;
+        overflow-x: hidden;
         scroll-snap-type: x mandatory;
         -webkit-overflow-scrolling: touch;
         /* Keep a horizontal flick from turning into a page-back gesture. */
@@ -1974,6 +1974,11 @@ body::-webkit-scrollbar,
         /* Room for the shadow under a pressed card. */
         padding-bottom: 4px;
         --rail-gutter: 40px;
+        transition: overflow 0.2s ease;
+    }
+
+    .projects-rail:hover .projects-rail__track {
+        overflow-x: auto;
     }
 
     .prail {
