@@ -19,7 +19,12 @@
         { id: 'NLphEFOyoqM', title: 'Let You Break My Heart Again', artist: 'Laufey'              },
         { id: '0bZ_TK6Q4bs', title: 'summer nights',              artist: 'The Millennial Club'   },
         { id: 'FPNmQmpqpI8', title: 'Paragraphs',                 artist: 'Luke Chiang'           },
-        { id: 'mARPGPmGOT4', title: 'Anything',                   artist: 'Adrianne Lenker'       }
+        { id: 'mARPGPmGOT4', title: 'Anything',                   artist: 'Adrianne Lenker'       },
+        { id: 'Vj2VHNvkBPA', title: 'Falling Behind',              artist: 'Laufey'                },
+        { id: '6uSC5nUn-LM', title: 'Gimme Love',                  artist: 'Joji'                  },
+        { id: 'iOYAl37AScY', title: 'One Summer Day',              artist: 'Joe Hisaishi'          },
+        { id: 'X-t2we3LL64', title: 'Nièo (Bonus Track)',          artist: 'sonicbrat'             },
+        { id: 'W9qGMTNnyfc', title: 'LIMBO',                       artist: 'keshi'                 }
     ];
 
     var player = null;
