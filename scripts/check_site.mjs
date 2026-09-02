@@ -33,11 +33,16 @@ for (const p of ['/', '/writing', '/bookmarks',
 console.log('\n--- content rendered ---');
 {
   const { page, ctx } = await open('/');
-  const projects = await page.locator('.project-item').count();
+  // Projects appear twice: the ring beside the column above 1080px, the swipe
+  // rail below it. Both are written from data/projects.json, so a mismatch
+  // means the build wrote one block and not the other.
+  const ring = await page.locator('.pcard').count();
+  const rail = await page.locator('.prail').count();
   const posts = await page.locator('.writing-post-item').count();
   const track = await page.locator('#npTitle').textContent();
-  console.log(`homepage: ${projects} projects, ${posts} recent posts, now-playing = "${track}"`);
-  if (projects !== 11) fail(`expected 11 projects, got ${projects}`);
+  console.log(`homepage: ${ring} ring cards, ${rail} rail slides, ${posts} recent posts, now-playing = "${track}"`);
+  if (ring === 0) fail('no project ring cards');
+  if (ring !== rail) fail(`ring has ${ring} projects, rail has ${rail}`);
   if (posts !== 3) fail(`expected 3 recent posts, got ${posts}`);
   if (!track || track === '—') fail('now-playing title not shown without the YT API');
   await ctx.close();

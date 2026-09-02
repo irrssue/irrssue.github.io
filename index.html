@@ -118,6 +118,28 @@
                 <div id="yt-player" style="position:fixed;bottom:0;right:0;width:2px;height:2px;opacity:0.01;pointer-events:none;z-index:-1;" aria-hidden="true"></div>
             </section>
 
+            <!-- Projects, below the ring breakpoint. Above 1080px the ring
+                 beside this column carries the same projects; below it there
+                 is no room for a ring, so they lie in a track you swipe.
+                 Both are written from data/projects.json by the build. -->
+            <section class="projects-rail" aria-labelledby="projects-rail-heading">
+                <h2 class="projects-rail__heading" id="projects-rail-heading">Projects</h2>
+                <div class="projects-rail__track" id="projectsRail">
+                    <!-- build:project-rail -->
+<a class="prail" href="https://snapsher.com" target="_blank" rel="noopener noreferrer"><img class="prail__shot" src="previews/projects/snapsher.webp" alt="Snapsher — A social-media that doesn&#x27;t burn you out." width="1000" height="625" loading="lazy" decoding="async"><b class="prail__name">Snapsher</b><span class="prail__desc">A social-media that doesn&#x27;t burn you out.</span></a>
+<a class="prail" href="https://news.irrssue.com" target="_blank" rel="noopener noreferrer"><img class="prail__shot" src="previews/projects/minimal-hackernews.webp" alt="Minimal HackerNews — Hackernews reimagined" width="1000" height="625" loading="lazy" decoding="async"><b class="prail__name">Minimal HackerNews</b><span class="prail__desc">Hackernews reimagined</span></a>
+<a class="prail" href="https://github.com/irrssue/homelab" target="_blank" rel="noopener noreferrer"><img class="prail__shot" src="previews/projects/homelab.webp" alt="Homelab — The start of my hobby into self hosting" width="1000" height="625" loading="lazy" decoding="async"><b class="prail__name">Homelab</b><span class="prail__desc">The start of my hobby into self hosting</span></a>
+<a class="prail" href="https://irrssue.github.io/" target="_blank" rel="noopener noreferrer"><img class="prail__shot" src="previews/projects/thura-zaw.webp" alt="Thura Zaw — Private playground" width="1000" height="625" loading="lazy" decoding="async"><b class="prail__name">Thura Zaw</b><span class="prail__desc">Private playground</span></a>
+<a class="prail" href="https://mail.irrssue.com/" target="_blank" rel="noopener noreferrer"><img class="prail__shot" src="previews/projects/baremail.webp" alt="Baremail — the minimal version of gmail" width="1000" height="625" loading="lazy" decoding="async"><b class="prail__name">Baremail</b><span class="prail__desc">the minimal version of gmail</span></a>
+<a class="prail" href="https://github.com/irrssue/conflict-map.git" target="_blank" rel="noopener noreferrer"><img class="prail__shot" src="previews/projects/conflict-map.webp" alt="Conflict Map — interactive conflict map" width="1000" height="625" loading="lazy" decoding="async"><b class="prail__name">Conflict Map</b><span class="prail__desc">interactive conflict map</span></a>
+<a class="prail" href="https://irrssue.com/mood-receipt/" target="_blank" rel="noopener noreferrer"><img class="prail__shot" src="previews/projects/mood-receipt.webp" alt="Mood Receipt — shareable what&#x27;s up in receipt format" width="1000" height="625" loading="lazy" decoding="async"><b class="prail__name">Mood Receipt</b><span class="prail__desc">shareable what&#x27;s up in receipt format</span></a>
+<a class="prail" href="https://thadar.com/" target="_blank" rel="noopener noreferrer"><img class="prail__shot" src="previews/projects/thadar.webp" alt="Thadar.com — A minimal Student management platform" width="1000" height="625" loading="lazy" decoding="async"><b class="prail__name">Thadar.com</b><span class="prail__desc">A minimal Student management platform</span></a>
+<a class="prail" href="https://irrssue.com/drawsomething/" target="_blank" rel="noopener noreferrer"><img class="prail__shot" src="previews/projects/draw-something.webp" alt="Draw Something — Idk, just draw something, that it." width="1000" height="625" loading="lazy" decoding="async"><b class="prail__name">Draw Something</b><span class="prail__desc">Idk, just draw something, that it.</span></a>
+<a class="prail" href="https://irrssue.com/solarsystem/" target="_blank" rel="noopener noreferrer"><img class="prail__shot" src="previews/projects/solar-system.webp" alt="Solar System — a view to mesmerize to" width="1000" height="625" loading="lazy" decoding="async"><b class="prail__name">Solar System</b><span class="prail__desc">a view to mesmerize to</span></a>
+<!-- /build:project-rail -->
+                </div>
+            </section>
+
             <section class="writing-section">
                 <h2 class="writing-heading reveal-item">
                     <a href="/writing" class="writing-heading-link">Writing <span class="writing-arrow">›</span></a>
@@ -192,6 +214,7 @@
     <script src="javascript/now-playing.js" defer></script>
     <script src="javascript/script.js" defer></script>
     <script src="javascript/project-ring.js" defer></script>
+    <script src="javascript/project-rail.js" defer></script>
     <script>
         // Link preview on hover (desktop only)
         (function() {

@@ -542,32 +542,127 @@ a {
     background-color: transparent;
 }
 
-/* Homepage only: shrink the whole content column to 70% as one block,
-   so every element inside keeps its relative proportions.
+/* Homepage, ring width only: shrink the whole content column to 70% as one
+   block, so every element inside keeps its relative proportions while the ring
+   takes the space on the right.
 
    `zoom`, not `transform: scale()`: zoom participates in layout, so the
    column still resolves its own width against the viewport and the document
    height matches what is actually drawn. `transform` does neither — it needed
    an over-wide box to compensate, and a box wider than the viewport cannot be
    centred by auto margins, so on phones the whole column was scaled about a
-   point right of centre and hung off the right edge. */
-body.home .main-content {
-    zoom: 0.7;
-    /* Pre-divide the lengths by the zoom factor so, once zoomed, the column
-       renders at the same 686px width and 40px gutters as the writing and
-       bookmarks pages. */
-    max-width: calc(686px / 0.7);
-    padding: calc(50px / 0.7) calc(40px / 0.7) calc(100px / 0.7) calc(40px / 0.7);
-    /* Left gutter only: widened again by half, so the reading column sits
-       well off the left edge while the right side stays put. Still
-       pre-divided by the zoom factor, so it renders as 90px. */
-    padding-left: calc(90px / 0.7);
-    /* Drop the right auto margin so the column is no longer centred in its
-       grid track: with only the left margin left on `auto`, it absorbs all the
-       slack and the column slides right, hard against the ring column. The
-       padding above is untouched — this moves the box, not its gutters. */
-    margin-right: 0;
-    margin-left: auto;
+   point right of centre and hung off the right edge.
+
+   Below 1080px there is no ring and the column is the whole page, so it is
+   authored at its real size instead (see the rule underneath). That is why
+   nothing under this breakpoint has to be pre-divided by 0.7 any more. */
+@media (min-width: 1080px) {
+    body.home .main-content {
+        zoom: 0.7;
+        /* Pre-divide the lengths by the zoom factor so, once zoomed, the
+           column renders at the same 686px width and 40px gutters as the
+           writing and bookmarks pages. */
+        max-width: calc(686px / 0.7);
+        padding: calc(50px / 0.7) calc(40px / 0.7) calc(100px / 0.7) calc(40px / 0.7);
+        /* Left gutter only: widened again by half, so the reading column sits
+           well off the left edge while the right side stays put. Still
+           pre-divided by the zoom factor, so it renders as 90px. */
+        padding-left: calc(90px / 0.7);
+        /* Drop the right auto margin so the column is no longer centred in its
+           grid track: with only the left margin left on `auto`, it absorbs all
+           the slack and the column slides right, hard against the ring column.
+           The padding above is untouched — this moves the box, not its
+           gutters. */
+        margin-right: 0;
+        margin-left: auto;
+    }
+
+    /* Homepage hero: the portrait + now-playing column reads 40% larger than
+       the rest of the scaled-down content column. `zoom` scales the whole
+       block — image, controls and track text together — while still reserving
+       layout space, so the hero text beside it never overlaps. */
+    body.home .content-section .hero-portrait-col {
+        zoom: 1.4;
+    }
+
+    /* And the player takes a further 20% on top of that, so the transport
+       controls and track text read larger than the portrait above them. */
+    body.home .content-section .now-playing {
+        zoom: 1.2;
+    }
+}
+
+/* Below the ring: one plain centred column, sized in the units it is written
+   in. Everything here is the size it actually renders at. */
+@media (max-width: 1079px) {
+    body.home .main-content {
+        max-width: 686px;
+        padding: 72px 40px calc(100px + env(safe-area-inset-bottom, 0px)) 40px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    /* The column's own top padding already clears the floating nav, so the
+       hero does not need the deep margin it takes beside the ring. */
+    body.home .hero-layout {
+        margin-top: 0;
+        gap: 28px;
+    }
+
+    /* Section rhythm, un-shrunk: these were authored to be seen at 70%. */
+    body.home .writing-section {
+        margin-top: 56px;
+    }
+
+    /* Type for the whole no-ring range, in px and vw rather than rem.
+       `html` sets 130% above 768px and 91% below it, so a rem-based clamp
+       jumps a third of its size across that breakpoint; a vw-based one runs
+       smoothly from 320px to the caps here. The caps are the sizes the
+       desktop column actually shows once its 0.7 zoom is applied, so nothing
+       reads larger on a tablet than it does on a monitor. */
+
+    body.home .hero-name {
+        font-size: clamp(26px, 7vw, 35px);
+        margin-bottom: 14px;
+    }
+
+    body.home .content-section p.hero-intro,
+    body.home .hero-intro {
+        font-size: clamp(19px, 5.2vw, 23px);
+        margin-bottom: 26px;
+    }
+
+    body.home .hero-social {
+        gap: 20px;
+    }
+
+    body.home .social-icon {
+        width: 30px;
+        height: 30px;
+    }
+
+    body.home .np-track {
+        font-size: 14px;
+    }
+
+    body.home .writing-heading,
+    body.home .projects-rail__heading {
+        font-size: clamp(13px, 3.4vw, 15.5px);
+    }
+
+    body.home .writing-post-link {
+        font-size: clamp(17px, 4.6vw, 20px);
+        line-height: 1.35;
+        padding: 5px 12px;
+    }
+
+    .prail__name {
+        font-size: 16px;
+    }
+
+    .prail__desc {
+        font-size: 13.5px;
+    }
 }
 
 /* Content sections for demonstration */
@@ -1654,8 +1749,8 @@ mark {
     }
 
     .hero-portrait {
-        width: 80px;
-        height: 80px;
+        width: 76px;
+        height: 76px;
     }
 
     .hero-portrait-col {
@@ -1684,8 +1779,8 @@ mark {
     }
 
     .np-btn {
-        width: 20px;
-        height: 20px;
+        width: 22px;
+        height: 22px;
     }
 
     .np-btn svg {
@@ -1699,30 +1794,10 @@ mark {
         max-width: 100%;
     }
 
-    .hero-name {
-        font-size: clamp(1.44rem, 5.76vw + 0.48rem, 1.92rem);
-        margin-bottom: 15px;
-        margin-top: 0;
+    body.home .np-track {
+        font-size: 13px;
     }
 
-    .content-section p.hero-intro,
-    .hero-intro {
-        font-size: 19.5px;
-        margin-bottom: 20px;
-    }
-
-    .hero-social {
-        /* 16px base, opened up a further 10% so the larger icons keep their
-           breathing room. */
-        gap: calc(16px * 1.1);
-    }
-
-    .social-icon {
-        /* 22px mobile base, scaled up 40% to match the desktop bump, then a
-           further 20% for legibility on a phone. */
-        width: calc(22px * 1.4 * 1.2);
-        height: calc(22px * 1.4 * 1.2);
-    }
 }
 
 /* Writing Section (homepage) */
@@ -1733,10 +1808,12 @@ mark {
     margin-bottom: 60px;
 }
 
-.writing-heading {
+.writing-heading,
+.projects-rail__heading {
     font-size: clamp(0.9rem, 1.5vw + 0.5rem, 1.05rem);
     font-weight: 600;
     margin-bottom: 12px;
+    color: var(--text);
 }
 
 .writing-heading-link {
@@ -1839,77 +1916,141 @@ body::-webkit-scrollbar,
     display: none;
 }
 
-/* Homepage mobile: the column already fills the viewport, so only the gutters
-   need pre-dividing to land on the shared 20px. The extra bottom padding keeps
-   the last row clear of the floating nav and the home-indicator inset. */
+/* Homepage on a phone: narrower gutters, and enough room under the last row
+   for the floating nav and the home-indicator inset. */
 @media (max-width: 768px) {
     body.home .main-content {
-        padding: calc(50px / 0.7) calc(20px / 0.7) calc(100px / 0.7) calc(20px / 0.7);
-        padding-bottom: calc((100px + env(safe-area-inset-bottom, 0px)) / 0.7);
-        /* Same proportional left gutter as desktop, off the mobile 20px base. */
-        padding-left: calc(45px / 0.7);
+        padding: 72px 20px calc(100px + env(safe-area-inset-bottom, 0px)) 20px;
     }
 }
 
-/* ── Homepage mobile type ────────────────────────────────────────────────
-   The column's 0.7 zoom applies to text as well as layout, which left the
-   homepage reading at ~12px on a phone while the Writing page set the same
-   kind of list title at 1.26rem (.bk-item-title). Pre-divide the type by the
-   zoom factor so it renders at full size: the post and project titles land on
-   the Writing page's 1.26rem exactly, and the rest of the type is un-shrunk to
-   the size it is authored at. The portrait, player and social icons are left
-   alone — they keep the scale they were tuned to. */
+/* ── Homepage project rail ────────────────────────────────────────────────
+   What the ring becomes when there is no room for a ring. Below 1080px the
+   same projects lie in a horizontal track you swipe, one screenshot at a time,
+   so a phone and a small window get the work the ring carries on a desktop.
+
+   Native scroll snapping does the whole job: with scripting off the track
+   still scrolls and still snaps, and only the dots underneath go missing.
+   Both blocks are written from data/projects.json by scripts/build_site.py,
+   so the ring and the rail cannot drift apart. */
+
+.projects-rail {
+    display: none;
+}
+
+@media (max-width: 1079px) {
+    .projects-rail {
+        display: block;
+        /* Collapses with .content-section's bottom margin above it. */
+        margin-top: 56px;
+    }
+
+    .projects-rail__track {
+        display: flex;
+        gap: 14px;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        /* Keep a horizontal flick from turning into a page-back gesture. */
+        overscroll-behavior-x: contain;
+        /* Bleed the track out to the screen edges and pad it back, so a card
+           can sit half off the edge. That sliver of the next screenshot is
+           what says there is more; a track stopping at the gutter does not. */
+        margin-inline: calc(var(--rail-gutter) * -1);
+        padding-inline: var(--rail-gutter);
+        scroll-padding-inline: var(--rail-gutter);
+        /* Room for the shadow under a pressed card. */
+        padding-bottom: 4px;
+        --rail-gutter: 40px;
+    }
+
+    .prail {
+        flex: 0 0 auto;
+        width: min(78%, 300px);
+        scroll-snap-align: start;
+    }
+
+    .prail__shot {
+        display: block;
+        width: 100%;
+        /* The height attribute on the img is a presentational hint that would
+           outrank this ratio, so height is released. */
+        height: auto;
+        aspect-ratio: 16 / 10;
+        object-fit: cover;
+        object-position: top center;
+        border-radius: 12px;
+        background-color: var(--bg-soft);
+        border: 1px solid var(--hairline);
+        transition: transform 0.25s ease;
+    }
+
+    .prail:active .prail__shot {
+        transform: scale(0.985);
+    }
+
+    .prail:focus-visible {
+        outline: none;
+    }
+
+    .prail:focus-visible .prail__shot {
+        outline: 2px solid var(--text-strong);
+        outline-offset: 3px;
+    }
+
+    .prail__name {
+        display: block;
+        margin-top: 11px;
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-strong);
+    }
+
+    .prail__desc {
+        display: block;
+        font-size: 0.83rem;
+        line-height: 1.45;
+        color: var(--text-muted);
+    }
+
+    /* Written by javascript/project-rail.js, so they only ever appear when
+       there is something to keep them in step with the track. */
+    .projects-rail__dots {
+        display: flex;
+        gap: 6px;
+        margin-top: 16px;
+    }
+
+    .projects-rail__dots i {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background-color: var(--tint-stronger);
+        transition: background-color 0.2s ease, width 0.2s ease;
+    }
+
+    .projects-rail__dots i.is-current {
+        width: 14px;
+        border-radius: 3px;
+        background-color: var(--text-strong);
+    }
+}
+
 @media (max-width: 768px) {
-    /* Same rendered size as .bk-item-title on the Writing page. */
-    body.home .writing-post-link {
-
-        font-size: calc(1.26rem / 0.7);
-        line-height: 1.35;
-    }
-
-    body.home .hero-name {
-        font-size: calc(clamp(1.44rem, 5.76vw + 0.48rem, 1.92rem) / 0.7);
-    }
-
-    body.home .content-section p.hero-intro {
-        font-size: calc(19.5px / 0.7);
-        /* Gap down to the social icons: the authored 20px, opened up 20%
-           twice over, and pre-divided by the column zoom so it actually
-           renders at 28.8px. */
-        margin-bottom: calc(20px * 1.2 * 1.2 / 0.7);
-    }
-
-    /* Section labels stay proportionally smaller than the titles below them. */
-    body.home .writing-heading {
-        font-size: calc(clamp(0.9rem, 1.5vw + 0.5rem, 1.05rem) / 0.7);
-        margin-bottom: calc(12px / 0.7);
-    }
-
-    /* Un-shrink the spacing that sets the rhythm around the larger type, so
-       the rows do not close up. Section margins are deliberately left scaled. */
-    body.home .writing-list {
-        gap: calc(4px / 0.7);
-    }
-
-    body.home .writing-post-link {
-        padding: calc(2px / 0.7) calc(12px / 0.7);
-        margin-left: calc(-12px / 0.7);
+    .projects-rail__track {
+        --rail-gutter: 20px;
     }
 }
 
-/* Homepage hero: the portrait + now-playing column reads 40% larger than the
-   rest of the scaled-down content column. `zoom` scales the whole block —
-   image, controls and track text together — while still reserving layout
-   space, so the hero text beside it never overlaps. */
-body.home .content-section .hero-portrait-col {
-    zoom: 1.4;
-}
+@media (prefers-reduced-motion: reduce) {
+    .projects-rail__track {
+        scroll-behavior: auto;
+    }
 
-/* Homepage hero: the now-playing player takes a further 20% on top of the
-   column's zoom, so the transport controls and track text read larger than
-   the portrait above them. */
-body.home .content-section .now-playing {
-    zoom: 1.2;
+    .prail__shot,
+    .projects-rail__dots i {
+        transition-duration: 0.01ms;
+    }
 }
 
 /* ── Homepage project ring ────────────────────────────────────────────────

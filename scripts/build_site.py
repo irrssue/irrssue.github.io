@@ -182,6 +182,36 @@ def render_project_cards() -> str:
     return "\n".join(card(p, i) for i, p in enumerate(projects))
 
 
+def render_project_rail() -> str:
+    """The same projects as a swipe track, for windows too narrow for the ring.
+
+    Written from the same file as the ring so the two cannot drift apart. The
+    images are the ring's images, so a browser that has already fetched one
+    block serves the other from cache.
+    """
+    projects = [
+        p
+        for p in json.loads((DATA_DIR / "projects.json").read_text(encoding="utf-8"))
+        if p.get("image")
+    ]
+
+    def slide(p: dict) -> str:
+        alt = p["name"]
+        if p.get("description"):
+            alt += f' — {p["description"]}'
+        return (
+            f'<a class="prail" href="{e(p["url"])}" target="_blank" '
+            f'rel="noopener noreferrer">'
+            f'<img class="prail__shot" src="{e(p["image"])}" alt="{e(alt)}" '
+            f'width="1000" height="625" loading="lazy" decoding="async">'
+            f'<b class="prail__name">{e(p["name"])}</b>'
+            f'<span class="prail__desc">{e(p.get("description", ""))}</span>'
+            f"</a>"
+        )
+
+    return "\n".join(slide(p) for p in projects)
+
+
 def render_header(heading: str, sub: str) -> str:
     """The shared bk-header: title and blurb."""
     return f'<div class="bk-heading">{e(heading)}</div><div class="bk-sub">{e(sub)}</div>'
@@ -283,6 +313,7 @@ def main() -> None:
 
     inject(ROOT / "index.html", "recent-posts", render_home_list(posts))
     inject(ROOT / "index.html", "project-cards", render_project_cards())
+    inject(ROOT / "index.html", "project-rail", render_project_rail())
 
     # The writing list is titles only — no excerpt lines under the post title.
     entries = [dict(p, desc="") for p in posts]
