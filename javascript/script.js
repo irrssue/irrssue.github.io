@@ -28,6 +28,10 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     function setOpen(open) {
+        // The theme chip flies between two parking spots on every toggle.
+        // Marking the first one keeps its opening move from playing itself
+        // out on a page that has only just loaded.
+        nav.classList.add('has-toggled');
         nav.classList.toggle('is-open', open);
         toggle.setAttribute('aria-expanded', String(open));
         toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');

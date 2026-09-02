@@ -11,7 +11,9 @@
 <link rel="stylesheet" href="/css/styles.css">
 <link rel="stylesheet" href="/css/fonts-gems.css">
 <style>
-  :root{
+  /* The gallery is its own warm-dark room and stays that way in either
+     site theme, so this palette has to outrank :root[data-theme=...]. */
+  :root, :root[data-theme]{
     --bg:#000000;
     --bg2:#100e0c;
     --fg:#f3efe8;
@@ -332,6 +334,8 @@
     .gem-detail-map{ height:6rem; }
   }
 </style>
+    <!-- Applies the saved theme before the first paint -->
+    <script src="/javascript/theme.js"></script>
 </head>
 <body>
 

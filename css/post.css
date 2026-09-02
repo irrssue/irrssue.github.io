@@ -29,7 +29,7 @@
     letter-spacing: -0.01em;
     overflow-wrap: break-word;
     word-break: break-word;
-    color: #e2e2e1;
+    color: var(--post-title);
 }
 
 .post-meta {
@@ -37,19 +37,19 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1.75rem;
-    color: #585857;
+    color: var(--post-meta);
     font-size: 11px;
 }
 
 .post-date {
     font-family: 'JetBrains Mono', monospace;
     font-size: 11px;
-    color: #585857;
+    color: var(--post-meta);
     cursor: default;
-    border-bottom: 1px dotted #8a8a89;
+    border-bottom: 1px dotted var(--post-rule);
     text-decoration: none;
     position: relative;
-    border-bottom-color: #666;
+    border-bottom-color: var(--post-rule);
 }
 
 .post-date::after {
@@ -66,8 +66,8 @@
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.15s ease;
-    background: #f5f5f5;
-    color: #333;
+    background: var(--tooltip-bg);
+    color: var(--tooltip-ink);
 }
 
 .post-date::before {
@@ -81,7 +81,7 @@
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.15s ease;
-    border-top-color: #f5f5f5;
+    border-top-color: var(--tooltip-bg);
 }
 
 .post-date:hover::after,
@@ -96,13 +96,13 @@
     font-weight: 400;
     overflow-wrap: break-word;
     word-break: break-word;
-    color: #d4d4d3;
+    color: var(--post-body);
 }
 
 .post-content h1 {
     margin-top: 2.25rem;
     margin-bottom: 0.625rem;
-    color: #1a1a1a;
+    color: var(--post-title);
     font-family: 'Inter', -apple-system, sans-serif;
     font-size: 16px;
     font-weight: 600;
@@ -113,7 +113,7 @@
 .post-content h2 {
     margin-top: 2.25rem;
     margin-bottom: 0.625rem;
-    color: #1a1a1a;
+    color: var(--post-title);
     font-family: 'Inter', -apple-system, sans-serif;
     font-size: 16px;
     font-weight: 600;
@@ -124,7 +124,7 @@
 .post-content h3 {
     margin-top: 1.5rem;
     margin-bottom: 0.5rem;
-    color: #1a1a1a;
+    color: var(--post-title);
     font-family: 'Inter', -apple-system, sans-serif;
     font-size: 14px;
     font-weight: 600;
@@ -151,28 +151,28 @@
     text-decoration: underline;
     text-underline-offset: 2px;
     transition: text-decoration-color 0.15s;
-    text-decoration-color: #262624;
-    color: rgb(163, 163, 163);
+    text-decoration-color: var(--post-rule-soft);
+    color: var(--text);
 }
 
 .post-content a:hover {
-    text-decoration-color: #8a8a89;
+    text-decoration-color: var(--post-rule);
 }
 
 .post-content strong {
     font-weight: 600;
-    color: #e2e2e1;
+    color: var(--post-title);
 }
 
 .post-content code {
-    border: 1px solid #e6e6e3;
+    border: 1px solid var(--code-border);
     padding: 1px 5px;
     border-radius: 4px;
     font-family: 'JetBrains Mono', monospace;
     font-size: 12px;
-    background: #141414;
-    border-color: #1e1e1c;
-    color: #b8b8b7;
+    background: var(--code-bg);
+    border-color: var(--code-border);
+    color: var(--code-ink);
 }
 
 .post-content pre {
@@ -180,22 +180,22 @@
     border-radius: 6px;
     overflow-x: auto;
     margin-bottom: 1.25rem;
-    background: #2a2a2a;
+    background: var(--pre-bg);
 }
 
 .post-content pre code {
     background: none;
     padding: 0;
-    color: rgb(163, 163, 163);
+    color: var(--text);
 }
 
 .post-content blockquote {
-    border-left: 3px solid #e5e5e5;
+    border-left: 3px solid var(--border);
     padding-left: 1rem;
     margin: 1.5rem 0;
     font-style: italic;
-    border-left-color: #404040;
-    color: rgb(163, 163, 163);
+    border-left-color: var(--border);
+    color: var(--text);
 }
 
 .post-content img {
@@ -207,16 +207,16 @@
 
 .post-content hr {
     border: none;
-    border-top: 1px solid #e5e5e5;
+    border-top: 1px solid var(--border);
     margin: 2rem 0;
-    border-top-color: #404040;
+    border-top-color: var(--border);
 }
 
 .back-link {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    color: rgb(115, 115, 115);
+    color: var(--text-muted);
     text-decoration: none;
     margin-bottom: 2rem;
     transition: color 0.2s;
@@ -230,7 +230,7 @@
 .loading {
     text-align: center;
     padding: 3rem;
-    color: rgb(115, 115, 115);
+    color: var(--text-muted);
 }
 
 .error {
@@ -239,16 +239,16 @@
 }
 
 .error h2 {
-    color: #d32f2f;
+    color: var(--danger);
     margin-bottom: 1rem;
 }
 
 .error p {
-    color: rgb(115, 115, 115);
+    color: var(--text-muted);
 }
 
 .post-date, .post-content h1, .post-content h2, .post-content h3 {
-    color: #e2e2e1;
+    color: var(--post-title);
 }
 
 /* Search highlight styles */
@@ -256,8 +256,8 @@
     padding: 2px 4px;
     border-radius: 3px;
     font-weight: 500;
-    background-color: rgba(255, 193, 7, 0.6);
-    color: #fff;
+    background-color: var(--mark-bg-strong);
+    color: var(--mark-ink);
     animation: highlight-fade-out-dark 3s ease-in-out forwards;
 }
 

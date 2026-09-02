@@ -1,8 +1,162 @@
+/* ------------------------------------------------------------------
+   Design tokens
+
+   Every colour on the site resolves to one of these, so the two themes
+   are two lists of values rather than two stylesheets. Dark is the
+   default; `data-theme="light"` on <html> swaps the list. The attribute
+   is stamped by javascript/theme.js before the first paint, so the page
+   never flashes the palette it is about to drop.
+   ------------------------------------------------------------------ */
 :root {
-    --main-text-color: rgb(163, 163, 163);
+    color-scheme: dark;
+
+    /* Page and surfaces */
+    --bg: #000000;
+    --bg-soft: #0b0b0b;
+    --surface: #1a1a1a;
+    --surface-raised: #2a2a2a;
+    --surface-glass: rgba(40, 40, 40, 0.95);
+    --scrim: rgba(0, 0, 0, 0.85);
+    --border: #404040;
+    --border-soft: #333333;
+    --hairline: rgba(255, 255, 255, 0.08);
+
+    /* Type */
+    --text: rgb(163, 163, 163);
+    --text-muted: rgb(115, 115, 115);
+    --text-bright: rgb(200, 200, 200);
+    --text-strong: #ffffff;
+    --text-title: rgb(250, 250, 250);
+    --main-text-color: var(--text);
+
+    /* Washes laid over the page background: hovers, chips, pressed states */
+    --tint-weak: rgba(255, 255, 255, 0.05);
+    --tint: rgba(255, 255, 255, 0.09);
+    --tint-strong: rgba(255, 255, 255, 0.15);
+    --tint-stronger: rgba(255, 255, 255, 0.2);
+
+    /* Bits with one fixed job */
+    --selection-bg: #ffffff;
+    --selection-ink: #000000;
+    --tooltip-bg: #f0efec;
+    --tooltip-ink: #1a1a19;
+    --mark-bg: rgba(255, 193, 7, 0.4);
+    --mark-bg-strong: rgba(255, 193, 7, 0.6);
+    --mark-ink: #ffffff;
+    --danger: #d32f2f;
+
+    /* Floating nav chrome: the pill, the menu card and the theme chip */
+    --nav-surface: rgba(28, 28, 30, 0.92);
+    --nav-surface-open: rgba(24, 24, 26, 0.96);
+    --nav-edge: rgba(255, 255, 255, 0.12);
+    --nav-rule: rgba(255, 255, 255, 0.1);
+    --nav-sheen: rgba(255, 255, 255, 0.1);
+    --nav-hover: rgba(255, 255, 255, 0.06);
+    --nav-focus: rgba(255, 255, 255, 0.5);
+    --nav-ink: rgba(255, 255, 255, 0.92);
+    --nav-ink-dim: rgba(255, 255, 255, 0.62);
+    --nav-ink-faint: rgba(255, 255, 255, 0.38);
+    --nav-ink-strong: #ffffff;
+    --nav-shadow: 0 6px 24px rgba(0, 0, 0, 0.35), 0 2px 6px rgba(0, 0, 0, 0.25);
+
+    /* Depth on the project ring and the hover preview */
+    --card-shadow: 0 18px 50px -16px rgba(0, 0, 0, 0.9);
+    --card-shadow-active: 0 32px 80px -16px rgba(0, 0, 0, 1);
+    --preview-shadow: 0 4px 24px rgba(0, 0, 0, 0.5), 0 1px 4px rgba(0, 0, 0, 0.3);
+    /* Ring cards fade into the page rather than off a hard window edge */
+    --edge-fade: linear-gradient(to right, rgba(0, 0, 0, 0), #000000);
+
+    /* Post pages */
+    --post-title: #e2e2e1;
+    --post-body: #d4d4d3;
+    --post-meta: #585857;
+    --post-rule: #8a8a89;
+    --post-rule-soft: #262624;
+    --code-bg: #141414;
+    --code-border: #1e1e1c;
+    --code-ink: #b8b8b7;
+    --pre-bg: #2a2a2a;
+
+    /* First-visit intro curtain */
     --intro-canvas: #f7f6f4;
     --intro-ink: #4a4a4a;
     --intro-ease: cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+:root[data-theme="light"] {
+    color-scheme: light;
+
+    --bg: #faf9f7;
+    --bg-soft: #f0eeea;
+    --surface: #ffffff;
+    --surface-raised: #f2f1ee;
+    --surface-glass: rgba(255, 255, 255, 0.95);
+    --scrim: rgba(28, 27, 25, 0.6);
+    --border: #d9d6d0;
+    --border-soft: #e4e1db;
+    --hairline: rgba(24, 23, 21, 0.1);
+
+    --text: rgb(92, 90, 86);
+    --text-muted: rgb(134, 131, 126);
+    --text-bright: rgb(58, 56, 53);
+    --text-strong: #171614;
+    --text-title: #100f0e;
+
+    --tint-weak: rgba(24, 23, 21, 0.045);
+    --tint: rgba(24, 23, 21, 0.07);
+    --tint-strong: rgba(24, 23, 21, 0.1);
+    --tint-stronger: rgba(24, 23, 21, 0.16);
+
+    --selection-bg: #171614;
+    --selection-ink: #faf9f7;
+    --tooltip-bg: #26241f;
+    --tooltip-ink: #f4f2ee;
+    --mark-bg: rgba(255, 193, 7, 0.45);
+    --mark-bg-strong: rgba(255, 193, 7, 0.75);
+    --mark-ink: #171614;
+
+    --nav-surface: rgba(255, 255, 255, 0.86);
+    --nav-surface-open: rgba(255, 255, 255, 0.94);
+    --nav-edge: rgba(24, 23, 21, 0.12);
+    --nav-rule: rgba(24, 23, 21, 0.1);
+    --nav-sheen: rgba(255, 255, 255, 0.9);
+    --nav-hover: rgba(24, 23, 21, 0.05);
+    --nav-focus: rgba(24, 23, 21, 0.45);
+    --nav-ink: rgba(23, 22, 20, 0.92);
+    --nav-ink-dim: rgba(23, 22, 20, 0.6);
+    --nav-ink-faint: rgba(23, 22, 20, 0.42);
+    --nav-ink-strong: #100f0e;
+    --nav-shadow: 0 6px 24px rgba(28, 27, 25, 0.12), 0 2px 6px rgba(28, 27, 25, 0.08);
+
+    --card-shadow: 0 18px 50px -18px rgba(28, 27, 25, 0.4);
+    --card-shadow-active: 0 32px 80px -20px rgba(28, 27, 25, 0.45);
+    --preview-shadow: 0 4px 24px rgba(28, 27, 25, 0.18), 0 1px 4px rgba(28, 27, 25, 0.1);
+    --edge-fade: linear-gradient(to right, rgba(250, 249, 247, 0), #faf9f7);
+
+    --post-title: #1b1a18;
+    --post-body: #3b3934;
+    --post-meta: #8b877f;
+    --post-rule: #b6b2a9;
+    --post-rule-soft: #d9d6d0;
+    --code-bg: #f2f1ec;
+    --code-border: #e2e0d9;
+    --code-ink: #3b3934;
+    --pre-bg: #f2f1ec;
+
+    /* The curtain still has to read against the page it uncovers, so on
+       light it drops to ink instead of paper. */
+    --intro-canvas: #17171a;
+    --intro-ink: #f2f1ee;
+}
+
+/* A brief cross-fade while the palette swaps, so the flip reads as one
+   move instead of a hard cut. theme.js adds the class for the length of
+   the fade only, so it never sits on top of the page's own transitions. */
+:root.is-theme-switching *,
+:root.is-theme-switching *::before,
+:root.is-theme-switching *::after {
+    transition: background-color 0.32s ease, border-color 0.32s ease,
+        color 0.32s ease, box-shadow 0.32s ease, fill 0.32s ease;
 }
 
 /* Reference-style words preloader: a quiet white canvas, compact greetings, then a rising curved canvas reveal. */
@@ -173,8 +327,8 @@ body {
     text-rendering: optimizeLegibility;
     line-height: 1.6;
     font-size: clamp(0.875rem, 1.5vw + 0.5rem, 1rem);
-    background-color: #000000;
-    color: rgb(163, 163, 163);
+    background-color: var(--bg);
+    color: var(--text);
 }
 
 .grid-container {
@@ -186,18 +340,18 @@ body {
 
 /* Text Selection */
 ::selection {
-    background-color: #ffffff;
-    color: #000000;
+    background-color: var(--selection-bg);
+    color: var(--selection-ink);
 }
 
 ::-moz-selection {
-    background-color: #ffffff;
-    color: #000000;
+    background-color: var(--selection-bg);
+    color: var(--selection-ink);
 }
 
 a {
     text-decoration: none;
-    color: rgb(115, 115, 115);
+    color: var(--text-muted);
 }
 
 /* Main Grid Container */
@@ -205,8 +359,8 @@ a {
 /* Navbar - Grid column 1, centered */
 .navbar {
     display: none;
-    background-color: #2a2a2a;
-    border-color: #404040;
+    background-color: var(--surface-raised);
+    border-color: var(--border);
 }
 
 .navbar-header {
@@ -221,7 +375,7 @@ a {
 
 .navbar-title {
     display: none;
-    color: rgb(163, 163, 163);
+    color: var(--text);
 }
 
 .search-icon-btn {
@@ -237,13 +391,13 @@ a {
 }
 
 .search-icon-btn:hover {
-    background-color: rgba(255, 255, 255, 0.05);
+    background-color: var(--tint-weak);
 }
 
 .search-icon {
     width: 20px;
     height: 20px;
-    color: rgb(163, 163, 163);
+    color: var(--text);
 }
 
 .search-box {
@@ -259,8 +413,8 @@ a {
     min-width: 300px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
     z-index: 2000;
-    background-color: #1a1a1a;
-    border-color: #404040;
+    background-color: var(--surface);
+    border-color: var(--border);
 }
 
 .search-box.active {
@@ -275,11 +429,11 @@ a {
     padding: 4px 4px;
     background: transparent;
     min-width: 0;
-    color: rgb(163, 163, 163);
+    color: var(--text);
 }
 
 .search-input::placeholder {
-    color: #666;
+    color: var(--text-muted);
 }
 
 .search-close-btn {
@@ -296,13 +450,13 @@ a {
 }
 
 .search-close-btn:hover {
-    background-color: rgba(255, 255, 255, 0.05);
+    background-color: var(--tint-weak);
 }
 
 .search-close-btn svg {
     width: 18px;
     height: 18px;
-    color: rgb(163, 163, 163);
+    color: var(--text);
 }
 
 .navbar-section {
@@ -319,7 +473,7 @@ a {
 
 .section-title {
     display: none;
-    color: rgb(163, 163, 163);
+    color: var(--text);
 }
 
 .navbar ul {
@@ -349,7 +503,7 @@ a {
     font-size: 0;
     transition: all 0.3s ease;
     border-radius: 10px;
-    color: rgb(163, 163, 163);
+    color: var(--text);
 }
 
 .navbar a .icon {
@@ -360,13 +514,13 @@ a {
 }
 
 .navbar a:hover {
-    background-color: rgba(255, 255, 255, 0.09);
+    background-color: var(--tint);
     border-radius: 10px;
-    color: rgb(163, 163, 163);
+    color: var(--text);
 }
 
 .navbar a.active {
-    background-color: rgba(255, 255, 255, 0.09);
+    background-color: var(--tint);
     border-radius: 10px;
 }
 
@@ -419,7 +573,7 @@ body.home .main-content {
 /* Content sections for demonstration */
 .content-section {
     margin-bottom: 60px;
-    color: rgb(115, 115, 115);
+    color: var(--text-muted);
     text-decoration: none;
 }
 
@@ -467,8 +621,8 @@ body.home .main-content {
     padding: 4px 9px 4px 9px;
     border-radius: 999px;
     border: 1px solid rgba(0, 0, 0, 0.1);
-    background: rgba(255, 255, 255, 0.07);
-    border-color: rgba(255, 255, 255, 0.12);
+    background: var(--tint);
+    border-color: var(--hairline);
 }
 
 .np-btn {
@@ -483,12 +637,12 @@ body.home .main-content {
     flex-shrink: 0;
     padding: 0;
     transition: background 0.15s ease;
-    background: rgba(255, 255, 255, 0.12);
-    color: #fff;
+    background: var(--tint-strong);
+    color: var(--text-strong);
 }
 
 .np-btn:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: var(--tint-stronger);
 }
 
 .np-btn svg {
@@ -501,7 +655,7 @@ body.home .main-content {
     width: 120px;
     text-align: center;
     line-height: 1.35;
-    color: #a3a3a3;
+    color: var(--text);
 }
 
 .np-track b {
@@ -510,7 +664,7 @@ body.home .main-content {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    color: #e5e5e5;
+    color: var(--text-bright);
 }
 
 #npArtist {
@@ -528,7 +682,7 @@ body.home .main-content {
 .hero-name {
     font-size: clamp(1.68rem, 3.84vw + 0.96rem, 2.4rem);
     font-weight: 600;
-    color: #ffffff;
+    color: var(--text-strong);
     margin-bottom: 15px;
     margin-top: 0;
     line-height: 1.2;
@@ -555,7 +709,7 @@ body.home .main-content {
     margin-bottom: 30px;
     margin-top: 0;
     max-width: 900px;
-    color: #ffffff;
+    color: var(--text-strong);
 }
 
 .hero-intro a.underline-sketch {
@@ -577,12 +731,12 @@ body.home .main-content {
     display: flex;
     align-items: center;
     justify-content: center;
-    color: rgb(163, 163, 163);
+    color: var(--text);
 }
 
 .social-icon:hover {
     transform: translateY(-2px);
-    color: rgb(200, 200, 200);
+    color: var(--text-bright);
 }
 
 .social-icon svg {
@@ -602,7 +756,7 @@ body.home .main-content {
     line-height: 1.8;
     font-size: clamp(0.875rem, 1.5vw + 0.5rem, 1rem);
     font-weight: 500;
-    color: rgb(163, 163, 163);
+    color: var(--text);
 }
 
 .intro-line a {
@@ -613,7 +767,7 @@ body.home .main-content {
 }
 
 .intro-line a:hover {
-    background-color: rgba(255, 255, 255, 0.15);
+    background-color: var(--tint-strong);
 }
 
 .mail-icon {
@@ -621,7 +775,7 @@ body.home .main-content {
     height: 20px;
     vertical-align: middle;
     display: inline-block;
-    color: rgb(163, 163, 163);
+    color: var(--text);
 }
 
 .mail-icon-link {
@@ -634,7 +788,7 @@ body.home .main-content {
     bottom: 100%;
     left: 50%;
     transform: translateX(-50%);
-    color: #fff;
+    color: var(--tooltip-ink);
     padding: 6px 12px;
     border-radius: 6px;
     font-size: 0.85rem;
@@ -643,7 +797,7 @@ body.home .main-content {
     pointer-events: none;
     transition: opacity 0.2s ease;
     margin-bottom: 8px;
-    background-color: #555;
+    background-color: var(--tooltip-bg);
 }
 
 .mail-tooltip::after {
@@ -653,7 +807,7 @@ body.home .main-content {
     left: 50%;
     transform: translateX(-50%);
     border: 5px solid transparent;
-    border-top-color: #555;
+    border-top-color: var(--tooltip-bg);
 }
 
 .mail-icon-link:hover .mail-tooltip {
@@ -662,7 +816,7 @@ body.home .main-content {
 
 .content-section h2 {
     font-size: clamp(1.25rem, 2vw + 0.75rem, 2rem);
-    color: rgb(163, 163, 163);
+    color: var(--text);
     margin-bottom: 15px;
     font-weight: 500;
 }
@@ -671,7 +825,7 @@ body.home .main-content {
     font-size: clamp(0.9rem, 1.5vw + 0.5rem, 1.1rem);
     line-height: 1.6;
     margin-bottom: 15px;
-    color: rgb(163, 163, 163);
+    color: var(--text);
 }
 
 /* Grid for project cards or content blocks */
@@ -685,10 +839,10 @@ body.home .main-content {
 .content-card {
     padding: 30px;
     border-radius: 12px;
-    border: 1px solid #e5e5e5;
+    border: 1px solid var(--border);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    background-color: #2a2a2a;
-    border-color: #404040;
+    background-color: var(--surface-raised);
+    border-color: var(--border);
 }
 
 .content-card:hover {
@@ -700,12 +854,12 @@ body.home .main-content {
     margin-bottom: 15px;
     font-size: clamp(1rem, 1.5vw + 0.5rem, 1.3rem);
     font-weight: 500;
-    color: rgb(163, 163, 163);
+    color: var(--text);
 }
 
 .content-card p {
     font-size: clamp(0.875rem, 1.5vw + 0.5rem, 1rem);
-    color: rgb(163, 163, 163);
+    color: var(--text);
 }
 
 .online-section {
@@ -718,7 +872,7 @@ body.home .main-content {
 
 .online-label {
     font-weight: 600;
-    color: rgb(115, 115, 115);
+    color: var(--text-muted);
     font-size: clamp(0.9rem, 1.5vw + 0.5rem, 1.1rem);
     letter-spacing: 1px;
     padding-top: 2px;
@@ -741,16 +895,16 @@ body.home .main-content {
     border-radius: 8px;
     transition: background-color 0.3s ease, color 0.3s ease;
     display: inline-block;
-    color: rgb(163, 163, 163);
+    color: var(--text);
 }
 
 .online-link-row a:hover {
-    background-color: rgba(255, 255, 255, 0.15);
+    background-color: var(--tint-strong);
 }
 
 .dotted-line {
     flex: 1 1 auto;
-    border-bottom: 1px dotted #888;
+    border-bottom: 1px dotted var(--border);
     height: 0;
     margin-left: 12px;
     margin-right: 0;
@@ -798,7 +952,7 @@ body.home .main-content {
     .navbar a:hover,
     .navbar a.active {
         border-left: none;
-        border-bottom-color: #333;
+        border-bottom-color: var(--border-soft);
     }
 
     .main-content {
@@ -835,12 +989,12 @@ body.home .main-content {
     font-size: clamp(1.25rem, 2vw + 0.75rem, 2rem);
     font-weight: 600;
     margin-bottom: 10px;
-    color: rgb(163, 163, 163);
+    color: var(--text);
 }
 
 .search-results-query {
     font-size: clamp(0.875rem, 1.5vw + 0.5rem, 1rem);
-    color: rgb(163, 163, 163);
+    color: var(--text);
 }
 
 .search-results-list {
@@ -861,7 +1015,7 @@ body.home .main-content {
 }
 
 .search-result-item:hover {
-    border-bottom-color: #333;
+    border-bottom-color: var(--border-soft);
 }
 
 .search-result-section {
@@ -869,7 +1023,7 @@ body.home .main-content {
     font-weight: 500;
     text-align: left;
     font-family: 'Courier New', 'Monaco', 'Menlo', 'Consolas', monospace;
-    color: rgb(163, 163, 163);
+    color: var(--text);
 }
 
 .search-result-content {
@@ -885,11 +1039,11 @@ body.home .main-content {
     border-radius: 8px;
     transition: background-color 0.3s ease;
     display: inline-block;
-    color: rgb(163, 163, 163);
+    color: var(--text);
 }
 
 .search-result-title:hover {
-    background-color: rgba(255, 255, 255, 0.15);
+    background-color: var(--tint-strong);
 }
 
 .search-result-context {
@@ -897,7 +1051,7 @@ body.home .main-content {
     line-height: 1.5;
     margin-bottom: 6px;
     margin-top: -4px;
-    color: rgb(163, 163, 163);
+    color: var(--text);
 }
 
 .highlight-match {
@@ -906,7 +1060,7 @@ body.home .main-content {
 }
 
 .highlight-match:hover mark {
-    background-color: rgba(255, 193, 7, 0.6);
+    background-color: var(--mark-bg-strong);
 }
 
 .search-result-meta {
@@ -920,20 +1074,20 @@ body.home .main-content {
 .search-result-date {
     font-size: clamp(0.7rem, 1vw + 0.3rem, 0.8rem);
     font-weight: 500;
-    color: rgb(163, 163, 163);
+    color: var(--text);
 }
 
 .search-result-tag {
     font-size: clamp(0.7rem, 1vw + 0.3rem, 0.8rem);
     font-weight: 500;
-    color: rgb(163, 163, 163);
+    color: var(--text);
 }
 
 .search-loading {
     text-align: center;
     padding: 60px 20px;
     font-size: clamp(0.9rem, 1.5vw + 0.5rem, 1.1rem);
-    color: rgb(163, 163, 163);
+    color: var(--text);
 }
 
 .search-no-results {
@@ -944,12 +1098,12 @@ body.home .main-content {
 .search-no-results p {
     font-size: clamp(0.9rem, 1.5vw + 0.5rem, 1.1rem);
     margin-bottom: 10px;
-    color: rgb(163, 163, 163);
+    color: var(--text);
 }
 
 .search-no-results-hint {
     font-size: clamp(0.8rem, 1.2vw + 0.4rem, 0.95rem) !important;
-    color: rgb(163, 163, 163) !important;
+    color: var(--text) !important;
 }
 
 /* Highlight matched terms */
@@ -958,8 +1112,8 @@ mark {
     border-radius: 3px;
     font-weight: 500;
     cursor: pointer;
-    background-color: rgba(255, 193, 7, 0.4);
-    color: #fff;
+    background-color: var(--mark-bg);
+    color: var(--mark-ink);
 }
 
 /* Mobile Search Overlay */
@@ -970,7 +1124,7 @@ mark {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.85);
+    background-color: var(--scrim);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     z-index: 10000;
@@ -995,7 +1149,7 @@ mark {
     border-radius: 15px;
     padding: 12px 16px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-    background-color: rgba(40, 40, 40, 0.95);
+    background-color: var(--surface-glass);
 }
 
 .mobile-search-input {
@@ -1004,11 +1158,11 @@ mark {
     outline: none;
     font-size: 17px;
     background: transparent;
-    color: rgb(163, 163, 163);
+    color: var(--text);
 }
 
 .mobile-search-input::placeholder {
-    color: rgba(163, 163, 163, 0.5);
+    color: var(--text-muted);
 }
 
 .mobile-search-close {
@@ -1024,13 +1178,13 @@ mark {
 }
 
 .mobile-search-close:active {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: var(--tint);
 }
 
 .mobile-search-close svg {
     width: 22px;
     height: 22px;
-    color: rgb(163, 163, 163);
+    color: var(--text);
 }
 
 /* ------------------------------------------------------------------
@@ -1056,29 +1210,44 @@ mark {
     font-size: 16px;
     /* Only the pill itself is clickable — the rest of the strip stays inert */
     pointer-events: none;
+
+    /* The pill's two widths, and the theme chip that has to aim at their
+       edges, are all measured from here so they can never drift apart. */
+    --nav-w-closed: 138px;
+    --nav-w-open: 300px;
+    --theme-size: 38px;
+    --theme-gap: 8px;
+    /* Shut, the pill and the chip beside it are one group; nudging the
+       pill half a chip to the left leaves the group centred on the page. */
+    --nav-offset: calc((var(--theme-gap) + var(--theme-size)) / 2);
+    --theme-x-closed: calc(var(--nav-w-closed) / 2 - var(--nav-offset) + var(--theme-gap));
+    --theme-x-open: calc(var(--nav-w-open) / 2 - var(--theme-size) - 10px);
+    /* Where the chip vanishes on the way between the two: the pill's middle. */
+    --theme-x-suck: calc(var(--theme-size) / -2);
 }
 
 .site-nav__surface {
     pointer-events: auto;
-    width: 138px;
-    background-color: rgba(28, 28, 30, 0.92);
+    width: var(--nav-w-closed);
+    background-color: var(--nav-surface);
     backdrop-filter: blur(20px) saturate(1.4);
     -webkit-backdrop-filter: blur(20px) saturate(1.4);
-    border: 0.5px solid rgba(255, 255, 255, 0.12);
+    border: 0.5px solid var(--nav-edge);
     border-radius: 22px;
-    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35),
-        0 2px 6px rgba(0, 0, 0, 0.25),
-        inset 0 0.5px 0 rgba(255, 255, 255, 0.1);
+    box-shadow: var(--nav-shadow), inset 0 0.5px 0 var(--nav-sheen);
     overflow: hidden;
+    transform: translateX(calc(-1 * var(--nav-offset)));
     transition: width 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+        transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),
         border-radius 0.4s ease,
         background-color 0.4s ease;
 }
 
 .site-nav.is-open .site-nav__surface {
-    width: 300px;
+    width: var(--nav-w-open);
+    transform: translateX(0);
     border-radius: 26px;
-    background-color: rgba(24, 24, 26, 0.96);
+    background-color: var(--nav-surface-open);
 }
 
 /* ── Toggle ─────────────────────────────────────── */
@@ -1093,7 +1262,7 @@ mark {
     background: none;
     border: none;
     cursor: pointer;
-    color: rgba(255, 255, 255, 0.92);
+    color: var(--nav-ink);
     font-family: inherit;
     font-size: 0.9em;
     font-weight: 500;
@@ -1102,11 +1271,11 @@ mark {
 }
 
 .site-nav__toggle:hover {
-    background-color: rgba(255, 255, 255, 0.06);
+    background-color: var(--nav-hover);
 }
 
 .site-nav__toggle:focus-visible {
-    outline: 2px solid rgba(255, 255, 255, 0.5);
+    outline: 2px solid var(--nav-focus);
     outline-offset: -3px;
 }
 
@@ -1217,7 +1386,7 @@ mark {
     font-weight: 500;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.38);
+    color: var(--nav-ink-faint);
 }
 
 .site-nav__list {
@@ -1245,25 +1414,25 @@ mark {
     font-weight: 600;
     letter-spacing: -0.025em;
     line-height: 1.35;
-    color: rgba(255, 255, 255, 0.62);
+    color: var(--nav-ink-dim);
     transition: color 0.2s ease, transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .site-nav__link:hover,
 .site-nav__link:focus-visible {
-    color: #ffffff;
+    color: var(--nav-ink-strong);
     transform: translateX(3px);
 }
 
 .site-nav__link.is-current {
-    color: #ffffff;
+    color: var(--nav-ink-strong);
 }
 
 .site-nav__rule {
     height: 0;
     margin: 14px 0;
     border: none;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 1px solid var(--nav-rule);
 }
 
 .site-nav__socials {
@@ -1275,13 +1444,170 @@ mark {
 
 .site-nav__socials a {
     font-size: 0.82em;
-    color: rgba(255, 255, 255, 0.62);
+    color: var(--nav-ink-dim);
     transition: color 0.2s ease;
 }
 
 .site-nav__socials a:hover,
 .site-nav__socials a:focus-visible {
-    color: #ffffff;
+    color: var(--nav-ink-strong);
+}
+
+
+/* ── Theme switch ───────────────────────────────
+   A round glass chip parked beside the pill while the menu is shut.
+   Opening the menu swallows it: it spirals into the middle of the pill,
+   goes out as the pill widens over the spot, and drops back out flush
+   inside the new right edge. Closing plays the same move backwards.
+
+   javascript/theme.js builds the button rather than every page carrying
+   it in markup — it does nothing without scripting, so with JS off there
+   is no dead control sitting in the nav.
+   ------------------------------------------------ */
+.site-nav__theme {
+    position: absolute;
+    top: 3px;
+    left: 50%;
+    display: grid;
+    place-items: center;
+    width: var(--theme-size);
+    height: var(--theme-size);
+    padding: 0;
+    border: 0.5px solid var(--nav-edge);
+    border-radius: 50%;
+    background-color: var(--nav-surface);
+    backdrop-filter: blur(20px) saturate(1.4);
+    -webkit-backdrop-filter: blur(20px) saturate(1.4);
+    box-shadow: var(--nav-shadow), inset 0 0.5px 0 var(--nav-sheen);
+    color: var(--nav-ink);
+    cursor: pointer;
+    pointer-events: auto;
+    transform: translateX(var(--theme-x-closed));
+    transition: background-color 0.4s ease, border-color 0.4s ease,
+        box-shadow 0.4s ease, color 0.25s ease;
+}
+
+/* Open, the chip is part of the card, so it drops its own shell and
+   behaves like the rest of the menu's rows. */
+.site-nav.is-open .site-nav__theme {
+    transform: translateX(var(--theme-x-open));
+    border-color: transparent;
+    background-color: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
+
+.site-nav__theme:hover {
+    color: var(--nav-ink-strong);
+}
+
+.site-nav.is-open .site-nav__theme:hover {
+    background-color: var(--nav-hover);
+}
+
+.site-nav__theme:focus-visible {
+    outline: 2px solid var(--nav-focus);
+    outline-offset: 2px;
+}
+
+/* Two names rather than one played in reverse: changing animation-name
+   is what makes the browser start the move again, and a finished
+   animation will not replay just because its direction flipped. */
+.site-nav.has-toggled .site-nav__theme {
+    animation: nav-theme-return 0.62s cubic-bezier(0.65, 0, 0.35, 1) both;
+}
+
+.site-nav.has-toggled.is-open .site-nav__theme {
+    animation-name: nav-theme-suck;
+}
+
+@keyframes nav-theme-suck {
+    0% {
+        transform: translateX(var(--theme-x-closed)) scale(1) rotate(0deg);
+        opacity: 1;
+        filter: blur(0);
+    }
+    38% {
+        transform: translateX(var(--theme-x-suck)) scale(0.04) rotate(-150deg);
+        opacity: 0;
+        filter: blur(2.5px);
+    }
+    56% {
+        transform: translateX(var(--theme-x-suck)) scale(0.04) rotate(-210deg);
+        opacity: 0;
+        filter: blur(2.5px);
+    }
+    100% {
+        transform: translateX(var(--theme-x-open)) scale(1) rotate(-360deg);
+        opacity: 1;
+        filter: blur(0);
+    }
+}
+
+@keyframes nav-theme-return {
+    0% {
+        transform: translateX(var(--theme-x-open)) scale(1) rotate(-360deg);
+        opacity: 1;
+        filter: blur(0);
+    }
+    38% {
+        transform: translateX(var(--theme-x-suck)) scale(0.04) rotate(-210deg);
+        opacity: 0;
+        filter: blur(2.5px);
+    }
+    56% {
+        transform: translateX(var(--theme-x-suck)) scale(0.04) rotate(-150deg);
+        opacity: 0;
+        filter: blur(2.5px);
+    }
+    100% {
+        transform: translateX(var(--theme-x-closed)) scale(1) rotate(0deg);
+        opacity: 1;
+        filter: blur(0);
+    }
+}
+
+/* Moon → sun without an icon swap: the disc carries a shifted inset
+   shadow that bites a crescent out of it, and the rays sit folded at
+   scale 0 until the light theme unfolds them. */
+.site-nav__theme-orb {
+    position: relative;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    box-shadow: inset 8px -8px 0 0 currentColor;
+    transform: rotate(-26deg) scale(1);
+    transition: box-shadow 0.45s ease, background-color 0.45s ease,
+        transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.site-nav__theme-orb::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    box-shadow:
+        0 -18px 0 -7px currentColor,
+        0 18px 0 -7px currentColor,
+        -18px 0 0 -7px currentColor,
+        18px 0 0 -7px currentColor,
+        -12.7px -12.7px 0 -7px currentColor,
+        12.7px -12.7px 0 -7px currentColor,
+        -12.7px 12.7px 0 -7px currentColor,
+        12.7px 12.7px 0 -7px currentColor;
+    transform: scale(0);
+    transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+:root[data-theme="light"] .site-nav__theme-orb {
+    background-color: currentColor;
+    box-shadow: inset 0 0 0 0 currentColor;
+    transform: rotate(0deg) scale(0.5);
+}
+
+:root[data-theme="light"] .site-nav__theme-orb::before {
+    transform: scale(1);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1291,9 +1617,17 @@ mark {
     .site-nav__list li,
     .site-nav__toggle-word,
     .site-nav__burger span,
-    .site-nav__link {
+    .site-nav__link,
+    .site-nav__theme,
+    .site-nav__theme-orb,
+    .site-nav__theme-orb::before {
         transition-duration: 0.01ms !important;
         transition-delay: 0s !important;
+    }
+
+    .site-nav.has-toggled .site-nav__theme,
+    .site-nav.has-toggled.is-open .site-nav__theme {
+        animation-duration: 0.01ms !important;
     }
 }
 
@@ -1309,10 +1643,7 @@ mark {
 
     .site-nav {
         top: calc(14px + env(safe-area-inset-top, 0px));
-    }
-
-    .site-nav.is-open .site-nav__surface {
-        width: min(320px, calc(100vw - 32px));
+        --nav-w-open: min(320px, calc(100vw - 32px));
     }
 
     /* Hero Section Mobile */
@@ -1414,7 +1745,7 @@ mark {
     align-items: center;
     gap: 4px;
     transition: opacity 0.2s ease;
-    color: rgb(163, 163, 163);
+    color: var(--text);
 }
 
 .writing-heading-link:hover {
@@ -1449,11 +1780,11 @@ mark {
     border-radius: 8px;
     margin-left: -12px;
     transition: background-color 0.2s ease;
-    color: rgb(250, 250, 250);
+    color: var(--text-title);
 }
 
 .writing-post-link:hover {
-    background-color: rgba(255, 255, 255, 0.05);
+    background-color: var(--tint-weak);
 }
 
 @media (max-width: 768px) {
@@ -1476,9 +1807,9 @@ mark {
     transform: translateY(8px);
     filter: blur(8.4px);
     transition: opacity 0.22s ease, transform 0.22s ease, filter 0.22s ease;
-    background: #1a1a1a;
-    border-color: rgba(255, 255, 255, 0.08);
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5), 0 1px 4px rgba(0, 0, 0, 0.3);
+    background: var(--surface);
+    border-color: var(--hairline);
+    box-shadow: var(--preview-shadow);
 }
 
 #link-preview.visible {
@@ -1660,8 +1991,8 @@ body.home .content-section .now-playing {
         display: block;
         overflow: hidden;
         border-radius: 12px;
-        background-color: #0b0b0b;
-        box-shadow: 0 18px 50px -16px rgba(0, 0, 0, 0.9);
+        background-color: var(--bg-soft);
+        box-shadow: var(--card-shadow);
         transition: transform 0.5s ease-out, filter 0.5s ease-out,
                     box-shadow 0.5s ease-out;
     }
@@ -1684,11 +2015,11 @@ body.home .content-section .now-playing {
     .project-ring .pcard.is-active .pcard__frame {
         filter: none;
         transform: translateZ(64px) scale(1.06);
-        box-shadow: 0 32px 80px -16px rgba(0, 0, 0, 1);
+        box-shadow: var(--card-shadow-active);
     }
 
     .pcard:focus-visible .pcard__frame {
-        outline: 2px solid #ffffff;
+        outline: 2px solid var(--text-strong);
         outline-offset: 4px;
     }
 
@@ -1702,7 +2033,7 @@ body.home .content-section .now-playing {
         width: 176px;
         z-index: 150;
         pointer-events: none;
-        background: linear-gradient(to right, rgba(0, 0, 0, 0), #000000);
+        background: var(--edge-fade);
     }
 
     /* Names the card under the cursor, and follows it. Fixed rather than
@@ -1716,13 +2047,13 @@ body.home .content-section .now-playing {
         align-items: center;
         gap: 8px;
         padding: 8px 14px;
-        border: 1px solid rgba(255, 255, 255, 0.15);
+        border: 1px solid var(--nav-edge);
         border-radius: 999px;
-        background-color: rgba(24, 24, 27, 0.95);
+        background-color: var(--nav-surface-open);
         -webkit-backdrop-filter: blur(6px);
         backdrop-filter: blur(6px);
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
-        color: rgba(255, 255, 255, 0.5);
+        box-shadow: var(--nav-shadow);
+        color: var(--nav-ink-dim);
         font-size: 0.75rem;
         line-height: 1.2;
         white-space: nowrap;
@@ -1732,7 +2063,7 @@ body.home .content-section .now-playing {
     }
 
     .project-ring__tip b {
-        color: #ffffff;
+        color: var(--nav-ink-strong);
         font-weight: 500;
     }
 
