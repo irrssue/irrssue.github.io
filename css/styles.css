@@ -122,9 +122,10 @@
     --code-ink: #b8b8b7;
     --pre-bg: #2a2a2a;
 
-    /* First-visit intro curtain */
-    --intro-canvas: #f7f6f4;
-    --intro-ink: #4a4a4a;
+    /* First-visit intro curtain: keep it in the active page palette so the
+       first paint and the reveal do not briefly invert the site. */
+    --intro-canvas: var(--bg);
+    --intro-ink: var(--text-strong);
     --intro-ease: cubic-bezier(0.76, 0, 0.24, 1);
 }
 
@@ -201,10 +202,8 @@
     --code-ink: #3b3934;
     --pre-bg: #f2f1ec;
 
-    /* The curtain still has to read against the page it uncovers, so on
-       light it drops to ink instead of paper. */
-    --intro-canvas: #17171a;
-    --intro-ink: #f2f1ee;
+    --intro-canvas: var(--bg);
+    --intro-ink: var(--text-strong);
 }
 
 /* A brief cross-fade while the palette swaps, so the flip reads as one
