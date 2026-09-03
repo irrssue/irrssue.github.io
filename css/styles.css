@@ -1391,8 +1391,6 @@ mark {
     --nav-offset: calc((var(--theme-gap) + var(--theme-size)) / 2);
     --theme-x-closed: calc(var(--nav-w-closed) / 2 - var(--nav-offset) + var(--theme-gap));
     --theme-x-open: calc(var(--nav-w-open) / 2 - var(--theme-size) - 10px);
-    /* Where the chip vanishes on the way between the two: the pill's middle. */
-    --theme-x-suck: calc(var(--theme-size) / -2);
 }
 
 .site-nav__surface {
@@ -1634,9 +1632,8 @@ mark {
 
 /* ── Theme switch ───────────────────────────────
    A round glass chip parked beside the pill while the menu is shut.
-   Opening the menu swallows it: it spirals into the middle of the pill,
-   goes out as the pill widens over the spot, and drops back out flush
-   inside the new right edge. Closing plays the same move backwards.
+   Opening the menu carries the chip along the same eased path as the pill,
+   ending it flush with the card's right edge. Closing retraces that path.
 
    javascript/theme.js builds the button rather than every page carrying
    it in markup — it does nothing without scripting, so with JS off there
@@ -1661,7 +1658,8 @@ mark {
     cursor: pointer;
     pointer-events: auto;
     transform: translateX(var(--theme-x-closed));
-    transition: background-color 0.4s ease, border-color 0.4s ease,
+    transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+        background-color 0.4s ease, border-color 0.4s ease,
         box-shadow 0.4s ease, color 0.25s ease;
 }
 
@@ -1687,63 +1685,6 @@ mark {
 .site-nav__theme:focus-visible {
     outline: 2px solid var(--nav-focus);
     outline-offset: 2px;
-}
-
-/* Two names rather than one played in reverse: changing animation-name
-   is what makes the browser start the move again, and a finished
-   animation will not replay just because its direction flipped. */
-.site-nav.has-toggled .site-nav__theme {
-    animation: nav-theme-return 0.62s cubic-bezier(0.65, 0, 0.35, 1) both;
-}
-
-.site-nav.has-toggled.is-open .site-nav__theme {
-    animation-name: nav-theme-suck;
-}
-
-@keyframes nav-theme-suck {
-    0% {
-        transform: translateX(var(--theme-x-closed)) scale(1) rotate(0deg);
-        opacity: 1;
-        filter: blur(0);
-    }
-    38% {
-        transform: translateX(var(--theme-x-suck)) scale(0.04) rotate(-150deg);
-        opacity: 0;
-        filter: blur(2.5px);
-    }
-    56% {
-        transform: translateX(var(--theme-x-suck)) scale(0.04) rotate(-210deg);
-        opacity: 0;
-        filter: blur(2.5px);
-    }
-    100% {
-        transform: translateX(var(--theme-x-open)) scale(1) rotate(-360deg);
-        opacity: 1;
-        filter: blur(0);
-    }
-}
-
-@keyframes nav-theme-return {
-    0% {
-        transform: translateX(var(--theme-x-open)) scale(1) rotate(-360deg);
-        opacity: 1;
-        filter: blur(0);
-    }
-    38% {
-        transform: translateX(var(--theme-x-suck)) scale(0.04) rotate(-210deg);
-        opacity: 0;
-        filter: blur(2.5px);
-    }
-    56% {
-        transform: translateX(var(--theme-x-suck)) scale(0.04) rotate(-150deg);
-        opacity: 0;
-        filter: blur(2.5px);
-    }
-    100% {
-        transform: translateX(var(--theme-x-closed)) scale(1) rotate(0deg);
-        opacity: 1;
-        filter: blur(0);
-    }
 }
 
 /* Moon → sun without an icon swap: the disc carries a shifted inset
@@ -1803,10 +1744,6 @@ mark {
         transition-delay: 0s !important;
     }
 
-    .site-nav.has-toggled .site-nav__theme,
-    .site-nav.has-toggled.is-open .site-nav__theme {
-        animation-duration: 0.01ms !important;
-    }
 }
 
 /* Mobile adjustments */
