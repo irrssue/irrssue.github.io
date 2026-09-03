@@ -401,6 +401,28 @@
         .item-row.drag-over { border-color: var(--accent); background: var(--surface-2); }
         .item-row.dragging  { opacity: 0.35; }
 
+        /* Touch has no drag-and-drop, so reorder buttons are the fallback —
+           always present (not just on touch) to keep this simple and to give
+           keyboard users a way to reorder too. */
+        .reorder-btns {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            flex-shrink: 0;
+        }
+        .reorder-btns button {
+            background: none;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text-muted);
+            font-size: 9px;
+            line-height: 1;
+            padding: 2px 5px;
+            cursor: pointer;
+        }
+        .reorder-btns button:hover:not(:disabled) { background: var(--surface-2); color: var(--text); }
+        .reorder-btns button:disabled { opacity: 0.3; cursor: not-allowed; }
+
         /* ── Mobile responsive ──────────────────────────── */
         @media (max-width: 640px) {
             .sidebar { display: none; }
@@ -1020,6 +1042,23 @@
         _dragIdx = -1;
     }
 
+    // Touch-safe fallback for the mouse-only drag handle above: move-up/
+    // move-down buttons that reuse the same reorder-and-save logic as onDrop.
+    function moveItem(type, i, delta) {
+        let arr, save;
+        if (type === 'project') { arr = projectsData; save = () => writeProjects('Reorder projects'); }
+        else if (type === 'bookmark') { arr = bookmarksData; save = () => writeBookmarks('Reorder bookmarks'); }
+        else if (type === 'post') { arr = postsData; save = renderPosts; }
+        else if (type === 'gem') { arr = gemsData; save = () => writeGems('Reorder gems'); }
+        else return;
+
+        const j = i + delta;
+        if (j < 0 || j >= arr.length) return;
+        const [item] = arr.splice(i, 1);
+        arr.splice(j, 0, item);
+        save();
+    }
+
     // ─────────────────────────────────────────────────
     // PROJECTS
     // ─────────────────────────────────────────────────
@@ -1050,6 +1089,10 @@
                  ondrop="onDrop(event,${i},'project')"
                  ondragend="onDragEnd(event)">
                 <span class="drag-handle" title="Drag to reorder">⠿</span>
+                <div class="reorder-btns">
+                    <button type="button" title="Move up" aria-label="Move up" onclick="moveItem('project',${i},-1)" ${i === 0 ? 'disabled' : ''}>▲</button>
+                    <button type="button" title="Move down" aria-label="Move down" onclick="moveItem('project',${i},1)" ${i === projectsData.length - 1 ? 'disabled' : ''}>▼</button>
+                </div>
                 <div class="item-info">
                     <div class="item-name">${esc(p.name)}${p.external ? ' <span class="tag-badge">↗ external</span>' : ''}</div>
                     <div class="item-meta">${esc(p.url)} — ${esc(p.description)}</div>
@@ -1153,6 +1196,10 @@
                  ondrop="onDrop(event,${i},'bookmark')"
                  ondragend="onDragEnd(event)">
                 <span class="drag-handle" title="Drag to reorder">⠿</span>
+                <div class="reorder-btns">
+                    <button type="button" title="Move up" aria-label="Move up" onclick="moveItem('bookmark',${i},-1)" ${i === 0 ? 'disabled' : ''}>▲</button>
+                    <button type="button" title="Move down" aria-label="Move down" onclick="moveItem('bookmark',${i},1)" ${i === bookmarksData.length - 1 ? 'disabled' : ''}>▼</button>
+                </div>
                 <div class="item-info">
                     <div class="item-name">
                         ${esc(b.title)}
@@ -1264,6 +1311,10 @@
                  ondrop="onDrop(event,${i},'gem')"
                  ondragend="onDragEnd(event)">
                 <span class="drag-handle" title="Drag to reorder">⠿</span>
+                <div class="reorder-btns">
+                    <button type="button" title="Move up" aria-label="Move up" onclick="moveItem('gem',${i},-1)" ${i === 0 ? 'disabled' : ''}>▲</button>
+                    <button type="button" title="Move down" aria-label="Move down" onclick="moveItem('gem',${i},1)" ${i === gemsData.length - 1 ? 'disabled' : ''}>▼</button>
+                </div>
                 <div class="item-info">
                     <div class="item-name">
                         ${esc(g.title || '(untitled)')}
@@ -1485,6 +1536,10 @@
                  ondrop="onDrop(event,${i},'post')"
                  ondragend="onDragEnd(event)">
                 <span class="drag-handle" title="Drag to reorder">⠿</span>
+                <div class="reorder-btns">
+                    <button type="button" title="Move up" aria-label="Move up" onclick="moveItem('post',${i},-1)" ${i === 0 ? 'disabled' : ''}>▲</button>
+                    <button type="button" title="Move down" aria-label="Move down" onclick="moveItem('post',${i},1)" ${i === postsData.length - 1 ? 'disabled' : ''}>▼</button>
+                </div>
                 <div class="item-info">
                     <div class="item-name">
                         ${esc(p.title || p.filename)}

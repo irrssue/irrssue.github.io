@@ -45,7 +45,7 @@
     font-family: 'JetBrains Mono', monospace;
     font-size: 11px;
     color: var(--post-meta);
-    cursor: default;
+    cursor: pointer;
     border-bottom: 1px dotted var(--post-rule);
     text-decoration: none;
     position: relative;
@@ -85,7 +85,9 @@
 }
 
 .post-date:hover::after,
-.post-date:hover::before {
+.post-date:hover::before,
+.post-date.is-shown::after,
+.post-date.is-shown::before {
     opacity: 1;
 }
 

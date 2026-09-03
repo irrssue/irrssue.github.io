@@ -35,6 +35,21 @@ function showRelativeDate() {
     el.textContent = getRelativeTime(date);
 }
 
+function setupDateTooltip() {
+    // The full date only ever showed on :hover, which touch devices have no
+    // real equivalent for. Add a tap toggle so it's reachable there too;
+    // desktop keeps working via the existing :hover CSS.
+    const el = document.querySelector('.post-date[data-full-date]');
+    if (!el) return;
+    el.addEventListener('click', (event) => {
+        event.stopPropagation();
+        el.classList.toggle('is-shown');
+    });
+    document.addEventListener('click', () => {
+        el.classList.remove('is-shown');
+    });
+}
+
 function highlightAndScrollToSearch() {
     const searchQuery = new URLSearchParams(window.location.search).get('search');
     if (!searchQuery) return;
@@ -73,4 +88,5 @@ function highlightAndScrollToSearch() {
 }
 
 showRelativeDate();
+setupDateTooltip();
 highlightAndScrollToSearch();
