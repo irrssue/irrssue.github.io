@@ -21,7 +21,7 @@
     var narrow = window.matchMedia('(max-width: 1079px)');
     var dots = null;
     var pips = [];
-    var settle = null;
+    var ticking = false;
 
     function build() {
         if (dots) return;
@@ -61,9 +61,14 @@
     }
 
     track.addEventListener('scroll', function () {
-        // One read after the flick has stopped, rather than one per frame.
-        window.clearTimeout(settle);
-        settle = window.setTimeout(mark, 60);
+        // Throttled to one read per animation frame so the dots track the
+        // finger during the swipe instead of jumping into place once it stops.
+        if (ticking) return;
+        ticking = true;
+        window.requestAnimationFrame(function () {
+            mark();
+            ticking = false;
+        });
     }, { passive: true });
 
     window.addEventListener('resize', function () {
