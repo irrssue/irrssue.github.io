@@ -5,7 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Saw Thura Zaw</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <!-- Decides, before a single rule is applied, whether this browser can run
+         the animated design, and fetches the scripts that drive it only if it
+         can. Browsers that cannot are drawn by css/legacy.css instead. -->
+    <script id="capability" src="javascript/capability.js" data-enhance="javascript/now-playing.js,javascript/script.js,javascript/project-ring.js,javascript/project-rail.js"></script>
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/legacy.css">
     <!-- Self-hosted display fonts, subset to the hero name's glyphs -->
     <link rel="stylesheet" href="css/fonts-hero.css">
     <!-- Applies the saved theme before the first paint -->
@@ -30,6 +35,13 @@
             var seenKey = 'irrssue-intro-v4';
             var hasReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
             var isSeen = false;
+
+            // The curtain is the most animated thing on the site; a browser
+            // that failed the capability gate never plays it.
+            if (!window.SITE_MODERN) {
+                if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
+                return;
+            }
 
             try {
                 isSeen = sessionStorage.getItem(seenKey) === '1';
@@ -152,6 +164,30 @@
 <!-- /build:recent-posts -->
                 </ul>
             </section>
+
+            <!-- Projects as plain lines — the shape they had before the ring,
+                 and the shape the Writing list above still has. Only browsers
+                 that fail the capability gate ever see this: css/styles.css
+                 hides it, because there the ring and the rail already carry
+                 the same projects. All three are written from
+                 data/projects.json by the build, so they cannot drift apart. -->
+            <section class="projects-section">
+                <h2 class="projects-heading reveal-item">Projects</h2>
+                <ul class="projects-list">
+                    <!-- build:projects -->
+<li class="project-item reveal-item"><a href="https://snapsher.com" class="project-link external" target="_blank" rel="noopener noreferrer"><span class="project-name">Snapsher</span><span class="project-description">A social-media that doesn&#x27;t burn you out.</span></a></li>
+<li class="project-item reveal-item"><a href="https://news.irrssue.com" class="project-link external" target="_blank" rel="noopener noreferrer"><span class="project-name">Minimal HackerNews</span><span class="project-description">Hackernews reimagined</span></a></li>
+<li class="project-item reveal-item"><a href="https://github.com/irrssue/homelab" class="project-link external" target="_blank" rel="noopener noreferrer"><span class="project-name">Homelab</span><span class="project-description">The start of my hobby into self hosting</span></a></li>
+<li class="project-item reveal-item"><a href="https://irrssue.github.io/" class="project-link external" target="_blank" rel="noopener noreferrer"><span class="project-name">Thura Zaw</span><span class="project-description">Private playground</span></a></li>
+<li class="project-item reveal-item"><a href="https://mail.irrssue.com/" class="project-link external" target="_blank" rel="noopener noreferrer"><span class="project-name">Baremail</span><span class="project-description">the minimal version of gmail</span></a></li>
+<li class="project-item reveal-item"><a href="https://github.com/irrssue/conflict-map.git" class="project-link external" target="_blank" rel="noopener noreferrer"><span class="project-name">Conflict Map</span><span class="project-description">interactive conflict map</span></a></li>
+<li class="project-item reveal-item"><a href="https://irrssue.com/mood-receipt/" class="project-link external" target="_blank" rel="noopener noreferrer"><span class="project-name">Mood Receipt</span><span class="project-description">shareable what&#x27;s up in receipt format</span></a></li>
+<li class="project-item reveal-item"><a href="https://thadar.com/" class="project-link external" target="_blank" rel="noopener noreferrer"><span class="project-name">Thadar.com</span><span class="project-description">A minimal Student management platform</span></a></li>
+<li class="project-item reveal-item"><a href="https://irrssue.com/drawsomething/" class="project-link external" target="_blank" rel="noopener noreferrer"><span class="project-name">Draw Something</span><span class="project-description">Idk, just draw something, that it.</span></a></li>
+<li class="project-item reveal-item"><a href="https://irrssue.com/solarsystem/" class="project-link external" target="_blank" rel="noopener noreferrer"><span class="project-name">Solar System</span><span class="project-description">a view to mesmerize to</span></a></li>
+<!-- /build:projects -->
+                </ul>
+            </section>
         </main>
 
         <!-- Ring of project screenshots orbiting a point off the right edge.
@@ -211,13 +247,13 @@
         </div>
     </nav>
 
-    <script src="javascript/now-playing.js" defer></script>
-    <script src="javascript/script.js" defer></script>
-    <script src="javascript/project-ring.js" defer></script>
-    <script src="javascript/project-rail.js" defer></script>
+    <!-- now-playing.js, script.js, project-ring.js and project-rail.js are
+         fetched by javascript/capability.js in the document head, and only
+         when the browser passes its test. -->
     <script>
         // Link preview on hover (desktop only)
         (function() {
+            if (!window.SITE_MODERN) return;
             if (window.matchMedia('(hover: none)').matches) return;
 
             var preview = document.createElement('div');
@@ -263,6 +299,7 @@
     <script>
         // Hero name font cycling — switches font every 5s with a fade transition
         (function() {
+            if (!window.SITE_MODERN) return;
             var fonts = [
                 { family: "'Fraunces', serif", weight: '300' },
                 { family: "'Cormorant Garamond', serif", weight: '300' },

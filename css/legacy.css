@@ -1,0 +1,635 @@
+/* ==================================================================
+   The old design, for browsers that cannot run the new one
+
+   javascript/capability.js asks whether the browser supports CSS custom
+   properties (and transitions, transforms and keyframes with them). If
+   the answer is no it stamps `legacy` on <html>, css/styles.css skips
+   itself on the same test, and everything the site draws comes from
+   here instead.
+
+   This is the site as it was before the rotating project ring: one
+   centred column, plain type, and lists that are just lines — Writing
+   and Projects styled identically, which is how Projects looked until
+   the ring replaced it. Nothing here moves. There is no intro curtain,
+   no ring, no swipe rail, no music player, no hover previews; those all
+   need the engine this browser does not have, so they are not shown at
+   all rather than shown broken.
+
+   Rules are written in CSS 2.1 with a little CSS 3: no custom
+   properties, no calc, no clamp, no grid, no flexbox, no transforms,
+   no transitions. Floats and clearfixes do the two-column work.
+
+   Every rule is scoped under `html.legacy`, so in a modern browser this
+   file is inert and cannot leak into the design css/styles.css draws.
+   ================================================================== */
+
+/* ── Page ────────────────────────────────────────── */
+/* css/styles.css opens with this same reset and every width below is written
+   expecting it, so the column and the footer rule under it measure alike. */
+html.legacy *,
+html.legacy *:before,
+html.legacy *:after {
+    box-sizing: border-box;
+}
+
+html.legacy {
+    font-size: 100%;
+    background-color: #000000;
+}
+
+html.legacy body {
+    margin: 0;
+    padding: 0;
+    background-color: #000000;
+    color: rgb(163, 163, 163);
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+html.legacy a {
+    color: rgb(200, 200, 200);
+    text-decoration: none;
+}
+
+html.legacy a:hover,
+html.legacy a:focus {
+    text-decoration: underline;
+}
+
+html.legacy img {
+    max-width: 100%;
+    border: 0;
+}
+
+/* ── Everything the old engine cannot draw ───────── */
+/* The markup for these is still in the page — it is the new design's, and
+   the build writes it from the same data. Here it is simply not shown. */
+html.legacy .intro-overlay,
+html.legacy .project-ring,
+html.legacy .projects-rail,
+html.legacy .now-playing,
+html.legacy .navbar,
+html.legacy .search-box,
+html.legacy #link-preview,
+html.legacy #yt-player,
+html.legacy .site-nav__theme,
+html.legacy .site-nav__toggle {
+    display: none;
+}
+
+/* ── The column ──────────────────────────────────── */
+html.legacy .grid-container {
+    display: block;
+    margin: 0;
+    padding: 0;
+}
+
+html.legacy .main-content {
+    display: block;
+    width: auto;
+    max-width: 686px;
+    margin: 0 auto;
+    padding: 48px 24px 56px 24px;
+}
+
+html.legacy .content-section {
+    margin-bottom: 48px;
+}
+
+/* ── Hero ────────────────────────────────────────── */
+/* The portrait sits beside the copy by floating, and the layout box closes
+   over it with a clearfix — the two-column job flexbox does in the new
+   design, done the way it was done before flexbox. */
+html.legacy .hero-layout {
+    display: block;
+    margin: 0;
+}
+
+html.legacy .hero-layout:after {
+    content: "";
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;
+}
+
+html.legacy .hero-portrait-col {
+    float: left;
+    margin: 4px 22px 14px 0;
+}
+
+html.legacy .hero-portrait {
+    display: block;
+    width: 104px;
+    height: 104px;
+    border-radius: 10px;
+}
+
+html.legacy .hero-name {
+    margin: 0 0 14px 0;
+    font-size: 32px;
+    font-weight: 600;
+    line-height: 1.2;
+    color: #ffffff;
+}
+
+html.legacy .hero-intro {
+    margin: 0 0 22px 0;
+    font-size: 17px;
+    color: rgb(163, 163, 163);
+}
+
+html.legacy .hero-intro a,
+html.legacy .underline-sketch {
+    color: #ffffff;
+    text-decoration: underline;
+}
+
+html.legacy .hero-social {
+    display: block;
+    margin: 0;
+}
+
+html.legacy .social-icon {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    margin: 0 18px 0 0;
+    color: rgb(163, 163, 163);
+}
+
+html.legacy .social-icon:hover {
+    color: #ffffff;
+}
+
+html.legacy .social-icon svg {
+    display: block;
+    width: 24px;
+    height: 24px;
+}
+
+/* ── Writing and Projects: the same list, twice ──── */
+/* This pairing is the point of the old design. Projects is not a ring or a
+   rail here, it is the Writing list with different rows: a small grey
+   heading over a stack of lines. */
+/* The `display` is not decoration: css/styles.css hides .projects-section, and
+   on the rare browser where the two gates disagree — scripting says legacy but
+   the CSS @supports still passes — that hide would otherwise win and leave the
+   page with no projects at all. Saying it here makes the script's answer the
+   one that counts. */
+html.legacy .writing-section,
+html.legacy .projects-section {
+    display: block;
+    margin: 52px 0 0 0;
+}
+
+html.legacy .writing-heading,
+html.legacy .projects-heading {
+    margin: 0 0 12px 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: rgb(163, 163, 163);
+}
+
+html.legacy .writing-heading-link {
+    color: rgb(163, 163, 163);
+}
+
+html.legacy .writing-arrow {
+    font-weight: 400;
+    color: rgb(115, 115, 115);
+}
+
+html.legacy .writing-list,
+html.legacy .projects-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+html.legacy .writing-post-item,
+html.legacy .project-item {
+    margin: 0;
+    padding: 0;
+}
+
+html.legacy .writing-post-link,
+html.legacy .project-link {
+    display: block;
+    padding: 4px 0;
+    color: rgb(250, 250, 250);
+}
+
+html.legacy .writing-post-link {
+    font-size: 19px;
+    font-weight: 600;
+}
+
+/* Name and description ride on one line as two inline spans — the gap is a
+   margin rather than the flex `gap` the new design uses. */
+html.legacy .project-name {
+    margin-right: 12px;
+    font-size: 19px;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+html.legacy .project-description {
+    font-size: 19px;
+    font-weight: 500;
+    color: rgb(163, 163, 163);
+}
+
+/* ── Navigation ──────────────────────────────────── */
+/* The pill is a fixed, animated card that unrolls on a click. With none of
+   that available the same links become a plain footer: the toggle goes, and
+   the panel it would have opened is simply always open. */
+html.legacy .site-nav {
+    position: static;
+    display: block;
+    margin: 0;
+    padding: 0;
+}
+
+html.legacy .site-nav__surface {
+    display: block;
+    width: auto;
+    margin: 0;
+    padding: 0;
+    background: none;
+    border: 0;
+}
+
+html.legacy .site-nav__panel {
+    display: block;
+}
+
+html.legacy .site-nav__panel-inner {
+    display: block;
+    max-width: 686px;
+    margin: 0 auto;
+    padding: 26px 24px 48px 24px;
+    border-top: 1px solid #333333;
+    visibility: visible;
+    overflow: visible;
+}
+
+html.legacy .site-nav__label {
+    margin: 20px 0 8px 0;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgb(115, 115, 115);
+}
+
+html.legacy .site-nav__panel-inner .site-nav__label {
+    margin-top: 0;
+}
+
+html.legacy .site-nav__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+html.legacy .site-nav__list li {
+    display: inline;
+    margin: 0;
+}
+
+html.legacy .site-nav__link {
+    display: inline-block;
+    margin: 0 18px 6px 0;
+    font-size: 17px;
+    color: rgb(200, 200, 200);
+}
+
+html.legacy .site-nav__rule {
+    height: 0;
+    margin: 22px 0;
+    border: 0;
+    border-top: 1px solid #333333;
+}
+
+html.legacy .site-nav__socials a {
+    display: inline-block;
+    margin: 0 18px 6px 0;
+    font-size: 15px;
+}
+
+/* ── Writing and Bookmarks index pages ───────────── */
+html.legacy .bookmarks-section {
+    margin-top: 8px;
+}
+
+html.legacy .bk-header {
+    margin-bottom: 32px;
+}
+
+html.legacy .bk-heading {
+    margin: 0;
+    font-family: Georgia, "Times New Roman", Times, serif;
+    font-size: 32px;
+    font-weight: 400;
+    line-height: 1.1;
+    color: rgb(250, 250, 250);
+}
+
+html.legacy .bk-sub {
+    margin-top: 8px;
+    font-size: 14px;
+    color: rgb(115, 115, 115);
+}
+
+html.legacy .bk-month {
+    margin-bottom: 8px;
+}
+
+html.legacy .bk-month-header {
+    margin: 34px 0 10px 0;
+    padding-bottom: 8px;
+    font-family: Georgia, "Times New Roman", Times, serif;
+    font-size: 18px;
+    color: rgb(200, 200, 200);
+}
+
+html.legacy .bk-month-count {
+    margin-left: 8px;
+    font-size: 12px;
+    color: rgb(115, 115, 115);
+}
+
+/* The date column is a float here rather than a grid track. */
+html.legacy .bk-item {
+    display: block;
+    padding: 10px 0;
+}
+
+html.legacy .bk-item:after {
+    content: "";
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;
+}
+
+html.legacy .bk-item-date {
+    float: left;
+    width: 52px;
+    font-size: 12px;
+    line-height: 1.9;
+    color: rgb(115, 115, 115);
+}
+
+html.legacy .bk-item-body {
+    margin-left: 68px;
+}
+
+html.legacy .bk-item-title {
+    font-size: 17px;
+    font-weight: 500;
+    line-height: 1.35;
+    color: rgb(250, 250, 250);
+}
+
+html.legacy .bk-item-title a {
+    color: rgb(250, 250, 250);
+}
+
+html.legacy .bk-item-desc {
+    margin-top: 4px;
+    font-size: 15px;
+    color: rgb(115, 115, 115);
+}
+
+html.legacy .bk-item-src {
+    margin-top: 4px;
+    font-size: 12px;
+    color: rgb(115, 115, 115);
+}
+
+/* ── Reading a post ──────────────────────────────── */
+html.legacy .post-container {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+html.legacy .back-link {
+    display: block;
+    margin-bottom: 28px;
+    font-size: 14px;
+    color: rgb(115, 115, 115);
+}
+
+html.legacy .back-link svg {
+    display: none;
+}
+
+html.legacy .post-header {
+    margin-bottom: 24px;
+}
+
+html.legacy .post-cover-image {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin-bottom: 18px;
+}
+
+html.legacy .post-title {
+    margin: 0 0 8px 0;
+    font-family: Georgia, "Times New Roman", Times, serif;
+    font-size: 31px;
+    font-weight: 500;
+    line-height: 1.2;
+    color: rgb(250, 250, 250);
+}
+
+html.legacy .post-meta {
+    display: block;
+    margin-bottom: 28px;
+    font-size: 12px;
+    color: rgb(115, 115, 115);
+}
+
+html.legacy .post-date {
+    border-bottom: 1px dotted #555555;
+    color: rgb(115, 115, 115);
+}
+
+html.legacy .post-content {
+    font-size: 17px;
+    line-height: 1.7;
+    color: rgb(200, 200, 200);
+}
+
+html.legacy .post-content h1,
+html.legacy .post-content h2,
+html.legacy .post-content h3,
+html.legacy .post-content h4 {
+    margin: 34px 0 12px 0;
+    line-height: 1.3;
+    color: rgb(250, 250, 250);
+}
+
+html.legacy .post-content h1 { font-size: 26px; }
+html.legacy .post-content h2 { font-size: 22px; }
+html.legacy .post-content h3 { font-size: 19px; }
+html.legacy .post-content h4 { font-size: 17px; }
+
+html.legacy .post-content p,
+html.legacy .post-content ul,
+html.legacy .post-content ol {
+    margin: 0 0 18px 0;
+}
+
+html.legacy .post-content ul,
+html.legacy .post-content ol {
+    padding-left: 24px;
+}
+
+html.legacy .post-content li {
+    margin-bottom: 6px;
+}
+
+html.legacy .post-content a {
+    color: #ffffff;
+    text-decoration: underline;
+}
+
+html.legacy .post-content blockquote {
+    margin: 0 0 18px 0;
+    padding-left: 16px;
+    border-left: 3px solid #404040;
+    color: rgb(163, 163, 163);
+}
+
+html.legacy .post-content code {
+    padding: 1px 4px;
+    background-color: #1a1a1a;
+    border: 1px solid #333333;
+    font-family: Consolas, "Courier New", monospace;
+    font-size: 14px;
+}
+
+html.legacy .post-content pre {
+    margin: 0 0 18px 0;
+    padding: 14px;
+    background-color: #1a1a1a;
+    border: 1px solid #333333;
+    overflow: auto;
+}
+
+html.legacy .post-content pre code {
+    padding: 0;
+    background: none;
+    border: 0;
+}
+
+html.legacy .post-content img {
+    display: block;
+    height: auto;
+    margin: 0 0 18px 0;
+}
+
+html.legacy .post-content table {
+    width: 100%;
+    margin-bottom: 18px;
+    border-collapse: collapse;
+}
+
+html.legacy .post-content th,
+html.legacy .post-content td {
+    padding: 8px;
+    border: 1px solid #333333;
+    text-align: left;
+}
+
+/* ── Notes that only the old design shows ────────── */
+/* css/styles.css hides .legacy-only, so a page can carry a line that speaks
+   only to this browser — Gems uses it to say the gallery will not run. */
+html.legacy .legacy-only {
+    display: block;
+    max-width: 686px;
+    margin: 0 auto;
+    padding: 96px 24px;
+    font-size: 17px;
+    color: rgb(163, 163, 163);
+}
+
+/* ── Narrow windows ──────────────────────────────── */
+@media (max-width: 700px) {
+    html.legacy .main-content {
+        padding: 36px 20px 48px 20px;
+    }
+
+    html.legacy .hero-portrait-col {
+        float: none;
+        margin: 0 0 16px 0;
+    }
+
+    html.legacy .site-nav__panel-inner {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    html.legacy .bk-item-date {
+        float: none;
+        width: auto;
+        line-height: 1.4;
+    }
+
+    html.legacy .bk-item-body {
+        margin-left: 0;
+    }
+}
+
+/* ------------------------------------------------------------------
+   IE 10/11 with scripting turned off
+
+   Without JS the class above is never stamped, so none of it applies —
+   and css/styles.css has already excused itself, which would leave the
+   page bare. This query is one modern engines never match and IE always
+   does, so it can carry a floor for that one case without any risk of
+   reaching the current design: readable type on the site's own black,
+   in a column, with the moving parts still out of the way.
+   ------------------------------------------------------------------ */
+@media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+    body {
+        margin: 0;
+        background-color: #000000;
+        color: rgb(163, 163, 163);
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, Arial, sans-serif;
+        font-size: 16px;
+        line-height: 1.6;
+    }
+
+    a { color: rgb(200, 200, 200); }
+
+    .main-content {
+        max-width: 686px;
+        margin: 0 auto;
+        padding: 48px 24px 56px 24px;
+    }
+
+    .hero-name { font-size: 32px; color: #ffffff; }
+    .hero-portrait { width: 104px; height: 104px; }
+    .project-name { font-weight: 700; color: #ffffff; }
+    .writing-post-link { color: rgb(250, 250, 250); }
+
+    .writing-list,
+    .projects-list,
+    .site-nav__list { list-style: none; padding: 0; }
+
+    .intro-overlay,
+    .project-ring,
+    .projects-rail,
+    .now-playing,
+    .site-nav__toggle,
+    #yt-player { display: none; }
+}

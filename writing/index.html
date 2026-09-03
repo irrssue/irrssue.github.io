@@ -5,7 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Writing - Saw Thura Zaw</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <!-- Decides, before a single rule is applied, whether this browser can run
+         the animated design, and fetches the scripts that drive it only if it
+         can. Browsers that cannot are drawn by css/legacy.css instead. -->
+    <script id="capability" src="/javascript/capability.js" data-enhance="/javascript/script.js"></script>
     <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/legacy.css">
     <link rel="stylesheet" href="/css/bookmarks.css">
     <!-- Applies the saved theme before the first paint -->
     <script src="/javascript/theme.js"></script>
@@ -62,6 +67,7 @@
         </div>
     </nav>
 
-    <script src="/javascript/script.js" defer></script>
+    <!-- script.js is fetched by javascript/capability.js in the head, and
+         only when the browser passes its test. -->
 </body>
 </html>

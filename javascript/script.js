@@ -5,7 +5,7 @@
    The markup is identical on every page, so the link for the page the
    visitor is on is marked here rather than hand-edited into each file.
    ------------------------------------------------------------------ */
-document.addEventListener('DOMContentLoaded', function () {
+function buildNav() {
     const nav = document.querySelector('.site-nav');
     if (!nav) return;
 
@@ -60,7 +60,15 @@ document.addEventListener('DOMContentLoaded', function () {
     panel.addEventListener('click', function (event) {
         if (event.target.closest('a')) setOpen(false);
     });
-});
+}
+
+/* javascript/capability.js loads this file once the document is parsed, so
+   DOMContentLoaded may already have come and gone by the time we get here. */
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', buildNav);
+} else {
+    buildNav();
+}
 
 /* ------------------------------------------------------------------
    Gems photo prewarm

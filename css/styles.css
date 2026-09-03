@@ -1,3 +1,25 @@
+/* ==================================================================
+   CAPABILITY GATE — this whole stylesheet lives inside one @supports.
+
+   Everything below is the current design, and all of it leans on things
+   that arrived together: custom properties, grid, sticky, 3D transforms,
+   backdrop-filter, the ring, the intro curtain. A browser that cannot do
+   custom properties cannot do the rest either, and half of this file
+   applied reads far worse than none of it — the palette alone is all
+   var(), so the page would come out as black text on a black ground.
+
+   So it is asked to skip the file whole. An unknown at-rule takes its
+   entire block with it, which is exactly what IE 11 and its contemporaries
+   do with @supports. They fall through to css/legacy.css instead, which
+   draws the site's older, plain design; javascript/capability.js runs the
+   same test before it loads any of the animation scripts.
+
+   The contents are deliberately left un-indented so this stays a wrapper
+   rather than a reformat of every rule in the file. Nothing may be added
+   outside the block.
+   ================================================================== */
+@supports (--gate: 0) {
+
 /* ------------------------------------------------------------------
    Design tokens
 
@@ -1855,6 +1877,15 @@ mark {
 
 }
 
+/* The homepage's plain text list of projects, and anything else marked as
+   belonging to the old design, exists in the markup for browsers that never
+   reach this file — see css/legacy.css. Here the ring and the swipe rail
+   carry the same projects, so the list would only say it twice. */
+.projects-section,
+.legacy-only {
+    display: none;
+}
+
 /* Writing Section (homepage) */
 .writing-section {
     /* Collapses against .content-section's 60px bottom margin, so this is the
@@ -2305,4 +2336,4 @@ body::-webkit-scrollbar,
         transition-duration: 0.01ms !important;
     }
 }
-
+} /* end capability gate — see the note at the top of the file */

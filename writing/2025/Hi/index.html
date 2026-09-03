@@ -6,8 +6,13 @@
     <title>Hi - Saw Thura Zaw</title>
     <meta name="description" content="so after years of procrastinating on not building my website, im now finally settle down and give myself a few weeks to prepare a entirely new website.">
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <!-- Decides, before a single rule is applied, whether this browser can run
+         the animated design, and fetches the scripts that drive it only if it
+         can. Browsers that cannot are drawn by css/legacy.css instead. -->
+    <script id="capability" src="/javascript/capability.js" data-enhance="/javascript/script.js,/javascript/post.js"></script>
     <link rel="stylesheet" href="/css/styles.css">
     <link rel="stylesheet" href="/css/post.css">
+    <link rel="stylesheet" href="/css/legacy.css">
     <link rel="stylesheet" href="/css/fonts-post.css">
     <style>
         .main-content { max-width: 720px; padding-left: 40px; padding-right: 40px; }
@@ -96,7 +101,9 @@ I used to think that personal portfolio has to include like super awesome fonts 
         </div>
     </nav>
 
-    <script src="/javascript/script.js" defer></script>
-    <script src="/javascript/post.js" defer></script>
+    <!-- script.js and post.js are fetched by javascript/capability.js in the
+         head, and only when the browser passes its test. The date they
+         rewrite is already rendered in full by the build, so a browser that
+         never runs them still reads it. -->
 </body>
 </html>

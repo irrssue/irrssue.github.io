@@ -54,6 +54,13 @@
     }
 
     function build() {
+        // The old design css/legacy.css draws is a single dark palette, and
+        // the chip itself is a transform-and-gradient affair, so a browser
+        // that failed the capability gate gets no toggle rather than a dead
+        // one. The stamp above still runs — it costs nothing and keeps the
+        // attribute consistent for anything else reading it.
+        if (!window.SITE_MODERN) return;
+
         var nav = document.querySelector('.site-nav');
         if (!nav) return;
 

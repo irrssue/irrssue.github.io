@@ -152,6 +152,28 @@ def render_home_list(posts: list[dict]) -> str:
 
 
 
+def render_projects() -> str:
+    """The homepage's plain text list of projects.
+
+    Only browsers that fail the capability gate ever see it — css/styles.css
+    hides it, because there the ring and the rail carry the same projects. All
+    three come out of data/projects.json so they cannot drift apart.
+    """
+    projects = json.loads((DATA_DIR / "projects.json").read_text(encoding="utf-8"))
+    items = []
+    for p in projects:
+        external = p.get("external")
+        attrs = ' target="_blank" rel="noopener noreferrer"' if external else ""
+        items.append(
+            '<li class="project-item reveal-item">'
+            f'<a href="{e(p["url"])}" class="project-link{" external" if external else ""}"{attrs}>'
+            f'<span class="project-name">{e(p["name"])}</span>'
+            f'<span class="project-description">{e(p.get("description", ""))}</span>'
+            "</a></li>"
+        )
+    return "\n".join(items)
+
+
 def render_project_cards() -> str:
     """The rotating ring of screenshots beside the homepage hero.
 
@@ -312,6 +334,7 @@ def main() -> None:
         print(f"wrote {out_dir.relative_to(ROOT)}/index.html")
 
     inject(ROOT / "index.html", "recent-posts", render_home_list(posts))
+    inject(ROOT / "index.html", "projects", render_projects())
     inject(ROOT / "index.html", "project-cards", render_project_cards())
     inject(ROOT / "index.html", "project-rail", render_project_rail())
 

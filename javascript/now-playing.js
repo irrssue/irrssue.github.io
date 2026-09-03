@@ -166,7 +166,7 @@
         });
     };
 
-    document.addEventListener('DOMContentLoaded', function () {
+    function start() {
         myPlaylist = shuffle(SONGS);
         myIndex = 0;
         updateDisplay();
@@ -203,5 +203,13 @@
                 playPrev();
             });
         }
-    });
+    }
+
+    /* javascript/capability.js loads this file once the document is parsed, so
+       DOMContentLoaded may already have come and gone by the time we get here. */
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', start);
+    } else {
+        start();
+    }
 })();

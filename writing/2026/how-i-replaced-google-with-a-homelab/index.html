@@ -6,8 +6,13 @@
     <title>How I Replaced Google With a Homelab - Saw Thura Zaw</title>
     <meta name="description" content="I pay Google roughly nothing for Photos and Drive. Most people do. And yet I spent a weekend replacing both of them with software I run on my own server. Why…">
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <!-- Decides, before a single rule is applied, whether this browser can run
+         the animated design, and fetches the scripts that drive it only if it
+         can. Browsers that cannot are drawn by css/legacy.css instead. -->
+    <script id="capability" src="/javascript/capability.js" data-enhance="/javascript/script.js,/javascript/post.js"></script>
     <link rel="stylesheet" href="/css/styles.css">
     <link rel="stylesheet" href="/css/post.css">
+    <link rel="stylesheet" href="/css/legacy.css">
     <link rel="stylesheet" href="/css/fonts-post.css">
     <style>
         .main-content { max-width: 720px; padding-left: 40px; padding-right: 40px; }
@@ -150,7 +155,9 @@
         </div>
     </nav>
 
-    <script src="/javascript/script.js" defer></script>
-    <script src="/javascript/post.js" defer></script>
+    <!-- script.js and post.js are fetched by javascript/capability.js in the
+         head, and only when the browser passes its test. The date they
+         rewrite is already rendered in full by the build, so a browser that
+         never runs them still reads it. -->
 </body>
 </html>

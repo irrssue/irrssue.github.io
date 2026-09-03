@@ -8,7 +8,12 @@
 <!-- Warm up the connection to the photo host so the TLS handshake is done before images are requested -->
 <link rel="preconnect" href="https://upload.irrssue.com" crossorigin>
 <link rel="dns-prefetch" href="https://upload.irrssue.com">
+<!-- Decides, before a single rule is applied, whether this browser can run
+     the animated design. The gallery below is built entirely in script from
+     data/gems.json, so a browser that fails gets the note instead. -->
+<script id="capability" src="/javascript/capability.js" data-enhance="/javascript/script.js"></script>
 <link rel="stylesheet" href="/css/styles.css">
+<link rel="stylesheet" href="/css/legacy.css">
 <link rel="stylesheet" href="/css/fonts-gems.css">
 <style>
   /* The gallery is its own warm-dark room and stays that way in either
@@ -340,6 +345,10 @@
 <body>
 
 <main class="scroller" id="scroller"></main>
+
+<p class="legacy-only">The Gems gallery is built from full-size photographs as you
+scroll, which needs a newer browser than this one. Everything else on the
+site reads fine here — <a href="/">head back to the front page</a>.</p>
 
 <script>
 /* ----------------------------------------------------------
@@ -782,6 +791,7 @@ fetch("../data/gems.json")
     </div>
 </nav>
 
-<script src="/javascript/script.js"></script>
+<!-- script.js is fetched by javascript/capability.js in the head, and only
+     when the browser passes its test. -->
 </body>
 </html>

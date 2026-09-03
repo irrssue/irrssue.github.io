@@ -1,3 +1,8 @@
+/* Gated on the same condition as css/styles.css — see the note at the top
+   of that file. Old browsers get css/legacy.css instead of a half-applied
+   version of this. */
+@supports (--gate: 0) {
+
 .bookmarks-section {
     margin-top: 40px;
 }
@@ -146,3 +151,4 @@
         margin-top: 6px;
     }
 }
+} /* end capability gate — see the note at the top of the file */
