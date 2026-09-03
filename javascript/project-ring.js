@@ -8,7 +8,9 @@
 
    Pointing at a card eases the ring to a stop — it slows rather than
    freezing — dims the rest and shows a pill that follows the cursor.
-   Scrolling gives the ring a short push that decays on its own.
+   Scrolling gives the ring a short push that decays on its own. When the
+   pointer is over the screenshots, the wheel belongs to the ring instead of
+   the page, so it can be browsed deliberately with the same soft momentum.
 
    Without this file the stylesheet still lays the cards out around the
    ring from the same angles; they just do not turn.
@@ -77,14 +79,18 @@
         var y = window.scrollY;
         var moved = lastScroll === null ? 0 : y - lastScroll;
         lastScroll = y;
-        // Scrolling nudges the ring along; the nudge then decays away.
-        boost = Math.min(boost + Math.abs(moved) * 0.004, 5) * Math.exp(-1.6 * dt);
+        // Page scrolling nudges the ring along; the nudge then decays away.
+        boost = Math.max(-5, Math.min(5, boost + moved * 0.004)) *
+            Math.exp(-1.6 * dt);
 
         // Ease towards the target speed so the ring coasts to a stop under the
         // pointer rather than stopping dead mid-turn.
         var target = hovered ? 0 : BASE_SPEED;
         speed += (target - speed) * (1 - Math.exp(-3.2 * dt));
-        angle -= (speed + (hovered ? 0 : boost)) * dt;
+        // The hover pause only stops the idle turn. A wheel gesture always
+        // wins, letting a card under the pointer coast naturally through the
+        // ring without making the document itself move.
+        angle -= (speed + boost) * dt;
 
         place();
         frame = window.requestAnimationFrame(tick);
@@ -154,6 +160,26 @@
             release(card);
         });
     });
+
+    function wheelDelta(event) {
+        // Wheel deltas are expressed in pixels by modern browsers, but line
+        // and page units remain possible in older mice and browsers.
+        if (event.deltaMode === 1) return event.deltaY * 16;
+        if (event.deltaMode === 2) return event.deltaY * window.innerHeight;
+        return event.deltaY;
+    }
+
+    ring.addEventListener('wheel', function (event) {
+        if (!wide.matches || still.matches) return;
+        var delta = wheelDelta(event);
+        if (!delta) return;
+
+        // Keep the response proportional to a trackpad or wheel gesture,
+        // while limiting the peak so the cards retain their reassuring weight.
+        boost = Math.max(-5, Math.min(5, boost + delta * 0.009));
+        event.preventDefault();
+        start();
+    }, { passive: false });
 
     function sync() {
         if (!wide.matches) {
