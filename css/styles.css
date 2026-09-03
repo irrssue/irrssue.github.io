@@ -1770,8 +1770,9 @@ mark {
     }
 
     .hero-portrait {
-        width: 76px;
-        height: 76px;
+        /* Mobile-only: portrait reads 20% larger than its base 76px size. */
+        width: 91.2px;
+        height: 91.2px;
     }
 
     .hero-portrait-col {
