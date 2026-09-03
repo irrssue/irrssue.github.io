@@ -5,23 +5,6 @@ const browser = await chromium.launch();
 let failures = 0;
 const fail = m => { console.log('     FAIL ' + m); failures++; };
 
-/* The site is allowed exactly one kind of external traffic: the Gems photo
-   prewarm that javascript/script.js schedules on `load`, during idle time, so
-   opening /gems is not a cold start. Everything else — a font CDN, an
-   analytics tag, an icon library — is a regression.
-
-   So a request is judged on two things: whether it beat the `load` event, and
-   whether it went anywhere other than the photo host. The allowed origins are
-   read out of gems.json rather than written down here, so moving the photos
-   somewhere else does not quietly widen what this check permits. */
-const prewarmOrigins = new Set(
-  JSON.parse(readFileSync(new URL('../data/gems.json', import.meta.url), 'utf8'))
-    .map(g => g && g.src)
-    .filter(Boolean)
-    .flatMap(src => { try { return [new URL(src).origin]; } catch { return []; } })
-);
-const origin = u => { try { return new URL(u).origin; } catch { return u; } };
-
 async function open(path) {
   const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
   const page = await ctx.newPage();
@@ -37,24 +20,19 @@ async function open(path) {
   page.on('requestfailed', r => failed.push(r.url()));
   await page.goto(BASE + path, { waitUntil: 'load' });
   await page.waitForTimeout(1200);            // let idle callbacks fire
-  // Anything that beat `load`, and anything aimed off the photo host.
-  const early = external.filter(r => r.beforeLoad);
-  const foreign = external.filter(r => !prewarmOrigins.has(origin(r.url)));
-  return { page, ctx, errors, external, early, foreign, failed };
+  return { page, ctx, errors, external, failed };
 }
 
-console.log('--- page load: no JS errors, nothing external before load ---');
+console.log('--- page load: no JS errors or background third-party traffic ---');
 for (const p of ['/', '/writing', '/bookmarks',
                  '/writing/2026/4-hour-of-ci-rabbit-hole', '/writing/2025/Hi']) {
-  const { ctx, errors, external, early, foreign, failed } = await open(p);
-  const ok = !errors.length && !early.length && !foreign.length && !failed.length;
+  const { ctx, errors, external, failed } = await open(p);
+  const ok = !errors.length && !external.length && !failed.length;
   if (!ok) failures++;
-  const warm = external.length - early.length - foreign.length;
-  console.log(`${ok ? 'ok  ' : 'FAIL'} ${p.padEnd(46)} ${warm} gems prewarm after load`);
+  console.log(`${ok ? 'ok  ' : 'FAIL'} ${p.padEnd(46)} ${external.length} external requests`);
   errors.forEach(e => console.log('       console: ' + e));
   failed.forEach(f => console.log('       failed : ' + f));
-  early.forEach(r => console.log('       BEFORE LOAD: ' + r.url.slice(0, 80)));
-  foreign.forEach(r => console.log('       FOREIGN    : ' + r.url.slice(0, 80)));
+  external.forEach(r => console.log('       EXTERNAL: ' + r.url.slice(0, 80)));
   await ctx.close();
 }
 
@@ -73,6 +51,38 @@ console.log('\n--- content rendered ---');
   if (ring !== rail) fail(`ring has ${ring} projects, rail has ${rail}`);
   if (posts !== 3) fail(`expected 3 recent posts, got ${posts}`);
   if (!track || track === '—') fail('now-playing title not shown without the YT API');
+  await ctx.close();
+}
+
+console.log('\n--- Gems data stays inert and defers unseen originals ---');
+{
+  const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+  const page = await ctx.newPage();
+  await page.route('**/data/gems.json', route => route.fulfill({
+    contentType: 'application/json',
+    body: JSON.stringify([
+      {
+        id: 'first', type: 'photo', orient: 'landscape',
+        src: 'https://upload.irrssue.com/first.jpg',
+        title: '<img data-xss-probe src=x>', desc: '<script data-xss-probe>window.xss=true</script>',
+        place: '<b data-xss-probe>place</b>', coords: '0, 0',
+        camera: '<img data-xss-probe>', lens: '50mm', iso: '100', aperture: 'f/2', shutter: '1/100'
+      },
+      {
+        id: 'second', type: 'photo', orient: 'landscape',
+        src: 'https://upload.irrssue.com/second.jpg',
+        title: 'Second', desc: '', place: '', coords: '', camera: '', lens: '', iso: '', aperture: '', shutter: ''
+      }
+    ])
+  }));
+  await page.goto(BASE + '/gems', { waitUntil: 'load' });
+  await page.waitForTimeout(250);
+  const injectedNodes = await page.locator('[data-xss-probe]').count();
+  const deferred = await page.locator('.stack-card img[data-src]').count();
+  const literalTitle = await page.locator('.title').textContent();
+  const ok = injectedNodes === 0 && deferred === 1 && literalTitle === '<img data-xss-probe src=x>';
+  if (!ok) fail(`Gems CMS data was not safely rendered (nodes=${injectedNodes}, deferred=${deferred})`);
+  else console.log('ok  CMS text is inert; only the first stack image is requested initially');
   await ctx.close();
 }
 {

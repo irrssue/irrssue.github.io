@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'none'; img-src 'self' https://upload.irrssue.com; media-src 'self' https://upload.irrssue.com; connect-src 'self'; font-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; upgrade-insecure-requests">
 <title>Gems — irrssue.com</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <!-- Warm up the connection to the photo host so the TLS handshake is done before images are requested -->
@@ -384,32 +385,62 @@ function mediaEl(g, i, stacked=false){
       </div>`;
     const btn = frame.querySelector(".playbtn");
     btn.addEventListener("click", ()=> btn.style.opacity = btn.style.opacity==="0"?"1":"0");
-  } else if(g.src){
+  } else {
+    const src = safeMediaUrl(g.src);
+    if(!src){
+      const empty = document.createElement("div");
+      empty.className = "empty";
+      empty.textContent = "media unavailable";
+      frame.appendChild(empty);
+      return frame;
+    }
     const img = document.createElement("img");
-    img.src = g.src;
-    img.alt = g.title;
+    img.alt = String(g.title || "");
     img.decoding = "async";
-    // Every stacked image needs to be ready before it can slide into the pinned frame.
-    if(i === 0 || stacked){
+    // The first photo is the only image needed for first paint. The stack
+    // loader below begins the next one while the reader approaches it.
+    if(i === 0){
+      img.src = src;
       img.loading = "eager";
-      if(i === 0) img.setAttribute("fetchpriority", "high");
+      img.setAttribute("fetchpriority", "high");
     } else {
+      img.dataset.src = src;
       img.loading = "lazy";
     }
     frame.appendChild(img);
-  } else {
-    const empty = document.createElement("div");
-    empty.className = "empty";
-    empty.textContent = g.orient + " photo";
-    frame.appendChild(empty);
   }
   return frame;
 }
 
-// Only http(s) links are allowed through — blocks javascript:/data: URIs.
+// Links can only leave via http(s), never a script-bearing URL scheme.
 function safeUrl(raw){
   try{ const u = new URL(raw, location.href); return (u.protocol==="http:"||u.protocol==="https:") ? u.href : null; }
   catch(_){ return null; }
+}
+
+// Gallery media is either a local asset or an HTTPS object on the dedicated
+// media host. Keeping this allowlist here prevents CMS data from becoming an
+// arbitrary resource loader.
+function safeMediaUrl(raw){
+  try{
+    const u = new URL(raw, location.href);
+    return u.origin === location.origin || u.origin === "https://upload.irrssue.com" ? u.href : null;
+  }catch(_){ return null; }
+}
+
+function valueText(value){ return String(value == null ? "" : value); }
+
+function appendMetaRow(parent, label, value){
+  const row = document.createElement("div");
+  row.className = "mrow";
+  const key = document.createElement("span");
+  key.className = "ml";
+  key.textContent = label;
+  const text = document.createElement("span");
+  text.className = "mv";
+  text.textContent = value;
+  row.append(key, text);
+  parent.appendChild(row);
 }
 
 function mapEl(g, stacked=false){
@@ -424,18 +455,28 @@ function mapEl(g, stacked=false){
     m.rel = "noopener noreferrer";
     m.setAttribute("aria-label", "Open " + (g.place || "location") + " in Google Maps");
   }
-  m.innerHTML = `<canvas></canvas><span class="pin"></span>
-    <div class="plabel"><div class="pl">${g.place||""}</div><div class="pc">${g.coords||""}</div></div>`;
+  const canvas = document.createElement("canvas");
+  const pin = document.createElement("span");
+  pin.className = "pin";
+  const label = document.createElement("div");
+  label.className = "plabel";
+  const place = document.createElement("div");
+  place.className = "pl";
+  place.textContent = valueText(g.place);
+  const coords = document.createElement("div");
+  coords.className = "pc";
+  coords.textContent = valueText(g.coords);
+  label.append(place, coords);
+  m.append(canvas, pin, label);
   return m;
 }
 
 function metaEl(g, stacked=false){
   const m = document.createElement("div");
   m.className = stacked ? "meta stack-copy" : "meta reveal d3";
-  m.innerHTML = `
-    <div class="mrow"><span class="ml">Camera</span><span class="mv">${g.camera}</span></div>
-    <div class="mrow"><span class="ml">Lens</span><span class="mv">${g.lens}</span></div>
-    <div class="mrow"><span class="ml">Exposure</span><span class="mv">ISO ${g.iso} · ${g.aperture} · ${g.shutter}s</span></div>`;
+  appendMetaRow(m, "Camera", valueText(g.camera));
+  appendMetaRow(m, "Lens", valueText(g.lens));
+  appendMetaRow(m, "Exposure", "ISO " + valueText(g.iso) + " · " + valueText(g.aperture) + " · " + valueText(g.shutter) + "s");
   return m;
 }
 
@@ -445,16 +486,31 @@ function infoBlock(g, i, stacked=false){
   const copyClass = stacked ? "stack-copy" : "reveal d1";
   const descClass = stacked ? "stack-copy" : "reveal d2";
   const footClass = stacked ? "stack-copy" : "reveal d3";
-  info.innerHTML =
-    `<div class="eyebrow ${copyClass}"><span class="idx">${pad(i)}</span><span class="type">${g.type}</span></div>
-     <h2 class="title ${copyClass}">${g.title}</h2>
-     <p class="desc ${descClass}">${g.desc}</p>`;
+  const eyebrow = document.createElement("div");
+  eyebrow.className = "eyebrow " + copyClass;
+  const index = document.createElement("span");
+  index.className = "idx";
+  index.textContent = pad(i);
+  const type = document.createElement("span");
+  type.className = "type";
+  type.textContent = valueText(g.type);
+  eyebrow.append(index, type);
+  const title = document.createElement("h2");
+  title.className = "title " + copyClass;
+  title.textContent = valueText(g.title);
+  const desc = document.createElement("p");
+  desc.className = "desc " + descClass;
+  desc.textContent = valueText(g.desc);
+  info.append(eyebrow, title, desc);
   info.appendChild(metaEl(g, stacked));
   const foot = document.createElement("div");
   foot.className = `info-foot ${footClass}`;
   const wrap = document.createElement("div"); wrap.className = "mapwrap";
   wrap.appendChild(mapEl(g, stacked));
-  wrap.insertAdjacentHTML("beforeend", `<span class="place">${g.place}</span>`);
+  const place = document.createElement("span");
+  place.className = "place";
+  place.textContent = valueText(g.place);
+  wrap.appendChild(place);
   foot.appendChild(wrap);
   info.appendChild(foot);
   return info;
@@ -463,10 +519,9 @@ function infoBlock(g, i, stacked=false){
 function detailMetaEl(g){
   const meta = document.createElement("div");
   meta.className = "meta gem-detail-meta";
-  meta.innerHTML = `
-    <div class="mrow"><span class="ml">Camera</span><span class="mv">${g.camera}</span></div>
-    <div class="mrow"><span class="ml">Lens</span><span class="mv">${g.lens}</span></div>
-    <div class="mrow"><span class="ml">Exposure</span><span class="mv">ISO ${g.iso} · ${g.aperture} · ${g.shutter}s</span></div>`;
+  appendMetaRow(meta, "Camera", valueText(g.camera));
+  appendMetaRow(meta, "Lens", valueText(g.lens));
+  appendMetaRow(meta, "Exposure", "ISO " + valueText(g.iso) + " · " + valueText(g.aperture) + " · " + valueText(g.shutter) + "s");
   return meta;
 }
 
@@ -579,6 +634,13 @@ function setupPhotoStack(stack){
   const mix = (from, to, amount) => from + (to - from) * amount;
   const transitionStart = index => index * sceneLength + holdLength;
 
+  function loadCardImage(index){
+    const image = cards[index] && cards[index].querySelector("img[data-src]");
+    if(!image) return;
+    image.src = image.dataset.src;
+    delete image.dataset.src;
+  }
+
   function updateStack(){
     frame = undefined;
     const unit = Math.max(scroller.clientHeight, 1);
@@ -588,6 +650,12 @@ function setupPhotoStack(stack){
 
     for(let index = 0; index < cards.length - 1; index += 1){
       if(progress >= transitionStart(index) + 0.5) activeIndex = index + 1;
+    }
+
+    // Start the upcoming image before its transition begins, while keeping
+    // unseen originals off the network entirely.
+    if(activeIndex < cards.length - 1 && progress >= transitionStart(activeIndex) - 0.25){
+      loadCardImage(activeIndex + 1);
     }
 
     cards.forEach((card, index) => {
@@ -625,8 +693,15 @@ function buildGem(g, i){
   stage.appendChild(infoBlock(g, i));
 
   sec.appendChild(stage);
-  sec.insertAdjacentHTML("beforeend",
-    `<div class="cue"><span class="lbl">scroll</span><span class="arrow"></span></div>`);
+  const cue = document.createElement("div");
+  cue.className = "cue";
+  const label = document.createElement("span");
+  label.className = "lbl";
+  label.textContent = "scroll";
+  const arrow = document.createElement("span");
+  arrow.className = "arrow";
+  cue.append(label, arrow);
+  sec.appendChild(cue);
   return sec;
 }
 

@@ -34,6 +34,9 @@
             var words = Array.prototype.slice.call(overlay.querySelectorAll('.intro-overlay__word'));
             var seenKey = 'irrssue-intro-v4';
             var hasReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            var connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+            var hasConstrainedConnection = connection &&
+                (connection.saveData || /^(slow-2g|2g|3g)$/.test(connection.effectiveType || ''));
             var isSeen = false;
 
             // The curtain is the most animated thing on the site; a browser
@@ -61,21 +64,23 @@
                 words[index].classList.add('is-visible');
             }
 
-            if (isSeen || hasReducedMotion) {
+            if (isSeen || hasReducedMotion || hasConstrainedConnection) {
                 window.setTimeout(removeIntro, 0);
                 return;
             }
 
             document.body.classList.add('intro-active');
-            window.setTimeout(function () { revealWord(1); }, 350);
-            window.setTimeout(function () { revealWord(2); }, 700);
-            window.setTimeout(function () { revealWord(3); }, 1050);
-            window.setTimeout(function () { revealWord(4); }, 1400);
+            // Keep the greeting, but do not make a first-time visitor wait for
+            // a multi-second animation before the actual page becomes usable.
+            window.setTimeout(function () { revealWord(1); }, 120);
+            window.setTimeout(function () { revealWord(2); }, 240);
+            window.setTimeout(function () { revealWord(3); }, 360);
+            window.setTimeout(function () { revealWord(4); }, 480);
             window.setTimeout(function () {
                 document.body.classList.add('intro-revealing');
                 overlay.classList.add('intro-overlay--leaving');
-            }, 1750);
-            window.setTimeout(removeIntro, 2750);
+            }, 600);
+            window.setTimeout(removeIntro, 1120);
         })();
     </script>
 
@@ -144,7 +149,7 @@
 <a class="prail" href="https://snapsher.com" target="_blank" rel="noopener noreferrer"><img class="prail__shot" src="previews/projects/snapsher.webp" alt="Snapsher — A social-media that doesn&#x27;t burn you out." width="1000" height="625" loading="lazy" decoding="async"><b class="prail__name">Snapsher</b><span class="prail__desc">A social-media that doesn&#x27;t burn you out.</span></a>
 <a class="prail" href="https://news.irrssue.com" target="_blank" rel="noopener noreferrer"><img class="prail__shot" src="previews/projects/minimal-hackernews.webp" alt="Minimal HackerNews — Hackernews reimagined" width="1000" height="625" loading="lazy" decoding="async"><b class="prail__name">Minimal HackerNews</b><span class="prail__desc">Hackernews reimagined</span></a>
 <a class="prail" href="https://github.com/irrssue/homelab" target="_blank" rel="noopener noreferrer"><img class="prail__shot" src="previews/projects/homelab.webp" alt="Homelab — The start of my hobby into self hosting" width="1000" height="625" loading="lazy" decoding="async"><b class="prail__name">Homelab</b><span class="prail__desc">The start of my hobby into self hosting</span></a>
-<a class="prail" href="https://irrssue.github.io/" target="_blank" rel="noopener noreferrer"><img class="prail__shot" src="previews/projects/thura-zaw.webp" alt="Thura Zaw — Private playground" width="1000" height="625" loading="lazy" decoding="async"><b class="prail__name">Thura Zaw</b><span class="prail__desc">Private playground</span></a>
+<a class="prail" href="https://irrssue.com/" target="_blank" rel="noopener noreferrer"><img class="prail__shot" src="previews/projects/thura-zaw.webp" alt="Thura Zaw — Private playground" width="1000" height="625" loading="lazy" decoding="async"><b class="prail__name">Thura Zaw</b><span class="prail__desc">Private playground</span></a>
 <a class="prail" href="https://mail.irrssue.com/" target="_blank" rel="noopener noreferrer"><img class="prail__shot" src="previews/projects/baremail.webp" alt="Baremail — the minimal version of gmail" width="1000" height="625" loading="lazy" decoding="async"><b class="prail__name">Baremail</b><span class="prail__desc">the minimal version of gmail</span></a>
 <a class="prail" href="https://github.com/irrssue/conflict-map.git" target="_blank" rel="noopener noreferrer"><img class="prail__shot" src="previews/projects/conflict-map.webp" alt="Conflict Map — interactive conflict map" width="1000" height="625" loading="lazy" decoding="async"><b class="prail__name">Conflict Map</b><span class="prail__desc">interactive conflict map</span></a>
 <a class="prail" href="https://irrssue.com/mood-receipt/" target="_blank" rel="noopener noreferrer"><img class="prail__shot" src="previews/projects/mood-receipt.webp" alt="Mood Receipt — shareable what&#x27;s up in receipt format" width="1000" height="625" loading="lazy" decoding="async"><b class="prail__name">Mood Receipt</b><span class="prail__desc">shareable what&#x27;s up in receipt format</span></a>
@@ -181,7 +186,7 @@
 <li class="project-item reveal-item"><a href="https://snapsher.com" class="project-link external" target="_blank" rel="noopener noreferrer"><span class="project-name">Snapsher</span><span class="project-description">A social-media that doesn&#x27;t burn you out.</span></a></li>
 <li class="project-item reveal-item"><a href="https://news.irrssue.com" class="project-link external" target="_blank" rel="noopener noreferrer"><span class="project-name">Minimal HackerNews</span><span class="project-description">Hackernews reimagined</span></a></li>
 <li class="project-item reveal-item"><a href="https://github.com/irrssue/homelab" class="project-link external" target="_blank" rel="noopener noreferrer"><span class="project-name">Homelab</span><span class="project-description">The start of my hobby into self hosting</span></a></li>
-<li class="project-item reveal-item"><a href="https://irrssue.github.io/" class="project-link external" target="_blank" rel="noopener noreferrer"><span class="project-name">Thura Zaw</span><span class="project-description">Private playground</span></a></li>
+<li class="project-item reveal-item"><a href="https://irrssue.com/" class="project-link external" target="_blank" rel="noopener noreferrer"><span class="project-name">Thura Zaw</span><span class="project-description">Private playground</span></a></li>
 <li class="project-item reveal-item"><a href="https://mail.irrssue.com/" class="project-link external" target="_blank" rel="noopener noreferrer"><span class="project-name">Baremail</span><span class="project-description">the minimal version of gmail</span></a></li>
 <li class="project-item reveal-item"><a href="https://github.com/irrssue/conflict-map.git" class="project-link external" target="_blank" rel="noopener noreferrer"><span class="project-name">Conflict Map</span><span class="project-description">interactive conflict map</span></a></li>
 <li class="project-item reveal-item"><a href="https://irrssue.com/mood-receipt/" class="project-link external" target="_blank" rel="noopener noreferrer"><span class="project-name">Mood Receipt</span><span class="project-description">shareable what&#x27;s up in receipt format</span></a></li>
@@ -203,7 +208,7 @@
 <a class="pcard" href="https://snapsher.com" target="_blank" rel="noopener noreferrer" style="--a:0.0deg" data-name="Snapsher" data-desc="A social-media that doesn&#x27;t burn you out."><span class="pcard__frame"><img class="pcard__shot" src="previews/projects/snapsher.webp" alt="Snapsher — A social-media that doesn&#x27;t burn you out." width="1000" height="625" loading="lazy" decoding="async"></span></a>
 <a class="pcard" href="https://news.irrssue.com" target="_blank" rel="noopener noreferrer" style="--a:36.0deg" data-name="Minimal HackerNews" data-desc="Hackernews reimagined"><span class="pcard__frame"><img class="pcard__shot" src="previews/projects/minimal-hackernews.webp" alt="Minimal HackerNews — Hackernews reimagined" width="1000" height="625" loading="lazy" decoding="async"></span></a>
 <a class="pcard" href="https://github.com/irrssue/homelab" target="_blank" rel="noopener noreferrer" style="--a:72.0deg" data-name="Homelab" data-desc="The start of my hobby into self hosting"><span class="pcard__frame"><img class="pcard__shot" src="previews/projects/homelab.webp" alt="Homelab — The start of my hobby into self hosting" width="1000" height="625" loading="lazy" decoding="async"></span></a>
-<a class="pcard" href="https://irrssue.github.io/" target="_blank" rel="noopener noreferrer" style="--a:108.0deg" data-name="Thura Zaw" data-desc="Private playground"><span class="pcard__frame"><img class="pcard__shot" src="previews/projects/thura-zaw.webp" alt="Thura Zaw — Private playground" width="1000" height="625" loading="lazy" decoding="async"></span></a>
+<a class="pcard" href="https://irrssue.com/" target="_blank" rel="noopener noreferrer" style="--a:108.0deg" data-name="Thura Zaw" data-desc="Private playground"><span class="pcard__frame"><img class="pcard__shot" src="previews/projects/thura-zaw.webp" alt="Thura Zaw — Private playground" width="1000" height="625" loading="lazy" decoding="async"></span></a>
 <a class="pcard" href="https://mail.irrssue.com/" target="_blank" rel="noopener noreferrer" style="--a:144.0deg" data-name="Baremail" data-desc="the minimal version of gmail"><span class="pcard__frame"><img class="pcard__shot" src="previews/projects/baremail.webp" alt="Baremail — the minimal version of gmail" width="1000" height="625" loading="lazy" decoding="async"></span></a>
 <a class="pcard" href="https://github.com/irrssue/conflict-map.git" target="_blank" rel="noopener noreferrer" style="--a:180.0deg" data-name="Conflict Map" data-desc="interactive conflict map"><span class="pcard__frame"><img class="pcard__shot" src="previews/projects/conflict-map.webp" alt="Conflict Map — interactive conflict map" width="1000" height="625" loading="lazy" decoding="async"></span></a>
 <a class="pcard" href="https://irrssue.com/mood-receipt/" target="_blank" rel="noopener noreferrer" style="--a:216.0deg" data-name="Mood Receipt" data-desc="shareable what&#x27;s up in receipt format"><span class="pcard__frame"><img class="pcard__shot" src="previews/projects/mood-receipt.webp" alt="Mood Receipt — shareable what&#x27;s up in receipt format" width="1000" height="625" loading="lazy" decoding="async"></span></a>

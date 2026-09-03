@@ -38,6 +38,10 @@
     var boost = 0;                      // spin picked up from scrolling
     var lastScroll = null;
     var lastFrame = 0;
+    // The idle turn is intentionally slow. Rendering it at 30fps is visually
+    // indistinguishable, while halving the style writes for all ten cards.
+    // Interaction and wheel momentum still render at the display refresh rate.
+    var IDLE_FRAME_MS = 1000 / 30;
     var frame = null;
     var hovered = null;
 
@@ -73,6 +77,11 @@
     }
 
     function tick(now) {
+        var isInteractive = hovered || Math.abs(boost) > 0.01;
+        if (!isInteractive && lastFrame && now - lastFrame < IDLE_FRAME_MS) {
+            frame = window.requestAnimationFrame(tick);
+            return;
+        }
         var dt = Math.min(now - lastFrame, 64) / 1000;
         lastFrame = now;
 
