@@ -1798,17 +1798,18 @@ mark {
         width: auto;
         max-width: 100%;
         padding: 4px 10px;
-        gap: 10px;
+        /* Give each transport control a slightly wider mobile tap buffer. */
+        gap: 11px;
     }
 
     .np-btn {
-        width: 22px;
-        height: 22px;
+        width: 26.4px;
+        height: 26.4px;
     }
 
     .np-btn svg {
-        width: 11px;
-        height: 11px;
+        width: 13.2px;
+        height: 13.2px;
     }
 
     .np-track {
