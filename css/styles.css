@@ -1607,14 +1607,23 @@ mark {
 .site-nav__socials {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px 16px;
+    gap: 0.5rem;
     padding-bottom: 18px;
 }
 
 .site-nav__socials a {
-    font-size: 0.82em;
+    display: grid;
+    width: 2rem;
+    height: 2rem;
+    place-items: center;
     color: var(--nav-ink-dim);
     transition: color 0.2s ease;
+}
+
+.site-nav__socials svg {
+    width: 1rem;
+    height: 1rem;
+    fill: currentColor;
 }
 
 .site-nav__socials a:hover,
