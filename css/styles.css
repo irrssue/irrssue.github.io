@@ -1960,7 +1960,12 @@ body::-webkit-scrollbar,
     .projects-rail__track {
         display: flex;
         gap: 14px;
-        overflow-x: hidden;
+        /* Touch devices need this scrollable from the first frame — there is
+           no real hover to reveal it on tap, only iOS/Android's sticky-hover
+           simulation after a card is pressed, which made the track swipeable
+           only after the first tap. Mouse/trackpad users still get the
+           hide-until-hover treatment below. */
+        overflow-x: auto;
         scroll-snap-type: x mandatory;
         -webkit-overflow-scrolling: touch;
         /* Keep a horizontal flick from turning into a page-back gesture. */
@@ -1977,8 +1982,14 @@ body::-webkit-scrollbar,
         transition: overflow 0.2s ease;
     }
 
-    .projects-rail:hover .projects-rail__track {
-        overflow-x: auto;
+    @media (hover: hover) and (pointer: fine) {
+        .projects-rail__track {
+            overflow-x: hidden;
+        }
+
+        .projects-rail:hover .projects-rail__track {
+            overflow-x: auto;
+        }
     }
 
     .prail {
