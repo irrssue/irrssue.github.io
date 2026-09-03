@@ -673,12 +673,16 @@ a {
     }
 }
 
-/* Mobile only: intro copy reads 15% smaller than the tablet size set above.
-   Name keeps the tablet size — no override needed. */
+/* Mobile only: name reads 30% larger, intro copy 30% smaller than the
+   tablet sizes set above. */
 @media (max-width: 768px) {
+    body.home .hero-name {
+        font-size: clamp(33.8px, 9.1vw, 45.5px);
+    }
+
     body.home .content-section p.hero-intro,
     body.home .hero-intro {
-        font-size: clamp(16.2px, 4.42vw, 19.6px);
+        font-size: clamp(13.3px, 3.64vw, 16.1px);
     }
 }
 
