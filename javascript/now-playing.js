@@ -44,30 +44,6 @@
         return a;
     }
 
-    var SVG_NS = 'http://www.w3.org/2000/svg';
-
-    function setSvgIcon(btn, isPaused) {
-        var svg = btn.querySelector('svg');
-        while (svg.firstChild) svg.removeChild(svg.firstChild);
-        if (isPaused) {
-            var r1 = document.createElementNS(SVG_NS, 'rect');
-            r1.setAttribute('x', '1.5'); r1.setAttribute('y', '1');
-            r1.setAttribute('width', '2.5'); r1.setAttribute('height', '8');
-            r1.setAttribute('fill', 'currentColor');
-            var r2 = document.createElementNS(SVG_NS, 'rect');
-            r2.setAttribute('x', '5.5'); r2.setAttribute('y', '1');
-            r2.setAttribute('width', '2.5'); r2.setAttribute('height', '8');
-            r2.setAttribute('fill', 'currentColor');
-            svg.appendChild(r1);
-            svg.appendChild(r2);
-        } else {
-            var poly = document.createElementNS(SVG_NS, 'polygon');
-            poly.setAttribute('points', '2,1 2,9 9,5');
-            poly.setAttribute('fill', 'currentColor');
-            svg.appendChild(poly);
-        }
-    }
-
     function updateDisplay() {
         var song = myPlaylist[myIndex];
         if (!song) return;
@@ -81,8 +57,9 @@
         playing = state;
         var btn = document.getElementById('npPlayBtn');
         if (btn) {
-            setSvgIcon(btn, state);
+            btn.classList.toggle('is-playing', state);
             btn.setAttribute('aria-label', state ? 'Pause' : 'Play');
+            btn.setAttribute('aria-pressed', String(state));
         }
     }
 
@@ -176,10 +153,14 @@
             btn.addEventListener('click', function () {
                 if (playing) {
                     userWantsPlay = false;
+                    setPlaying(false);
                     if (player) player.pauseVideo();
                     return;
                 }
                 userWantsPlay = true;
+                // Switch the control immediately; the embed can take a moment
+                // to initialise on mobile networks.
+                setPlaying(true);
                 if (playerReady) {
                     player.playVideo();
                 } else {

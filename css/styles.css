@@ -81,6 +81,11 @@
     --nav-ink-strong: #ffffff;
     --nav-shadow: 0 6px 24px rgba(0, 0, 0, 0.35), 0 2px 6px rgba(0, 0, 0, 0.25);
 
+    /* Responsive micro-interactions */
+    --motion-quick: 140ms;
+    --motion-play-icon: 220ms;
+    --motion-spring: cubic-bezier(0.2, 0.8, 0.2, 1);
+
     /* Depth on the project ring and the hover preview */
     --card-shadow: 0 18px 50px -16px rgba(0, 0, 0, 0.9);
     --card-shadow-active: 0 32px 80px -16px rgba(0, 0, 0, 1);
@@ -805,7 +810,10 @@ a {
     justify-content: center;
     flex-shrink: 0;
     padding: 0;
-    transition: background 0.15s ease;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    will-change: transform;
+    transition: transform var(--motion-quick) var(--motion-spring), background var(--motion-quick) ease, color var(--motion-quick) ease;
     background: var(--tint-strong);
     color: var(--text-strong);
 }
@@ -814,9 +822,60 @@ a {
     background: var(--tint-stronger);
 }
 
+.np-btn:active {
+    transform: scale(0.88);
+    transition-duration: 70ms;
+}
+
+.np-btn:focus-visible {
+    outline: 2px solid var(--nav-focus);
+    outline-offset: 2px;
+}
+
 .np-btn svg {
     width: 12px;
     height: 12px;
+    overflow: visible;
+}
+
+.np-btn--play svg {
+    transform: scale(1);
+    transition: transform var(--motion-play-icon) var(--motion-spring);
+}
+
+.np-btn--play.is-playing svg {
+    transform: scale(1.12);
+}
+
+.np-icon-play,
+.np-icon-pause {
+    transform-box: fill-box;
+    transform-origin: center;
+    transition: opacity var(--motion-play-icon) ease, transform var(--motion-play-icon) var(--motion-spring);
+}
+
+.np-icon-pause {
+    opacity: 0;
+    transform: scale(0.55);
+}
+
+.np-btn--play.is-playing .np-icon-play {
+    opacity: 0;
+    transform: scale(0.55);
+}
+
+.np-btn--play.is-playing .np-icon-pause {
+    opacity: 1;
+    transform: scale(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .np-btn,
+    .np-btn--play svg,
+    .np-icon-play,
+    .np-icon-pause {
+        transition-duration: 0ms;
+    }
 }
 
 .np-track {

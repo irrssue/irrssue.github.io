@@ -90,8 +90,11 @@
                                 <button type="button" class="np-btn" id="npBackBtn" aria-label="Previous track">
                                     <svg viewBox="0 0 10 10"><rect x="1" y="1" width="1.3" height="8" fill="currentColor"/><polygon points="9,1 9,9 2.3,5" fill="currentColor"/></svg>
                                 </button>
-                                <button type="button" class="np-btn" id="npPlayBtn" aria-label="Play">
-                                    <svg viewBox="0 0 10 10"><polygon points="2,1 2,9 9,5" fill="currentColor"/></svg>
+                                <button type="button" class="np-btn np-btn--play" id="npPlayBtn" aria-label="Play" aria-pressed="false">
+                                    <svg viewBox="0 0 10 10" aria-hidden="true">
+                                        <polygon class="np-icon-play" points="2,1 2,9 9,5" fill="currentColor"/>
+                                        <path class="np-icon-pause" d="M1.5 1h2.5v8H1.5zm4 0H8v8H5.5z" fill="currentColor"/>
+                                    </svg>
                                 </button>
                                 <button type="button" class="np-btn" id="npNextBtn" aria-label="Next track">
                                     <svg viewBox="0 0 10 10"><polygon points="1,1 1,9 7.7,5" fill="currentColor"/><rect x="7.7" y="1" width="1.3" height="8" fill="currentColor"/></svg>
