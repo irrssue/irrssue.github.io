@@ -1787,6 +1787,8 @@ mark {
         width: auto;
         flex: 1;
         min-width: 0;
+        /* Mobile-only: player reads 30% larger than its own base size. */
+        zoom: 1.3;
     }
 
     .np-controls {
