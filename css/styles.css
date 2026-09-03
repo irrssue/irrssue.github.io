@@ -63,8 +63,26 @@
     --card-shadow: 0 18px 50px -16px rgba(0, 0, 0, 0.9);
     --card-shadow-active: 0 32px 80px -16px rgba(0, 0, 0, 1);
     --preview-shadow: 0 4px 24px rgba(0, 0, 0, 0.5), 0 1px 4px rgba(0, 0, 0, 0.3);
-    /* Ring cards fade into the page rather than off a hard window edge */
-    --edge-fade: linear-gradient(to right, rgba(0, 0, 0, 0), #000000);
+    /* Ring cards fade into the page rather than off a hard window edge.
+       A straight two-stop ramp turns on with a sudden change of slope, and
+       the eye reads that as a line drawn down the cards. These stops trace a
+       smootherstep curve instead: a flat toe where the fade is still nothing,
+       an S through the middle, and full cover well before the window edge, so
+       the veil has no beginning you can point at. */
+    --edge-fade: linear-gradient(to right,
+        rgba(0, 0, 0, 0) 0%,
+        rgba(0, 0, 0, 0) 30%,
+        rgba(0, 0, 0, 0.009) 36%,
+        rgba(0, 0, 0, 0.058) 42%,
+        rgba(0, 0, 0, 0.163) 48%,
+        rgba(0, 0, 0, 0.317) 54%,
+        rgba(0, 0, 0, 0.5) 60%,
+        rgba(0, 0, 0, 0.683) 66%,
+        rgba(0, 0, 0, 0.837) 72%,
+        rgba(0, 0, 0, 0.942) 78%,
+        rgba(0, 0, 0, 0.991) 84%,
+        rgba(0, 0, 0, 1) 90%,
+        rgba(0, 0, 0, 1) 100%);
 
     /* Post pages */
     --post-title: #e2e2e1;
@@ -131,7 +149,20 @@
     --card-shadow: 0 18px 50px -18px rgba(28, 27, 25, 0.4);
     --card-shadow-active: 0 32px 80px -20px rgba(28, 27, 25, 0.45);
     --preview-shadow: 0 4px 24px rgba(28, 27, 25, 0.18), 0 1px 4px rgba(28, 27, 25, 0.1);
-    --edge-fade: linear-gradient(to right, rgba(250, 249, 247, 0), #faf9f7);
+    --edge-fade: linear-gradient(to right,
+        rgba(250, 249, 247, 0) 0%,
+        rgba(250, 249, 247, 0) 30%,
+        rgba(250, 249, 247, 0.009) 36%,
+        rgba(250, 249, 247, 0.058) 42%,
+        rgba(250, 249, 247, 0.163) 48%,
+        rgba(250, 249, 247, 0.317) 54%,
+        rgba(250, 249, 247, 0.5) 60%,
+        rgba(250, 249, 247, 0.683) 66%,
+        rgba(250, 249, 247, 0.837) 72%,
+        rgba(250, 249, 247, 0.942) 78%,
+        rgba(250, 249, 247, 0.991) 84%,
+        rgba(250, 249, 247, 1) 90%,
+        rgba(250, 249, 247, 1) 100%);
 
     --post-title: #1b1a18;
     --post-body: #3b3934;
@@ -2209,13 +2240,15 @@ body::-webkit-scrollbar,
     }
 
     /* Cards swinging round the far side fade into the page instead of being
-       cut off on the window's hard edge. */
+       cut off on the window's hard edge. Wider than the fade itself looks:
+       the first third of this box is the gradient's flat toe, there only to
+       give the veil room to arrive from nothing. */
     .project-ring__edge {
         position: absolute;
         top: 0;
         right: 0;
         bottom: 0;
-        width: 176px;
+        width: clamp(200px, 22vw, 320px);
         z-index: 150;
         pointer-events: none;
         background: var(--edge-fade);
