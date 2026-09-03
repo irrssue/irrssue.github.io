@@ -742,8 +742,8 @@ a {
 }
 
 .np-btn {
-    width: 18px;
-    height: 18px;
+    width: 21.6px;
+    height: 21.6px;
     border-radius: 50%;
     border: none;
     cursor: pointer;
@@ -762,8 +762,8 @@ a {
 }
 
 .np-btn svg {
-    width: 10px;
-    height: 10px;
+    width: 12px;
+    height: 12px;
 }
 
 .np-track {
