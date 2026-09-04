@@ -235,7 +235,6 @@
     z-index: 3;
     width: min(100% - 2rem, 34rem);
     height: 2.65rem;
-    overflow: hidden;
 }
 
 .intro-overlay__word {
@@ -249,14 +248,12 @@
     letter-spacing: -0.06em;
     line-height: 1;
     opacity: 0;
-    transform: translateY(105%);
-    transition: transform 0.48s var(--intro-ease), opacity 0.12s linear;
+    transition: opacity 0.2s linear;
     white-space: nowrap;
 }
 
 .intro-overlay__word.is-visible {
     opacity: 1;
-    transform: translateY(0);
 }
 
 .intro-overlay__word--burmese {
@@ -268,7 +265,6 @@
 
 .intro-overlay__word.is-past {
     opacity: 0;
-    transform: translateY(-105%);
 }
 
 .intro-overlay__curtain {
@@ -333,7 +329,6 @@ body.intro-active.intro-revealing .site-nav__surface {
 
 .intro-overlay.intro-overlay--leaving .intro-overlay__word {
     opacity: 0;
-    transform: translateY(-150%);
 }
 
 .intro-overlay.intro-overlay--leaving .intro-overlay__curtain {

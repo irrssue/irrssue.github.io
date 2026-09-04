@@ -32,7 +32,6 @@
     <script>
         (function () {
             var overlay = document.getElementById('introOverlay');
-            var words = Array.prototype.slice.call(overlay.querySelectorAll('.intro-overlay__word'));
             var seenKey = 'irrssue-intro-v4';
             var hasReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
             var connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
@@ -59,29 +58,19 @@
                 if (overlay && overlay.parentNode) overlay.remove();
             }
 
-            function revealWord(index) {
-                words[index - 1].classList.remove('is-visible');
-                words[index - 1].classList.add('is-past');
-                words[index].classList.add('is-visible');
-            }
-
             if (isSeen || hasReducedMotion || hasConstrainedConnection) {
                 window.setTimeout(removeIntro, 0);
                 return;
             }
 
             document.body.classList.add('intro-active');
-            // Keep the greeting, but do not make a first-time visitor wait for
-            // a multi-second animation before the actual page becomes usable.
-            window.setTimeout(function () { revealWord(1); }, 120);
-            window.setTimeout(function () { revealWord(2); }, 240);
-            window.setTimeout(function () { revealWord(3); }, 360);
-            window.setTimeout(function () { revealWord(4); }, 480);
+            // Keep the greeting stationary. The former word-by-word vertical
+            // movement was clipped by its compact stage on mobile Safari.
             window.setTimeout(function () {
                 document.body.classList.add('intro-revealing');
                 overlay.classList.add('intro-overlay--leaving');
-            }, 600);
-            window.setTimeout(removeIntro, 1120);
+            }, 700);
+            window.setTimeout(removeIntro, 1220);
         })();
     </script>
 
