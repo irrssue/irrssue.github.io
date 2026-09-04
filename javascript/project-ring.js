@@ -77,6 +77,15 @@
     }
 
     function tick(now) {
+        // javascript/pjax.js replaces this ring's whole subtree wholesale on
+        // every soft navigation rather than tearing it down explicitly, so
+        // this is the loop's only chance to notice it's been detached and
+        // stop -- otherwise it would keep animating an invisible, orphaned
+        // ring forever, one extra instance per visit back to the homepage.
+        if (!ring.isConnected) {
+            stop();
+            return;
+        }
         var isInteractive = hovered || Math.abs(boost) > 0.01;
         if (!isInteractive && lastFrame && now - lastFrame < IDLE_FRAME_MS) {
             frame = window.requestAnimationFrame(tick);
@@ -106,7 +115,7 @@
     }
 
     function start() {
-        if (frame !== null || still.matches || !wide.matches) return;
+        if (frame !== null || still.matches || !wide.matches || !ring.isConnected) return;
         lastFrame = window.performance.now();
         lastScroll = null;
         frame = window.requestAnimationFrame(tick);

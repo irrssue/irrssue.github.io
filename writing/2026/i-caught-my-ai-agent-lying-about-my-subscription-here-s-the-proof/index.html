@@ -10,12 +10,12 @@
     <!-- Decides, before a single rule is applied, whether this browser can run
          the animated design, and fetches the scripts that drive it only if it
          can. Browsers that cannot are drawn by css/legacy.css instead. -->
-    <script id="capability" src="/javascript/capability.js" data-enhance="/javascript/script.js,/javascript/post.js,/javascript/now-playing.js"></script>
+    <script id="capability" src="/javascript/capability.js" data-enhance="/javascript/script.js,/javascript/post.js,/javascript/now-playing.js,/javascript/pjax.js"></script>
     <link rel="stylesheet" href="/css/styles.css">
     <link rel="stylesheet" href="/css/post.css">
     <link rel="stylesheet" href="/css/legacy.css">
     <link rel="stylesheet" href="/css/fonts-post.css">
-    <style>
+    <style id="post-overrides">
         .main-content { max-width: 720px; padding-left: 40px; padding-right: 40px; }
         .post-container { padding-left: 0; padding-right: 0; max-width: 100%; }
         @media (max-width: 768px) {
@@ -37,6 +37,12 @@
     <script src="/javascript/theme.js"></script>
 </head>
 <body class="post-page">
+    <!-- Everything in here is what javascript/pjax.js swaps out on a soft
+         navigation between /, /writing and /bookmarks. The nav and the
+         YouTube embed below live outside it on purpose, so neither one is
+         ever torn down and rebuilt just because the visitor clicked a link
+         -- music in particular keeps playing straight through. -->
+    <div id="pjax-root">
     <div class="grid-container">
         <main class="main-content">
             <div class="post-container">
@@ -222,6 +228,7 @@ cat ~/.hermes/auth.json               # the actual answer
             </div>
         </main>
     </div>
+    </div><!-- #pjax-root -->
 
     <!-- Top Navigation -->
     <nav class="site-nav" id="siteNav">

@@ -401,6 +401,12 @@ body {
     min-height: 100vh;
 }
 
+/* javascript/pjax.js focuses #pjax-root after a soft navigation so screen
+   readers announce the page change; nobody tabbed here, so no ring. */
+#pjax-root:focus {
+    outline: none;
+}
+
 /* Text Selection */
 ::selection {
     background-color: var(--selection-bg);

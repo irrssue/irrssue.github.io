@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'none'; img-src 'self'; media-src 'self'; connect-src 'self'; font-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' https://www.youtube.com 'sha256-CmmbnEKjrURykmDYAtj9Q7FSTza2eQfXJnGaGPJb2MQ=' 'sha256-RIe4j5tG42ycuhmtsdAgBy2blPsE+InElMFpzkVxhm4=' 'sha256-Lq3epzR4E9NkTak86SV9l9FCSeT4GQxjLRqB/YRdgfA='; frame-src https://www.youtube.com; upgrade-insecure-requests">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'none'; img-src 'self' data: https:; media-src 'self' https:; connect-src 'self'; font-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' https://www.youtube.com 'sha256-CmmbnEKjrURykmDYAtj9Q7FSTza2eQfXJnGaGPJb2MQ=' 'sha256-RIe4j5tG42ycuhmtsdAgBy2blPsE+InElMFpzkVxhm4=' 'sha256-Lq3epzR4E9NkTak86SV9l9FCSeT4GQxjLRqB/YRdgfA='; frame-src https://www.youtube.com; upgrade-insecure-requests">
     <title>Saw Thura Zaw</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <!-- Decides, before a single rule is applied, whether this browser can run
          the animated design, and fetches the scripts that drive it only if it
          can. Browsers that cannot are drawn by css/legacy.css instead. -->
-    <script id="capability" src="javascript/capability.js" data-enhance="javascript/now-playing.js,javascript/script.js,javascript/project-ring.js,javascript/project-rail.js"></script>
+    <script id="capability" src="javascript/capability.js" data-enhance="javascript/now-playing.js,javascript/script.js,javascript/project-ring.js,javascript/project-rail.js,javascript/pjax.js"></script>
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/legacy.css">
     <!-- Self-hosted display fonts, subset to the hero name's glyphs -->
@@ -18,6 +18,12 @@
     <script src="javascript/theme.js"></script>
 </head>
 <body class="home">
+    <!-- This whole intro sequence stays outside #pjax-root on purpose: it's
+         a once-per-session first-paint curtain (gated on sessionStorage
+         below), so it has no business replaying on a soft navigation back
+         to home -- and its inline script only has a CSP script-src hash on
+         this page, which a soft navigation arriving from elsewhere would be
+         running under a CSP that never granted it. -->
     <noscript><style>.intro-overlay { display: none !important; }</style></noscript>
     <div class="intro-overlay" id="introOverlay" aria-hidden="true">
         <div class="intro-overlay__word-stage">
@@ -85,6 +91,12 @@
         })();
     </script>
 
+    <!-- Everything in here is what javascript/pjax.js swaps out on a soft
+         navigation between /, /writing and /bookmarks. The nav and the
+         YouTube embed below live outside it on purpose, so neither one is
+         ever torn down and rebuilt just because the visitor clicked a link
+         -- music in particular keeps playing straight through. -->
+    <div id="pjax-root">
     <div class="grid-container">
         <main class="main-content">
             <section class="content-section" id="home">
@@ -136,7 +148,6 @@
                         </div>
                     </div><!-- .hero-text -->
                 </div><!-- .hero-layout -->
-                <div id="yt-player" style="position:fixed;bottom:0;right:0;width:2px;height:2px;opacity:0.01;pointer-events:none;z-index:-1;" aria-hidden="true"></div>
             </section>
 
             <!-- Projects, below the ring breakpoint. Above 1080px the ring
@@ -223,6 +234,7 @@
             <div class="project-ring__tip" aria-hidden="true"><b></b><span></span></div>
         </aside>
     </div>
+    </div><!-- #pjax-root -->
 
     <!-- Top Navigation -->
     <nav class="site-nav" id="siteNav">
@@ -264,9 +276,16 @@
         </div>
     </nav>
 
-    <!-- now-playing.js, script.js, project-ring.js and project-rail.js are
-         fetched by javascript/capability.js in the document head, and only
-         when the browser passes its test. -->
+    <!-- Invisible YouTube embed for now-playing.js -- keeps a track already
+         started on another page going (or resumable) here too. See the note
+         above requestApi() in that file for why it's a plain div, not an
+         iframe, and why it loads immediately rather than on first tap.
+         Lives outside #pjax-root so a soft navigation never rebuilds it. -->
+    <div id="yt-player" style="position:fixed;bottom:0;right:0;width:2px;height:2px;opacity:0.01;pointer-events:none;z-index:-1;" aria-hidden="true"></div>
+
+    <!-- now-playing.js, script.js, project-ring.js, project-rail.js and
+         pjax.js are fetched by javascript/capability.js in the document
+         head, and only when the browser passes its test. -->
     <script>
         // Link preview on hover (desktop only)
         (function() {

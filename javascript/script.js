@@ -5,6 +5,30 @@
    The markup is identical on every page, so the link for the page the
    visitor is on is marked here rather than hand-edited into each file.
    ------------------------------------------------------------------ */
+// Highlight the current page. "/" only matches the homepage; every other
+// entry also covers its sub-pages (e.g. /writing/2026/a-post). Exported so
+// javascript/pjax.js can re-run just this part after a soft navigation,
+// without touching the toggle/menu listeners buildNav() below sets up once.
+function updateNavCurrent() {
+    const nav = document.querySelector('.site-nav');
+    if (!nav) return;
+
+    const path = location.pathname.replace(/index\.html$/, '');
+    nav.querySelectorAll('.site-nav__link').forEach(function (link) {
+        const href = link.getAttribute('href');
+        const isCurrent = href === '/'
+            ? path === '/'
+            : path === href || path.indexOf(href + '/') === 0;
+        link.classList.toggle('is-current', isCurrent);
+        if (isCurrent) {
+            link.setAttribute('aria-current', 'page');
+        } else {
+            link.removeAttribute('aria-current');
+        }
+    });
+}
+window.updateNavCurrent = updateNavCurrent;
+
 function buildNav() {
     const nav = document.querySelector('.site-nav');
     if (!nav) return;
@@ -13,19 +37,7 @@ function buildNav() {
     const panel = nav.querySelector('.site-nav__panel');
     if (!toggle || !panel) return;
 
-    // Highlight the current page. "/" only matches the homepage; every
-    // other entry also covers its sub-pages (e.g. /writing/2026/a-post).
-    const path = location.pathname.replace(/index\.html$/, '');
-    nav.querySelectorAll('.site-nav__link').forEach(function (link) {
-        const href = link.getAttribute('href');
-        const isCurrent = href === '/'
-            ? path === '/'
-            : path === href || path.indexOf(href + '/') === 0;
-        if (isCurrent) {
-            link.classList.add('is-current');
-            link.setAttribute('aria-current', 'page');
-        }
-    });
+    updateNavCurrent();
 
     function setOpen(open) {
         // The theme chip glides between its closed and open parking spots.

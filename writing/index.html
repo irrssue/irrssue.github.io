@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'none'; img-src 'self'; media-src 'self'; connect-src 'self'; font-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' https://www.youtube.com; frame-src https://www.youtube.com; upgrade-insecure-requests">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'none'; img-src 'self' data: https:; media-src 'self' https:; connect-src 'self'; font-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' https://www.youtube.com; frame-src https://www.youtube.com; upgrade-insecure-requests">
     <title>Writing - Saw Thura Zaw</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <!-- Decides, before a single rule is applied, whether this browser can run
          the animated design, and fetches the scripts that drive it only if it
          can. Browsers that cannot are drawn by css/legacy.css instead. -->
-    <script id="capability" src="/javascript/capability.js" data-enhance="/javascript/script.js,/javascript/now-playing.js"></script>
+    <script id="capability" src="/javascript/capability.js" data-enhance="/javascript/script.js,/javascript/now-playing.js,/javascript/pjax.js"></script>
     <link rel="stylesheet" href="/css/styles.css">
     <link rel="stylesheet" href="/css/legacy.css">
     <link rel="stylesheet" href="/css/bookmarks.css">
@@ -17,6 +17,12 @@
     <script src="/javascript/theme.js"></script>
 </head>
 <body>
+    <!-- Everything in here is what javascript/pjax.js swaps out on a soft
+         navigation between /, /writing and /bookmarks. The nav and the
+         YouTube embed below live outside it on purpose, so neither one is
+         ever torn down and rebuilt just because the visitor clicked a link
+         -- music in particular keeps playing straight through. -->
+    <div id="pjax-root">
     <div class="grid-container">
         <!-- Main Content Area -->
         <main class="main-content">
@@ -35,6 +41,7 @@
             </section>
         </main>
     </div>
+    </div><!-- #pjax-root -->
 
     <!-- Top Navigation -->
     <nav class="site-nav" id="siteNav">
