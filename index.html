@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'none'; img-src 'self'; media-src 'self'; connect-src 'self'; font-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' https://www.youtube.com 'sha256-SxD6DpjBna1Bjg8SOVuMXTUDVswO8LZC+ZLB7e5sGms=' 'sha256-RIe4j5tG42ycuhmtsdAgBy2blPsE+InElMFpzkVxhm4=' 'sha256-Lq3epzR4E9NkTak86SV9l9FCSeT4GQxjLRqB/YRdgfA='; frame-src https://www.youtube.com; upgrade-insecure-requests">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'none'; img-src 'self'; media-src 'self'; connect-src 'self'; font-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' https://www.youtube.com 'sha256-CmmbnEKjrURykmDYAtj9Q7FSTza2eQfXJnGaGPJb2MQ=' 'sha256-RIe4j5tG42ycuhmtsdAgBy2blPsE+InElMFpzkVxhm4=' 'sha256-Lq3epzR4E9NkTak86SV9l9FCSeT4GQxjLRqB/YRdgfA='; frame-src https://www.youtube.com; upgrade-insecure-requests">
     <title>Saw Thura Zaw</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <!-- Decides, before a single rule is applied, whether this browser can run
@@ -22,9 +22,10 @@
     <div class="intro-overlay" id="introOverlay" aria-hidden="true">
         <div class="intro-overlay__word-stage">
             <span class="intro-overlay__word is-visible">Hello</span>
-            <span class="intro-overlay__word">bonjour</span>
-            <span class="intro-overlay__word">やあ</span>
-            <span class="intro-overlay__word">ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ ਜੀ</span>
+            <span class="intro-overlay__word intro-overlay__word--cjk">你好</span>
+            <span class="intro-overlay__word">नमस्ते</span>
+            <span class="intro-overlay__word">Hola</span>
+            <span class="intro-overlay__word">Bonjour</span>
             <span class="intro-overlay__word intro-overlay__word--burmese">မင်္ဂလာပါ</span>
         </div>
         <div class="intro-overlay__curtain" aria-hidden="true"></div>
@@ -33,7 +34,7 @@
         (function () {
             var overlay = document.getElementById('introOverlay');
             var words = Array.prototype.slice.call(overlay.querySelectorAll('.intro-overlay__word'));
-            var seenKey = 'irrssue-intro-v4';
+            var seenKey = 'irrssue-intro-v5';
             var hasReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
             var connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
             var hasConstrainedConnection = connection &&
@@ -75,11 +76,12 @@
             window.setTimeout(function () { revealWord(2); }, 700);
             window.setTimeout(function () { revealWord(3); }, 1050);
             window.setTimeout(function () { revealWord(4); }, 1400);
+            window.setTimeout(function () { revealWord(5); }, 1750);
             window.setTimeout(function () {
                 document.body.classList.add('intro-revealing');
                 overlay.classList.add('intro-overlay--leaving');
-            }, 1750);
-            window.setTimeout(removeIntro, 2750);
+            }, 2100);
+            window.setTimeout(removeIntro, 3100);
         })();
     </script>
 
