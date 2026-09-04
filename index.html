@@ -32,6 +32,7 @@
     <script>
         (function () {
             var overlay = document.getElementById('introOverlay');
+            var words = Array.prototype.slice.call(overlay.querySelectorAll('.intro-overlay__word'));
             var seenKey = 'irrssue-intro-v4';
             var hasReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
             var connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
@@ -58,19 +59,27 @@
                 if (overlay && overlay.parentNode) overlay.remove();
             }
 
+            function revealWord(index) {
+                words[index - 1].classList.remove('is-visible');
+                words[index - 1].classList.add('is-past');
+                words[index].classList.add('is-visible');
+            }
+
             if (isSeen || hasReducedMotion || hasConstrainedConnection) {
                 window.setTimeout(removeIntro, 0);
                 return;
             }
 
             document.body.classList.add('intro-active');
-            // Keep the greeting stationary. The former word-by-word vertical
-            // movement was clipped by its compact stage on mobile Safari.
+            window.setTimeout(function () { revealWord(1); }, 350);
+            window.setTimeout(function () { revealWord(2); }, 700);
+            window.setTimeout(function () { revealWord(3); }, 1050);
+            window.setTimeout(function () { revealWord(4); }, 1400);
             window.setTimeout(function () {
                 document.body.classList.add('intro-revealing');
                 overlay.classList.add('intro-overlay--leaving');
-            }, 700);
-            window.setTimeout(removeIntro, 1220);
+            }, 1750);
+            window.setTimeout(removeIntro, 2750);
         })();
     </script>
 
