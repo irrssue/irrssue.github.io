@@ -365,6 +365,9 @@ html {
     /* Always reserve the scrollbar gutter so toggling overflow:hidden
        (e.g. the intro scroll-lock) doesn't shift centered content */
     scrollbar-gutter: stable;
+    /* iOS Safari double-tap zooms into empty space by default; this disables
+       that gesture while still allowing pinch-zoom and normal scrolling. */
+    touch-action: manipulation;
 }
 
 * {
