@@ -34,6 +34,7 @@
     var userWantsPlay = false;
     var myPlaylist = [];
     var myIndex = 0;
+    var playAttemptTimer = null;
 
     function shuffle(arr) {
         var a = arr.slice();
@@ -63,6 +64,22 @@
         }
     }
 
+    // Guards the optimistic "playing" UI set on tap: if playback hasn't
+    // actually started shortly after, the play attempt was silently blocked
+    // (see the requestApi comment above) rather than just slow. Snapping the
+    // button back to "Play" means the *next* tap is a fresh, real gesture,
+    // which mobile browsers always honor -- instead of needing a confusing
+    // pause-then-play to get sound.
+    function armPlayWatchdog() {
+        clearTimeout(playAttemptTimer);
+        playAttemptTimer = setTimeout(function () {
+            if (userWantsPlay && !playing) {
+                userWantsPlay = false;
+                setPlaying(false);
+            }
+        }, 1500);
+    }
+
     function playNext() {
         if (!myPlaylist.length) return;
         myIndex++;
@@ -87,33 +104,29 @@
     }
 
     // The YouTube embed pulls in ~20 requests, including doubleclick and
-    // googleads, so it's deferred until the page has settled rather than
-    // loaded eagerly. The track name comes from SONGS, not the API, so
-    // nothing waits on it.
+    // googleads, so this is a background load rather than part of the
+    // initial render -- it's kicked off right after DOMContentLoaded, not
+    // blocking anything on the page. The track name comes from SONGS, not
+    // the API, so nothing waits on it.
     //
-    // It's still requested ahead of the first tap (during idle time) rather
-    // than lazily on click: mobile Safari/Chrome only allow player.playVideo()
-    // to autoplay with sound when it runs synchronously inside the tap that
-    // requested it. Requesting the API on click means the player isn't built
-    // until onReady fires later (after a network round trip), so the resulting
-    // playVideo() call happens outside the gesture and gets silently blocked
-    // on mobile (desktop is lenient about this gap). Warming the player early
-    // means it already exists by the time someone taps play, so that call is
-    // synchronous with the tap on every platform.
+    // It's requested on load rather than lazily on the first tap: mobile
+    // Safari/Chrome only allow player.playVideo() to autoplay with sound
+    // when it runs synchronously inside the tap that requested it.
+    // Requesting the API on click means the player isn't built until onReady
+    // fires later (after a network round trip), so the resulting playVideo()
+    // call happens outside the gesture and gets silently blocked on mobile
+    // (desktop is lenient about this gap). This is also why this can't just
+    // warm once and be done -- every page on the site is a full navigation,
+    // so this whole file re-runs from scratch and the player has to be
+    // rebuilt again on each page. Warming it immediately on load (not on
+    // idle/click) gives it the most possible time to finish before someone
+    // actually taps play.
     function requestApi() {
         if (apiRequested) return;
         apiRequested = true;
         var tag = document.createElement('script');
         tag.src = 'https://www.youtube.com/iframe_api';
         document.head.appendChild(tag);
-    }
-
-    function warmApi() {
-        if ('requestIdleCallback' in window) {
-            requestIdleCallback(requestApi, { timeout: 4000 });
-        } else {
-            setTimeout(requestApi, 2000);
-        }
     }
 
     window.onYouTubeIframeAPIReady = function () {
@@ -134,12 +147,16 @@
             events: {
                 onReady: function () {
                     playerReady = true;
-                    // The click that loaded the API leaves the document with
-                    // sticky activation, so this still counts as user-initiated.
+                    // This fires asynchronously, well outside the click that
+                    // triggered it, so mobile browsers can silently ignore
+                    // this playVideo() call. armPlayWatchdog() (set when the
+                    // tap happened) catches that and resets the button so the
+                    // next tap is a fresh, honored gesture.
                     if (userWantsPlay) player.playVideo();
                 },
                 onStateChange: function (e) {
                     if (e.data === YT.PlayerState.PLAYING) {
+                        clearTimeout(playAttemptTimer);
                         setPlaying(true);
                     } else if (e.data === YT.PlayerState.PAUSED) {
                         if (userWantsPlay) {
@@ -166,21 +183,24 @@
         myPlaylist = shuffle(SONGS);
         myIndex = 0;
         updateDisplay();
-        warmApi();
+        requestApi();
 
         var btn = document.getElementById('npPlayBtn');
         if (btn) {
             btn.addEventListener('click', function () {
                 if (playing) {
                     userWantsPlay = false;
+                    clearTimeout(playAttemptTimer);
                     setPlaying(false);
                     if (player) player.pauseVideo();
                     return;
                 }
                 userWantsPlay = true;
                 // Switch the control immediately; the embed can take a moment
-                // to initialise on mobile networks.
+                // to initialise on mobile networks. armPlayWatchdog() reverts
+                // this if playback doesn't actually start in time.
                 setPlaying(true);
+                armPlayWatchdog();
                 if (playerReady) {
                     player.playVideo();
                 } else {
