@@ -87,14 +87,33 @@
     }
 
     // The YouTube embed pulls in ~20 requests, including doubleclick and
-    // googleads, so it stays off the page until someone actually presses play.
-    // The track name comes from SONGS, not the API, so nothing waits on it.
+    // googleads, so it's deferred until the page has settled rather than
+    // loaded eagerly. The track name comes from SONGS, not the API, so
+    // nothing waits on it.
+    //
+    // It's still requested ahead of the first tap (during idle time) rather
+    // than lazily on click: mobile Safari/Chrome only allow player.playVideo()
+    // to autoplay with sound when it runs synchronously inside the tap that
+    // requested it. Requesting the API on click means the player isn't built
+    // until onReady fires later (after a network round trip), so the resulting
+    // playVideo() call happens outside the gesture and gets silently blocked
+    // on mobile (desktop is lenient about this gap). Warming the player early
+    // means it already exists by the time someone taps play, so that call is
+    // synchronous with the tap on every platform.
     function requestApi() {
         if (apiRequested) return;
         apiRequested = true;
         var tag = document.createElement('script');
         tag.src = 'https://www.youtube.com/iframe_api';
         document.head.appendChild(tag);
+    }
+
+    function warmApi() {
+        if ('requestIdleCallback' in window) {
+            requestIdleCallback(requestApi, { timeout: 4000 });
+        } else {
+            setTimeout(requestApi, 2000);
+        }
     }
 
     window.onYouTubeIframeAPIReady = function () {
@@ -147,6 +166,7 @@
         myPlaylist = shuffle(SONGS);
         myIndex = 0;
         updateDisplay();
+        warmApi();
 
         var btn = document.getElementById('npPlayBtn');
         if (btn) {
