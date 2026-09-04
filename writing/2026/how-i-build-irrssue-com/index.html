@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'none'; img-src 'self' data: https:; media-src 'self' https:; connect-src 'self'; font-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'; upgrade-insecure-requests">
     <title>how I build irrssue.com - Saw Thura Zaw</title>
     <meta name="description" content="Most personal sites I admire are embarrassingly simple. You load the page and what you get is text, a couple of links, and nothing else. No skeleton loaders.…">
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
@@ -57,8 +58,8 @@
 That’s the kind of site I wanted to build. So I did — three times, actually, before I landed on the version that’s live now at <a href="http://irrssue.com" target="_blank" rel="noopener noreferrer">irrssue.com</a>.<br>
 This is a post about what that site is, why it looks the way it looks, and the handful of decisions I made that I think are worth writing down.</p>
 <p>The short version<br>
-<a href="http://irrssue.com" target="_blank" rel="noopener noreferrer">irrssue.com</a> is my personal portfolio and writing site. It’s vanilla HTML, CSS, and JavaScript — no React, no Next.js, no Tailwind, no build step. It’s served as static files from GitHub Pages out of the main branch of a public repo. When I want to publish a blog post, I write a markdown file, push it, and a GitHub Action renders it to HTML.<br>
-The whole thing weighs next to nothing. First paint is sub-second even on a slow connection. There are no external scripts on the initial load — no analytics, no fonts CDN except a small cycling-font experiment on the homepage, no icon library. The design philosophy, written in my own <a href="http://CLAUDE.md" target="_blank" rel="noopener noreferrer">CLAUDE.md</a> as a note to future me, is that every element earns its place and the default is to remove, not add.</p>
+<a href="https://irrssue.com" target="_blank" rel="noopener noreferrer">irrssue.com</a> is my personal portfolio and writing site. It’s vanilla HTML, CSS, and JavaScript — no React, no Next.js, no Tailwind, no build step. It’s served as static files from GitHub Pages out of the main branch of a public repo. When I want to publish a blog post, I write a markdown file, push it, and a GitHub Action renders it to HTML.<br>
+The whole thing weighs next to nothing. First paint is sub-second even on a slow connection. There are no external scripts on the initial load — no analytics, no fonts CDN except a small cycling-font experiment on the homepage, no icon library. The design philosophy, written in my own <code>CLAUDE.md</code> as a note to future me, is that every element earns its place and the default is to remove, not add.</p>
 <p>Why vanilla<br>
 I’ve built things in React. I like React. But a personal site is the one project where a framework actively hurts you.<br>
 A framework buys you reactivity, component isolation, and a component ecosystem. For an app with state — a dashboard, a form-heavy tool, a real product — those are worth the cost. For a portfolio with a homepage, a writing list, a bookmarks page, and a blog post template, none of them are worth anything. I don’t need reactivity. I don’t have state. I have text.<br>
@@ -70,12 +71,12 @@ The inspiration was two sites: Guillermo Rauch’s and, surprisingly, Berkshire 
 That’s what I was trying to copy. The page should feel like a well-formatted plain text document, not a brochure.<br>
 A few specific rules I wrote down for myself:<br>
 The name on the homepage is small. It’s not a hero. It sits at about 1.2–1.5rem, not the giant 4rem display type you see on most dev portfolios. A giant name announces that the page is about you in a way that’s faintly embarrassing. A small name lets the work speak.<br>
-Section labels are lowercase, muted, and 0.85rem. They look like labels, not headings. Compare to a site that gives you <h2>PROJECTS</h2> at 2rem — the section label is visually screaming, even though the reader doesn’t need it to.<br>
+Section labels are lowercase, muted, and 0.85rem. They look like labels, not headings. Compare to a site that gives you &lt;h2&gt;PROJECTS&lt;/h2&gt; at 2rem — the section label is visually screaming, even though the reader doesn’t need it to.<br>
 Dates on entries are right-aligned using margin-left: auto in a flex container. This is a small detail but it’s what makes the page feel like a resume or a document rather than a blog post. Your eye scans names on the left, dates on the right.<br>
 Everything flows through CSS custom properties defined in :root. Colors, spacing, typography, max-width — all tokens. Dark mode is literally just a re-declaration of those tokens under body.dark-mode. That’s the whole mechanism.</p>
 <h2>The writing pipeline<br>
 This is the part I’m most proud of, because it’s the part that was tempting to over-engineer.<br>
-Blog posts live in /posts/ as markdown files with YAML front matter. A GitHub Action runs on push and renders them to HTML. The writing page loads a JSON index of posts and renders the list client-side. Individual posts load at /html/post.html?slug=<post-slug> and the page fetches the rendered HTML and injects it.<br>
+Blog posts live in /posts/ as markdown files with YAML front matter. A GitHub Action runs on push and renders them to HTML. The writing page loads a JSON index of posts and renders the list client-side. Individual posts load at /html/post.html?slug=&lt;post-slug&gt; and the page fetches the rendered HTML and injects it.<br>
 Front matter looks like this:</h2>
 <h2>title: “How I Replaced Google With a Homelab”<br>
 date: “Apr 13, 2026”<br>

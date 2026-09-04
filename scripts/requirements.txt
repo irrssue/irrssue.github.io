@@ -1,3 +1,13 @@
-# Build-time only - nothing here ships to the browser.
-markdown-it-py[linkify]==3.0.0
-PyYAML==6.0.2
+# Build-time only - nothing here ships to the browser. The complete, hashed
+# set keeps the contents-write GitHub Actions job from resolving mutable
+# transitive packages at run time.
+--only-binary=:all:
+markdown-it-py[linkify]==3.0.0 \
+    --hash=sha256:355216845c60bd96232cd8d8c40e8f9765cc86f46880e43a8fd22dc1a1a8cab1
+linkify-it-py==2.2.0 \
+    --hash=sha256:3adc40eb5af300b2605fcfdb968c24e1d780a90f1f2221af7c15e5111e94d443
+mdurl==0.1.2 \
+    --hash=sha256:84008a41e51615a49fc9966191ff91509e3c40b939176e643fd50a5c2196b8f8
+PyYAML==6.0.2 \
+    --hash=sha256:80bab7bfc629882493af4aa31a4cfa43a4c57c83813253626916b8c7ada83476 \
+    --hash=sha256:a8786accb172bd8afb8be14490a16625cbc387036876ab6ba70912730faf8e1f

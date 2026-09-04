@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; base-uri 'none'; form-action 'none'; style-src 'unsafe-inline'; script-src 'none'; navigate-to https://upload.irrssue.com; upgrade-insecure-requests">
 <title>Redirecting to media upload…</title>
 <!-- The media uploader is a live service on the homelab (it writes files, so it can't
      run on static GitHub Pages). This page just forwards there. Keeping the short,
@@ -23,6 +24,5 @@
 <body>
   <p>Redirecting to the media upload page…<br>
      <a href="https://upload.irrssue.com/upload">Continue if you’re not redirected ↗</a></p>
-  <script>location.replace("https://upload.irrssue.com/upload");</script>
 </body>
 </html>

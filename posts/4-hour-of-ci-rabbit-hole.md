@@ -50,4 +50,4 @@ The whole CI saga was solving a problem that didn't exist.
 
 **The actual lesson:** before reaching for a new system, run `crontab -l`. Or `systemctl list-timers`. Or `ls ~/scripts/`. Half the time the thing you're about to build is already running on your own machine, doing exactly what you need, and the only reason it feels broken is that the trigger condition isn't being hit.
 
-The commit message thing? Fixed in one CLAUDE.md edit. Took five minutes. Exactly like I thought at the start.
+The commit message thing? Fixed in one `CLAUDE.md` edit. Took five minutes. Exactly like I thought at the start.

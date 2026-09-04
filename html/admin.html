@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' https: data:; media-src 'self' https:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src 'self' https://api.github.com https://upload.irrssue.com; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+    <meta name="robots" content="noindex, nofollow, noarchive">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' https: data:; media-src 'self' https:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self' https://api.github.com https://upload.irrssue.com; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
     <title>Admin — irrssue.github.io</title>
     <style>
         :root {
@@ -552,14 +553,14 @@
 <div id="pat-modal" class="modal-overlay">
     <div class="modal">
         <h2>GitHub Token Required</h2>
-        <p>Enter a Personal Access Token with <code>repo</code> scope. It's stored only in your browser's localStorage — never committed or sent anywhere except GitHub's API.</p>
+        <p>Enter a fine-grained Personal Access Token limited to this repository with Contents read/write permission. It stays only in this page's memory and is cleared when you close or reload it.</p>
         <div class="form-group">
             <label for="pat-input">Personal Access Token</label>
             <input type="password" id="pat-input" placeholder="ghp_..." autocomplete="off">
         </div>
         <div class="modal-actions">
-            <button class="btn btn-primary" onclick="savePAT()">Save &amp; Connect</button>
-            <a href="https://github.com/settings/tokens/new?scopes=repo&description=irrssue.github.io+CMS"
+            <button class="btn btn-primary" data-action="save-pat">Save &amp; Connect</button>
+            <a href="https://github.com/settings/personal-access-tokens/new"
                target="_blank" rel="noopener noreferrer" class="btn btn-ghost">Generate Token ↗</a>
         </div>
     </div>
@@ -570,17 +571,17 @@
     <span class="admin-title">irrssue.github.io · Admin</span>
     <div class="pat-bar">
         <span class="pat-status" id="pat-status">Not connected</span>
-        <button class="btn btn-ghost btn-sm" onclick="showPATModal()">Change token</button>
+        <button class="btn btn-ghost btn-sm" data-action="show-pat-modal">Change token</button>
     </div>
 </header>
 
 <div class="admin-body">
     <!-- Sidebar -->
     <nav class="sidebar">
-        <button class="tab-btn active" data-tab="projects" onclick="switchTab('projects', this)">Projects</button>
-        <button class="tab-btn" data-tab="bookmarks" onclick="switchTab('bookmarks', this)">Bookmarks</button>
-        <button class="tab-btn" data-tab="posts" onclick="switchTab('posts', this)">Posts</button>
-        <button class="tab-btn" data-tab="gems" onclick="switchTab('gems', this)">Gems</button>
+        <button class="tab-btn active" data-action="switch-tab" data-tab="projects">Projects</button>
+        <button class="tab-btn" data-action="switch-tab" data-tab="bookmarks">Bookmarks</button>
+        <button class="tab-btn" data-action="switch-tab" data-tab="posts">Posts</button>
+        <button class="tab-btn" data-action="switch-tab" data-tab="gems">Gems</button>
     </nav>
 
     <!-- Main Panel -->
@@ -590,7 +591,7 @@
         <div id="tab-projects" class="tab-panel active">
             <div class="panel-header">
                 <h2 class="panel-title">Projects</h2>
-                <button class="btn btn-ghost btn-sm" onclick="loadProjects()">↻ Refresh</button>
+                <button class="btn btn-ghost btn-sm" data-action="refresh-projects">↻ Refresh</button>
             </div>
 
             <div class="form-card">
@@ -616,8 +617,8 @@
                     </div>
                 </div>
                 <div class="form-actions">
-                    <button class="btn btn-primary" onclick="saveProject()">Save Project</button>
-                    <button class="btn btn-ghost" id="proj-cancel" onclick="resetProjectForm()" style="display:none">Cancel</button>
+                    <button class="btn btn-primary" data-action="save-project">Save Project</button>
+                    <button class="btn btn-ghost" id="proj-cancel" data-action="reset-project" style="display:none">Cancel</button>
                 </div>
             </div>
 
@@ -631,7 +632,7 @@
         <div id="tab-bookmarks" class="tab-panel">
             <div class="panel-header">
                 <h2 class="panel-title">Bookmarks</h2>
-                <button class="btn btn-ghost btn-sm" onclick="loadBookmarks()">↻ Refresh</button>
+                <button class="btn btn-ghost btn-sm" data-action="refresh-bookmarks">↻ Refresh</button>
             </div>
 
             <div class="form-card">
@@ -659,8 +660,8 @@
                     </div>
                 </div>
                 <div class="form-actions">
-                    <button class="btn btn-primary" onclick="saveBookmark()">Save Bookmark</button>
-                    <button class="btn btn-ghost" id="bm-cancel" onclick="resetBookmarkForm()" style="display:none">Cancel</button>
+                    <button class="btn btn-primary" data-action="save-bookmark">Save Bookmark</button>
+                    <button class="btn btn-ghost" id="bm-cancel" data-action="reset-bookmark" style="display:none">Cancel</button>
                 </div>
             </div>
 
@@ -674,7 +675,7 @@
         <div id="tab-posts" class="tab-panel">
             <div class="panel-header">
                 <h2 class="panel-title">Posts</h2>
-                <button class="btn btn-ghost btn-sm" onclick="loadPosts()">↻ Refresh</button>
+                <button class="btn btn-ghost btn-sm" data-action="refresh-posts">↻ Refresh</button>
             </div>
 
             <div class="form-card">
@@ -700,8 +701,8 @@
                     </div>
                 </div>
                 <div class="form-actions">
-                    <button class="btn btn-primary" id="post-submit-btn" onclick="submitPost()">Create Post</button>
-                    <button class="btn btn-ghost" id="post-cancel" onclick="resetPostForm()" style="display:none">Cancel</button>
+                    <button class="btn btn-primary" id="post-submit-btn" data-action="submit-post">Create Post</button>
+                    <button class="btn btn-ghost" id="post-cancel" data-action="reset-post" style="display:none">Cancel</button>
                 </div>
             </div>
 
@@ -715,7 +716,7 @@
         <div id="tab-gems" class="tab-panel">
             <div class="panel-header">
                 <h2 class="panel-title">Gems</h2>
-                <button class="btn btn-ghost btn-sm" onclick="loadGems()">↻ Refresh</button>
+                <button class="btn btn-ghost btn-sm" data-action="refresh-gems">↻ Refresh</button>
             </div>
 
             <div class="form-card">
@@ -743,7 +744,7 @@
                     <div class="form-group full">
                         <label for="gem-src">Media URL / path</label>
                         <input type="text" id="gem-src" placeholder="assets/dune.jpg or https://...">
-                        <div class="upload-zone" id="gem-drop" role="button" tabindex="0"
+                        <div class="upload-zone" id="gem-drop" data-action="choose-gem-media" role="button" tabindex="0"
                              aria-label="Drop a photo or video, or click to choose">
                             drag &amp; drop a photo/video here, or click to choose
                         </div>
@@ -791,8 +792,8 @@
                     </div>
                 </div>
                 <div class="form-actions">
-                    <button class="btn btn-primary" onclick="saveGem()">Save Gem</button>
-                    <button class="btn btn-ghost" id="gem-cancel" onclick="resetGemForm()" style="display:none">Cancel</button>
+                    <button class="btn btn-primary" data-action="save-gem">Save Gem</button>
+                    <button class="btn btn-ghost" id="gem-cancel" data-action="reset-gem" style="display:none">Cancel</button>
                 </div>
             </div>
 
@@ -809,871 +810,28 @@
 
 <!-- Bottom nav (mobile) -->
 <nav class="admin-bottom-nav" id="admin-bottom-nav">
-    <button class="admin-nav-item active" id="btn-nav-projects" onclick="switchTab('projects', this)" aria-label="Projects">
+    <button class="admin-nav-item active" id="btn-nav-projects" data-action="switch-tab" data-tab="projects" aria-label="Projects">
         <svg class="admin-nav-icon" viewBox="0 0 24 24" fill="currentColor">
             <path d="M20 6h-8l-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/>
         </svg>
     </button>
-    <button class="admin-nav-item" id="btn-nav-bookmarks" onclick="switchTab('bookmarks', this)" aria-label="Bookmarks">
+    <button class="admin-nav-item" id="btn-nav-bookmarks" data-action="switch-tab" data-tab="bookmarks" aria-label="Bookmarks">
         <svg class="admin-nav-icon" viewBox="0 0 24 24" fill="currentColor">
             <path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z"/>
         </svg>
     </button>
-    <button class="admin-nav-item" id="btn-nav-posts" onclick="switchTab('posts', this)" aria-label="Posts">
+    <button class="admin-nav-item" id="btn-nav-posts" data-action="switch-tab" data-tab="posts" aria-label="Posts">
         <svg class="admin-nav-icon" viewBox="0 0 24 24" fill="currentColor">
             <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
         </svg>
     </button>
-    <button class="admin-nav-item" id="btn-nav-gems" onclick="switchTab('gems', this)" aria-label="Gems">
+    <button class="admin-nav-item" id="btn-nav-gems" data-action="switch-tab" data-tab="gems" aria-label="Gems">
         <svg class="admin-nav-icon" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 2L2 8.5 12 22l10-13.5L12 2zm0 2.8L18.9 9 12 18.3 5.1 9 12 4.8z"/>
         </svg>
     </button>
 </nav>
 
-<script>
-    const REPO  = 'irrssue/irrssue.github.io';
-    const API   = 'https://api.github.com/repos/' + REPO + '/contents';
-    const BRANCH = 'main';
-
-    let pat = localStorage.getItem('cms_pat') || '';
-
-    // Tracked SHAs for JSON files (required by GitHub API for updates)
-    let projectsSHA  = null;
-    let bookmarksSHA = null;
-    let gemsSHA      = null;
-
-    // In-memory data
-    let projectsData  = [];
-    let bookmarksData = [];
-    let postsData     = [];
-    let gemsData      = [];
-
-    // Edit state
-    let editingProjectIdx  = -1;
-    let editingBookmarkIdx = -1;
-    let editingGemIdx      = -1;
-    let editingPost = null; // { filename, sha }
-
-    // ── Init ─────────────────────────────────────────
-    function init() {
-        setToday('bm-date');
-        setFormattedDate('post-date');
-
-        if (pat) {
-            hidePATModal();
-            updatePATStatus(true);
-            loadProjects();
-        }
-    }
-
-    function setToday(id) {
-        document.getElementById(id).value = new Date().toISOString().split('T')[0];
-    }
-
-    function setFormattedDate(id) {
-        const d = new Date();
-        const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-        document.getElementById(id).value = months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
-    }
-
-    // ── PAT ──────────────────────────────────────────
-    function savePAT() {
-        const val = document.getElementById('pat-input').value.trim();
-        if (!val) return;
-        pat = val;
-        localStorage.setItem('cms_pat', pat);
-        hidePATModal();
-        updatePATStatus(true);
-        loadProjects();
-    }
-
-    function showPATModal() {
-        document.getElementById('pat-modal').style.display = 'flex';
-    }
-
-    function hidePATModal() {
-        document.getElementById('pat-modal').style.display = 'none';
-    }
-
-    function updatePATStatus(connected) {
-        const el = document.getElementById('pat-status');
-        el.textContent = connected ? 'Connected' : 'Not connected';
-        el.className = 'pat-status' + (connected ? ' connected' : '');
-    }
-
-    document.getElementById('pat-input').addEventListener('keydown', e => {
-        if (e.key === 'Enter') savePAT();
-    });
-
-    // ── Tabs ─────────────────────────────────────────
-    function switchTab(name, btn) {
-        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('.admin-nav-item').forEach(b => b.classList.remove('active'));
-        document.getElementById('tab-' + name).classList.add('active');
-        // Activate matching buttons in both navs
-        const sideBtn = document.querySelector('.tab-btn[data-tab="' + name + '"]');
-        const botBtn  = document.getElementById('btn-nav-' + name);
-        if (sideBtn) sideBtn.classList.add('active');
-        if (botBtn)  botBtn.classList.add('active');
-        if (name === 'projects')  loadProjects();
-        if (name === 'bookmarks') loadBookmarks();
-        if (name === 'posts')     loadPosts();
-        if (name === 'gems')      loadGems();
-    }
-
-    // ── GitHub API helpers ────────────────────────────
-    function apiHeaders() {
-        return {
-            'Authorization': 'Bearer ' + pat,
-            'Content-Type': 'application/json'
-        };
-    }
-
-    async function ghGet(path) {
-        const res = await fetch(API + '/' + path + '?ref=' + BRANCH, { headers: apiHeaders() });
-        if (!res.ok) throw new Error('GET ' + path + ' failed: ' + res.status);
-        return res.json();
-    }
-
-    async function ghPut(path, textContent, sha, message) {
-        const encoded = b64encode(textContent);
-        const body = { message, content: encoded, branch: BRANCH };
-        if (sha) body.sha = sha;
-        const res = await fetch(API + '/' + path, {
-            method: 'PUT',
-            headers: apiHeaders(),
-            body: JSON.stringify(body)
-        });
-        if (!res.ok) {
-            const err = await res.json().catch(() => ({}));
-            throw new Error(err.message || 'PUT failed: ' + res.status);
-        }
-        return res.json();
-    }
-
-    async function ghDelete(path, sha, message) {
-        const res = await fetch(API + '/' + path, {
-            method: 'DELETE',
-            headers: apiHeaders(),
-            body: JSON.stringify({ message, sha, branch: BRANCH })
-        });
-        if (!res.ok) throw new Error('DELETE failed: ' + res.status);
-        return res.json();
-    }
-
-    function b64encode(str) {
-        return btoa(unescape(encodeURIComponent(str)));
-    }
-
-    function b64decode(str) {
-        return decodeURIComponent(escape(atob(str.replace(/\n/g, ''))));
-    }
-
-    // ── Toast ─────────────────────────────────────────
-    let toastTimer;
-    function toast(msg, type = 'info') {
-        const el = document.getElementById('toast');
-        el.textContent = msg;
-        el.className = type;
-        clearTimeout(toastTimer);
-        toastTimer = setTimeout(() => { el.className = ''; }, 3800);
-    }
-
-    // ── HTML escape ───────────────────────────────────
-    function esc(str) {
-        return String(str || '')
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;');
-    }
-
-    // ─────────────────────────────────────────────────
-    // DRAG & DROP
-    // ─────────────────────────────────────────────────
-    let _dragIdx  = -1;
-    let _dragType = '';
-
-    function onDragStart(e, i, type) {
-        _dragIdx  = i;
-        _dragType = type;
-        e.dataTransfer.effectAllowed = 'move';
-        setTimeout(() => e.currentTarget.classList.add('dragging'), 0);
-    }
-
-    function onDragOver(e) {
-        e.preventDefault();
-        e.dataTransfer.dropEffect = 'move';
-        e.currentTarget.classList.add('drag-over');
-    }
-
-    function onDragLeave(e) {
-        e.currentTarget.classList.remove('drag-over');
-    }
-
-    function onDragEnd(e) {
-        document.querySelectorAll('.item-row').forEach(r => r.classList.remove('drag-over', 'dragging'));
-        _dragIdx = -1;
-    }
-
-    function onDrop(e, i, type) {
-        e.preventDefault();
-        e.currentTarget.classList.remove('drag-over');
-        if (_dragIdx < 0 || _dragIdx === i || _dragType !== type) return;
-        if (type === 'project') {
-            const [item] = projectsData.splice(_dragIdx, 1);
-            projectsData.splice(i, 0, item);
-            writeProjects('Reorder projects');
-        } else if (type === 'bookmark') {
-            const [item] = bookmarksData.splice(_dragIdx, 1);
-            bookmarksData.splice(i, 0, item);
-            writeBookmarks('Reorder bookmarks');
-        } else if (type === 'post') {
-            const [item] = postsData.splice(_dragIdx, 1);
-            postsData.splice(i, 0, item);
-            renderPosts();
-        } else if (type === 'gem') {
-            const [item] = gemsData.splice(_dragIdx, 1);
-            gemsData.splice(i, 0, item);
-            writeGems('Reorder gems');
-        }
-        _dragIdx = -1;
-    }
-
-    // Touch-safe fallback for the mouse-only drag handle above: move-up/
-    // move-down buttons that reuse the same reorder-and-save logic as onDrop.
-    function moveItem(type, i, delta) {
-        let arr, save;
-        if (type === 'project') { arr = projectsData; save = () => writeProjects('Reorder projects'); }
-        else if (type === 'bookmark') { arr = bookmarksData; save = () => writeBookmarks('Reorder bookmarks'); }
-        else if (type === 'post') { arr = postsData; save = renderPosts; }
-        else if (type === 'gem') { arr = gemsData; save = () => writeGems('Reorder gems'); }
-        else return;
-
-        const j = i + delta;
-        if (j < 0 || j >= arr.length) return;
-        const [item] = arr.splice(i, 1);
-        arr.splice(j, 0, item);
-        save();
-    }
-
-    // ─────────────────────────────────────────────────
-    // PROJECTS
-    // ─────────────────────────────────────────────────
-    async function loadProjects() {
-        const list = document.getElementById('projects-list');
-        list.innerHTML = '<div class="loading-state">Loading...</div>';
-        try {
-            const data = await ghGet('data/projects.json');
-            projectsSHA  = data.sha;
-            projectsData = JSON.parse(b64decode(data.content));
-            renderProjects();
-        } catch (e) {
-            list.innerHTML = '<div class="empty-state">Could not load — check your token.</div>';
-        }
-    }
-
-    function renderProjects() {
-        const list = document.getElementById('projects-list');
-        if (!projectsData.length) {
-            list.innerHTML = '<div class="empty-state">No projects yet.</div>';
-            return;
-        }
-        list.innerHTML = projectsData.map((p, i) => `
-            <div class="item-row" draggable="true"
-                 ondragstart="onDragStart(event,${i},'project')"
-                 ondragover="onDragOver(event)"
-                 ondragleave="onDragLeave(event)"
-                 ondrop="onDrop(event,${i},'project')"
-                 ondragend="onDragEnd(event)">
-                <span class="drag-handle" title="Drag to reorder">⠿</span>
-                <div class="reorder-btns">
-                    <button type="button" title="Move up" aria-label="Move up" onclick="moveItem('project',${i},-1)" ${i === 0 ? 'disabled' : ''}>▲</button>
-                    <button type="button" title="Move down" aria-label="Move down" onclick="moveItem('project',${i},1)" ${i === projectsData.length - 1 ? 'disabled' : ''}>▼</button>
-                </div>
-                <div class="item-info">
-                    <div class="item-name">${esc(p.name)}${p.external ? ' <span class="tag-badge">↗ external</span>' : ''}</div>
-                    <div class="item-meta">${esc(p.url)} — ${esc(p.description)}</div>
-                </div>
-                <div class="item-actions">
-                    <button class="btn btn-ghost btn-sm" onclick="editProject(${i})">Edit</button>
-                    <button class="btn btn-danger btn-sm" onclick="deleteProject(${i})">Delete</button>
-                </div>
-            </div>
-        `).join('');
-    }
-
-    function editProject(i) {
-        editingProjectIdx = i;
-        const p = projectsData[i];
-        document.getElementById('proj-name').value     = p.name;
-        document.getElementById('proj-url').value      = p.url;
-        document.getElementById('proj-desc').value     = p.description;
-        document.getElementById('proj-external').checked = !!p.external;
-        document.getElementById('proj-form-title').textContent = 'Edit Project';
-        document.getElementById('proj-cancel').style.display = '';
-        document.getElementById('proj-name').focus();
-        document.querySelector('#tab-projects').scrollIntoView({ behavior: 'smooth' });
-    }
-
-    function resetProjectForm() {
-        editingProjectIdx = -1;
-        document.getElementById('proj-name').value     = '';
-        document.getElementById('proj-url').value      = '';
-        document.getElementById('proj-desc').value     = '';
-        document.getElementById('proj-external').checked = false;
-        document.getElementById('proj-form-title').textContent = 'New Project';
-        document.getElementById('proj-cancel').style.display = 'none';
-    }
-
-    async function saveProject() {
-        const name        = document.getElementById('proj-name').value.trim();
-        const url         = document.getElementById('proj-url').value.trim();
-        const description = document.getElementById('proj-desc').value.trim();
-        const external    = document.getElementById('proj-external').checked;
-
-        if (!name || !url) return toast('Name and URL are required.', 'error');
-
-        const project = { name, url, description, external };
-
-        if (editingProjectIdx >= 0) {
-            projectsData[editingProjectIdx] = project;
-        } else {
-            projectsData.push(project);
-        }
-
-        await writeProjects(editingProjectIdx >= 0 ? `Update project: ${name}` : `Add project: ${name}`);
-        resetProjectForm();
-    }
-
-    async function deleteProject(i) {
-        if (!confirm(`Delete "${projectsData[i].name}"?`)) return;
-        projectsData.splice(i, 1);
-        await writeProjects('Remove project');
-    }
-
-    async function writeProjects(message) {
-        try {
-            const result = await ghPut('data/projects.json', JSON.stringify(projectsData, null, 2), projectsSHA, message);
-            projectsSHA = result.content.sha;
-            renderProjects();
-            toast(message, 'success');
-        } catch (e) {
-            toast('Error: ' + e.message, 'error');
-            loadProjects(); // Re-sync to get fresh SHA
-        }
-    }
-
-    // ─────────────────────────────────────────────────
-    // BOOKMARKS
-    // ─────────────────────────────────────────────────
-    async function loadBookmarks() {
-        const list = document.getElementById('bookmarks-list');
-        list.innerHTML = '<div class="loading-state">Loading...</div>';
-        try {
-            const data = await ghGet('data/bookmarks.json');
-            bookmarksSHA  = data.sha;
-            bookmarksData = JSON.parse(b64decode(data.content));
-            renderBookmarks();
-        } catch (e) {
-            list.innerHTML = '<div class="empty-state">Could not load — check your token.</div>';
-        }
-    }
-
-    function renderBookmarks() {
-        const list = document.getElementById('bookmarks-list');
-        if (!bookmarksData.length) {
-            list.innerHTML = '<div class="empty-state">No bookmarks yet.</div>';
-            return;
-        }
-        list.innerHTML = bookmarksData.map((b, i) => `
-            <div class="item-row" draggable="true"
-                 ondragstart="onDragStart(event,${i},'bookmark')"
-                 ondragover="onDragOver(event)"
-                 ondragleave="onDragLeave(event)"
-                 ondrop="onDrop(event,${i},'bookmark')"
-                 ondragend="onDragEnd(event)">
-                <span class="drag-handle" title="Drag to reorder">⠿</span>
-                <div class="reorder-btns">
-                    <button type="button" title="Move up" aria-label="Move up" onclick="moveItem('bookmark',${i},-1)" ${i === 0 ? 'disabled' : ''}>▲</button>
-                    <button type="button" title="Move down" aria-label="Move down" onclick="moveItem('bookmark',${i},1)" ${i === bookmarksData.length - 1 ? 'disabled' : ''}>▼</button>
-                </div>
-                <div class="item-info">
-                    <div class="item-name">
-                        ${esc(b.title)}
-                        ${b.tag ? `<span class="tag-badge">#${esc(b.tag)}</span>` : ''}
-                    </div>
-                    <div class="item-meta">${esc(b.url)}${b.date ? ' · ' + esc(b.date) : ''}</div>
-                </div>
-                <div class="item-actions">
-                    <button class="btn btn-ghost btn-sm" onclick="editBookmark(${i})">Edit</button>
-                    <button class="btn btn-danger btn-sm" onclick="deleteBookmark(${i})">Delete</button>
-                </div>
-            </div>
-        `).join('');
-    }
-
-    function editBookmark(i) {
-        editingBookmarkIdx = i;
-        const b = bookmarksData[i];
-        document.getElementById('bm-title').value = b.title;
-        document.getElementById('bm-url').value   = b.url;
-        document.getElementById('bm-tag').value   = b.tag  || '';
-        document.getElementById('bm-date').value  = b.date || '';
-        document.getElementById('bm-note').value  = b.note || '';
-        document.getElementById('bm-form-title').textContent = 'Edit Bookmark';
-        document.getElementById('bm-cancel').style.display = '';
-        document.getElementById('bm-title').focus();
-    }
-
-    function resetBookmarkForm() {
-        editingBookmarkIdx = -1;
-        document.getElementById('bm-title').value = '';
-        document.getElementById('bm-url').value   = '';
-        document.getElementById('bm-tag').value   = '';
-        document.getElementById('bm-note').value  = '';
-        document.getElementById('bm-form-title').textContent = 'New Bookmark';
-        document.getElementById('bm-cancel').style.display = 'none';
-        setToday('bm-date');
-    }
-
-    async function saveBookmark() {
-        const title = document.getElementById('bm-title').value.trim();
-        const url   = document.getElementById('bm-url').value.trim();
-        const tag   = document.getElementById('bm-tag').value.trim();
-        const date  = document.getElementById('bm-date').value.trim();
-        const note  = document.getElementById('bm-note').value.trim();
-
-        if (!title || !url) return toast('Title and URL are required.', 'error');
-        if (tag && tag.includes(' ')) return toast('Tag must be a single word.', 'error');
-
-        const bookmark = { title, url, tag, date, note };
-
-        if (editingBookmarkIdx >= 0) {
-            bookmarksData[editingBookmarkIdx] = bookmark;
-        } else {
-            bookmarksData.unshift(bookmark); // newest first
-        }
-
-        await writeBookmarks(editingBookmarkIdx >= 0 ? `Update bookmark: ${title}` : `Add bookmark: ${title}`);
-        resetBookmarkForm();
-    }
-
-    async function deleteBookmark(i) {
-        if (!confirm(`Delete "${bookmarksData[i].title}"?`)) return;
-        bookmarksData.splice(i, 1);
-        await writeBookmarks('Remove bookmark');
-    }
-
-    async function writeBookmarks(message) {
-        try {
-            const result = await ghPut('data/bookmarks.json', JSON.stringify(bookmarksData, null, 2), bookmarksSHA, message);
-            bookmarksSHA = result.content.sha;
-            renderBookmarks();
-            toast(message, 'success');
-        } catch (e) {
-            toast('Error: ' + e.message, 'error');
-            loadBookmarks();
-        }
-    }
-
-    // ─────────────────────────────────────────────────
-    // GEMS
-    // ─────────────────────────────────────────────────
-    const GEM_FIELDS = ['title','type','orient','src','desc','place','coords','maps','camera','lens','iso','aperture','shutter'];
-
-    async function loadGems() {
-        const list = document.getElementById('gems-list');
-        list.innerHTML = '<div class="loading-state">Loading...</div>';
-        try {
-            const data = await ghGet('data/gems.json');
-            gemsSHA  = data.sha;
-            gemsData = JSON.parse(b64decode(data.content));
-            renderGems();
-        } catch (e) {
-            list.innerHTML = '<div class="empty-state">Could not load — check your token.</div>';
-        }
-    }
-
-    function renderGems() {
-        const list = document.getElementById('gems-list');
-        if (!gemsData.length) {
-            list.innerHTML = '<div class="empty-state">No gems yet.</div>';
-            return;
-        }
-        list.innerHTML = gemsData.map((g, i) => `
-            <div class="item-row" draggable="true"
-                 ondragstart="onDragStart(event,${i},'gem')"
-                 ondragover="onDragOver(event)"
-                 ondragleave="onDragLeave(event)"
-                 ondrop="onDrop(event,${i},'gem')"
-                 ondragend="onDragEnd(event)">
-                <span class="drag-handle" title="Drag to reorder">⠿</span>
-                <div class="reorder-btns">
-                    <button type="button" title="Move up" aria-label="Move up" onclick="moveItem('gem',${i},-1)" ${i === 0 ? 'disabled' : ''}>▲</button>
-                    <button type="button" title="Move down" aria-label="Move down" onclick="moveItem('gem',${i},1)" ${i === gemsData.length - 1 ? 'disabled' : ''}>▼</button>
-                </div>
-                <div class="item-info">
-                    <div class="item-name">
-                        ${esc(g.title || '(untitled)')}
-                        <span class="tag-badge">${esc(g.type || 'photo')}</span>
-                    </div>
-                    <div class="item-meta">${esc(g.place || '')}${g.src ? ' · ' + esc(g.src) : ' · no media'}</div>
-                </div>
-                <div class="item-actions">
-                    <button class="btn btn-ghost btn-sm" onclick="editGem(${i})">Edit</button>
-                    <button class="btn btn-danger btn-sm" onclick="deleteGem(${i})">Delete</button>
-                </div>
-            </div>
-        `).join('');
-    }
-
-    function editGem(i) {
-        editingGemIdx = i;
-        const g = gemsData[i];
-        GEM_FIELDS.forEach(f => {
-            const el = document.getElementById('gem-' + f);
-            if (el) el.value = g[f] != null ? g[f] : '';
-        });
-        document.getElementById('gem-form-title').textContent = 'Edit Gem';
-        document.getElementById('gem-cancel').style.display = '';
-        document.getElementById('gem-title').focus();
-        document.querySelector('#tab-gems').scrollIntoView({ behavior: 'smooth' });
-    }
-
-    function resetGemForm() {
-        editingGemIdx = -1;
-        GEM_FIELDS.forEach(f => {
-            const el = document.getElementById('gem-' + f);
-            if (!el) return;
-            if (f === 'type')   el.value = 'photo';
-            else if (f === 'orient') el.value = 'landscape';
-            else el.value = '';
-        });
-        document.getElementById('gem-form-title').textContent = 'New Gem';
-        document.getElementById('gem-cancel').style.display = 'none';
-    }
-
-    // ── Inline media upload (upload.irrssue.com) ─────
-    const UPLOAD_URL  = 'https://upload.irrssue.com/upload';
-    const DROP_LABEL  = 'drag & drop a photo/video here, or click to choose';
-    const gemDrop     = document.getElementById('gem-drop');
-    const gemPicker   = document.getElementById('gem-picker');
-    const uploadToken = document.getElementById('upload-token');
-
-    uploadToken.value = localStorage.getItem('uploadToken') || '';
-    uploadToken.addEventListener('input', () => localStorage.setItem('uploadToken', uploadToken.value));
-
-    async function uploadGemMedia(file) {
-        const token = uploadToken.value.trim();
-        if (!token) {
-            uploadToken.focus();
-            return toast('Upload token required.', 'error');
-        }
-        gemDrop.classList.add('busy');
-        gemDrop.textContent = 'Uploading ' + file.name + '…';
-        try {
-            const res  = await fetch(UPLOAD_URL + '?name=' + encodeURIComponent(file.name), {
-                method: 'POST',
-                headers: { 'X-Upload-Token': token },
-                body: file
-            });
-            const data = await res.json().catch(() => ({}));
-            if (!res.ok) throw new Error(data.error || 'HTTP ' + res.status);
-
-            document.getElementById('gem-src').value = data.url;
-            if (file.type.startsWith('video/')) document.getElementById('gem-type').value = 'video';
-            if (file.type.startsWith('image/')) {
-                const img = new Image();
-                img.onload = () => {
-                    document.getElementById('gem-orient').value =
-                        img.width > img.height ? 'landscape' :
-                        img.width < img.height ? 'portrait'  : 'square';
-                    URL.revokeObjectURL(img.src);
-                };
-                img.src = URL.createObjectURL(file);
-            }
-            toast('Uploaded: ' + data.url, 'success');
-        } catch (e) {
-            toast('Upload error: ' + e.message, 'error');
-        } finally {
-            gemDrop.classList.remove('busy');
-            gemDrop.textContent = DROP_LABEL;
-        }
-    }
-
-    gemDrop.addEventListener('click', () => gemPicker.click());
-    gemDrop.addEventListener('keydown', e => {
-        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); gemPicker.click(); }
-    });
-    gemPicker.addEventListener('change', () => {
-        if (gemPicker.files.length) uploadGemMedia(gemPicker.files[0]);
-        gemPicker.value = '';
-    });
-    ['dragenter', 'dragover'].forEach(ev => gemDrop.addEventListener(ev, e => {
-        e.preventDefault();
-        gemDrop.classList.add('over');
-    }));
-    ['dragleave', 'drop'].forEach(ev => gemDrop.addEventListener(ev, e => {
-        e.preventDefault();
-        gemDrop.classList.remove('over');
-    }));
-    gemDrop.addEventListener('drop', e => {
-        if (e.dataTransfer && e.dataTransfer.files.length) uploadGemMedia(e.dataTransfer.files[0]);
-    });
-
-    function slugify(str) {
-        return String(str || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-    }
-
-    async function saveGem() {
-        const gem = {};
-        GEM_FIELDS.forEach(f => { gem[f] = document.getElementById('gem-' + f).value.trim(); });
-
-        if (!gem.title) return toast('Title is required.', 'error');
-
-        // Only allow http(s) map links — blocks javascript:/data: URIs.
-        if (gem.maps) {
-            let ok = false;
-            try { const u = new URL(gem.maps); ok = (u.protocol === 'http:' || u.protocol === 'https:'); } catch (_) {}
-            if (!ok) return toast('Google Maps link must be a valid http(s) URL.', 'error');
-        }
-
-        // Media URL/path can be a relative path (assets/foo.jpg) or an absolute
-        // http(s) URL, but never javascript:/data:/vbscript: — those would run
-        // as script wherever this field is later rendered as a src attribute.
-        if (gem.src && /^\s*(javascript|data|vbscript):/i.test(gem.src)) {
-            return toast('Media URL must be a relative path or an http(s) URL.', 'error');
-        }
-        if (gem.src && /^[a-z][a-z0-9+.-]*:\/\//i.test(gem.src)) {
-            let ok = false;
-            try { const u = new URL(gem.src); ok = (u.protocol === 'http:' || u.protocol === 'https:'); } catch (_) {}
-            if (!ok) return toast('Media URL must be a relative path or an http(s) URL.', 'error');
-        }
-
-        // Stable id: keep existing on edit, otherwise derive from title.
-        if (editingGemIdx >= 0 && gemsData[editingGemIdx].id) {
-            gem.id = gemsData[editingGemIdx].id;
-        } else {
-            let base = slugify(gem.title) || 'gem';
-            let id = base, n = 2;
-            while (gemsData.some((x, idx) => x.id === id && idx !== editingGemIdx)) id = base + '-' + (n++);
-            gem.id = id;
-        }
-
-        if (editingGemIdx >= 0) {
-            gemsData[editingGemIdx] = gem;
-        } else {
-            gemsData.push(gem);
-        }
-
-        await writeGems(editingGemIdx >= 0 ? `Update gem: ${gem.title}` : `Add gem: ${gem.title}`);
-        resetGemForm();
-    }
-
-    async function deleteGem(i) {
-        if (!confirm(`Delete "${gemsData[i].title}"?`)) return;
-        gemsData.splice(i, 1);
-        await writeGems('Remove gem');
-    }
-
-    async function writeGems(message) {
-        try {
-            const result = await ghPut('data/gems.json', JSON.stringify(gemsData, null, 2), gemsSHA, message);
-            gemsSHA = result.content.sha;
-            renderGems();
-            toast(message, 'success');
-        } catch (e) {
-            toast('Error: ' + e.message, 'error');
-            loadGems(); // Re-sync to get fresh SHA
-        }
-    }
-
-    // ─────────────────────────────────────────────────
-    // POSTS
-    // ─────────────────────────────────────────────────
-    async function loadPosts() {
-        const list = document.getElementById('posts-list');
-        list.innerHTML = '<div class="loading-state">Loading...</div>';
-        try {
-            const files = await ghGet('posts');
-            const mdFiles = files.filter(f => f.name.endsWith('.md') && f.name !== '_template.md');
-
-            if (!mdFiles.length) {
-                postsData = [];
-                list.innerHTML = '<div class="empty-state">No posts yet.</div>';
-                return;
-            }
-
-            const posts = await Promise.all(mdFiles.map(async f => {
-                const fileData = await ghGet('posts/' + encodeURIComponent(f.name));
-                const text = b64decode(fileData.content);
-                const fm   = parseFrontMatter(text);
-                return { filename: f.name, sha: f.sha, ...fm };
-            }));
-
-            posts.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
-            postsData = posts;
-            renderPosts();
-        } catch (e) {
-            document.getElementById('posts-list').innerHTML = '<div class="empty-state">Could not load — check your token.</div>';
-        }
-    }
-
-    function renderPosts() {
-        const list = document.getElementById('posts-list');
-        if (!postsData.length) {
-            list.innerHTML = '<div class="empty-state">No posts yet.</div>';
-            return;
-        }
-        list.innerHTML = postsData.map((p, i) => `
-            <div class="item-row" draggable="true"
-                 ondragstart="onDragStart(event,${i},'post')"
-                 ondragover="onDragOver(event)"
-                 ondragleave="onDragLeave(event)"
-                 ondrop="onDrop(event,${i},'post')"
-                 ondragend="onDragEnd(event)">
-                <span class="drag-handle" title="Drag to reorder">⠿</span>
-                <div class="reorder-btns">
-                    <button type="button" title="Move up" aria-label="Move up" onclick="moveItem('post',${i},-1)" ${i === 0 ? 'disabled' : ''}>▲</button>
-                    <button type="button" title="Move down" aria-label="Move down" onclick="moveItem('post',${i},1)" ${i === postsData.length - 1 ? 'disabled' : ''}>▼</button>
-                </div>
-                <div class="item-info">
-                    <div class="item-name">
-                        ${esc(p.title || p.filename)}
-                        ${p.draft ? '<span class="tag-badge">draft</span>' : ''}
-                    </div>
-                    <div class="item-meta">${esc(p.filename)}${p.date ? ' · ' + esc(p.date) : ''}</div>
-                </div>
-                <div class="item-actions">
-                    <button class="btn btn-ghost btn-sm" onclick="editPost(${esc(JSON.stringify(p.filename))}, ${esc(JSON.stringify(p.sha))})">Edit</button>
-                    <button class="btn btn-danger btn-sm" onclick="deletePost(${esc(JSON.stringify(p.filename))}, ${esc(JSON.stringify(p.sha))})">Delete</button>
-                </div>
-            </div>
-        `).join('');
-    }
-
-    async function editPost(filename, sha) {
-        try {
-            const data    = await ghGet('posts/' + filename);
-            const content = b64decode(data.content);
-            const fm      = parseFrontMatter(content);
-            const body    = content.replace(/^---[\s\S]*?---\n*/, '');
-
-            document.getElementById('post-title').value = fm.title || '';
-            document.getElementById('post-date').value  = fm.date  || '';
-            document.getElementById('post-draft').checked = fm.draft !== false;
-            document.getElementById('post-body').value  = body;
-
-            editingPost = { filename, sha: data.sha };
-            document.getElementById('post-form-title').textContent = 'Edit Post';
-            document.getElementById('post-submit-btn').textContent = 'Update Post';
-            document.getElementById('post-cancel').style.display = '';
-            document.getElementById('post-title').focus();
-            document.querySelector('.main-panel').scrollTo({ top: 0, behavior: 'smooth' });
-            toast('Post loaded for editing.', 'info');
-        } catch (e) {
-            toast('Error loading post: ' + e.message, 'error');
-        }
-    }
-
-    function resetPostForm() {
-        editingPost = null;
-        document.getElementById('post-title').value = '';
-        document.getElementById('post-body').value  = '';
-        document.getElementById('post-draft').checked = true;
-        document.getElementById('post-form-title').textContent = 'New Post';
-        document.getElementById('post-submit-btn').textContent = 'Create Post';
-        document.getElementById('post-cancel').style.display = 'none';
-        setFormattedDate('post-date');
-    }
-
-    async function submitPost() {
-        const title = document.getElementById('post-title').value.trim();
-        const date  = document.getElementById('post-date').value.trim();
-        const draft = document.getElementById('post-draft').checked;
-        const body  = document.getElementById('post-body').value;
-
-        if (!title) return toast('Title is required.', 'error');
-
-        const content = `---\ntitle: "${title}"\ndate: "${date}"\ncover: ""\ndraft: ${draft}\n---\n\n${body}`;
-
-        try {
-            if (editingPost) {
-                // Update existing file
-                await ghPut('posts/' + editingPost.filename, content, editingPost.sha, `Update post: ${title}`);
-                toast('Post updated: ' + editingPost.filename, 'success');
-            } else {
-                // Create new file
-                const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-                const filename = 'posts/' + slug + '.md';
-                try {
-                    await ghGet(filename);
-                    return toast(`Post "${slug}.md" already exists. Use Edit instead.`, 'error');
-                } catch (_) { /* 404 = ok to create */ }
-                await ghPut(filename, content, null, `Add post: ${title}`);
-                toast('Post created: ' + filename, 'success');
-            }
-            resetPostForm();
-            loadPosts();
-        } catch (e) {
-            toast('Error: ' + e.message, 'error');
-        }
-    }
-
-    async function deletePost(filename, sha) {
-        if (!confirm(`Delete "${filename}"?`)) return;
-        try {
-            await ghDelete('posts/' + filename, sha, 'Delete post: ' + filename);
-            toast('Post deleted.', 'success');
-            loadPosts();
-        } catch (e) {
-            toast('Error: ' + e.message, 'error');
-        }
-    }
-
-    // ── Front matter parser ───────────────────────────
-    function parseFrontMatter(content) {
-        const match = content.match(/^---\s*\n([\s\S]*?)\n---/);
-        if (!match) return {};
-        const result = {};
-        match[1].split('\n').forEach(line => {
-            const colon = line.indexOf(':');
-            if (colon < 0) return;
-            const key = line.slice(0, colon).trim();
-            const val = line.slice(colon + 1).trim().replace(/^["']|["']$/g, '');
-            if (val === 'true')       result[key] = true;
-            else if (val === 'false') result[key] = false;
-            else                      result[key] = val;
-        });
-        return result;
-    }
-
-    // ── Bottom nav hover pill ─────────────────────────
-    (function () {
-        const nav   = document.getElementById('admin-bottom-nav');
-        if (!nav) return;
-        const items = nav.querySelectorAll('.admin-nav-item');
-
-        function setPill(item) {
-            const nr = nav.getBoundingClientRect();
-            const ir = item.getBoundingClientRect();
-            nav.style.setProperty('--hover-left',   (ir.left   - nr.left) + 'px');
-            nav.style.setProperty('--hover-top',    (ir.top    - nr.top)  + 'px');
-            nav.style.setProperty('--hover-width',  ir.width  + 'px');
-            nav.style.setProperty('--hover-height', ir.height + 'px');
-        }
-
-        items.forEach(item => {
-            item.addEventListener('mouseenter', () => { setPill(item); nav.classList.add('nav-hover-active'); });
-        });
-        nav.addEventListener('mouseleave', () => nav.classList.remove('nav-hover-active'));
-    })();
-
-    // ── Start ─────────────────────────────────────────
-    init();
-</script>
+<script src="../javascript/admin.js" defer></script>
 </body>
 </html>

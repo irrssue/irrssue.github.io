@@ -119,11 +119,6 @@
   var picker = document.getElementById('picker');
   var results = document.getElementById('results');
 
-  tokenInput.value = localStorage.getItem('uploadToken') || '';
-  tokenInput.addEventListener('input', function () {
-    localStorage.setItem('uploadToken', tokenInput.value);
-  });
-
   function upload(file) {
     var li = document.createElement('li');
     li.innerHTML = '<strong></strong> <span class="status">uploading…</span>';

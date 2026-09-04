@@ -12,8 +12,8 @@ That's the kind of site I wanted to build. So I did — three times, actually, b
 This is a post about what that site is, why it looks the way it looks, and the handful of decisions I made that I think are worth writing down.
 
 The short version
-irrssue.com is my personal portfolio and writing site. It's vanilla HTML, CSS, and JavaScript — no React, no Next.js, no Tailwind, no build step. It's served as static files from GitHub Pages out of the main branch of a public repo. When I want to publish a blog post, I write a markdown file, push it, and a GitHub Action renders it to HTML.
-The whole thing weighs next to nothing. First paint is sub-second even on a slow connection. There are no external scripts on the initial load — no analytics, no fonts CDN except a small cycling-font experiment on the homepage, no icon library. The design philosophy, written in my own CLAUDE.md as a note to future me, is that every element earns its place and the default is to remove, not add.
+[irrssue.com](https://irrssue.com) is my personal portfolio and writing site. It's vanilla HTML, CSS, and JavaScript — no React, no Next.js, no Tailwind, no build step. It's served as static files from GitHub Pages out of the main branch of a public repo. When I want to publish a blog post, I write a markdown file, push it, and a GitHub Action renders it to HTML.
+The whole thing weighs next to nothing. First paint is sub-second even on a slow connection. There are no external scripts on the initial load — no analytics, no fonts CDN except a small cycling-font experiment on the homepage, no icon library. The design philosophy, written in my own `CLAUDE.md` as a note to future me, is that every element earns its place and the default is to remove, not add.
 
 Why vanilla
 I've built things in React. I like React. But a personal site is the one project where a framework actively hurts you.

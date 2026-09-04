@@ -31,19 +31,70 @@ TEMPLATE = (ROOT / "scripts" / "post_template.html").read_text(encoding="utf-8")
 
 MAX_HOME_POSTS = 3
 EXCERPT_LIMIT = 160
+SLUG_RE = re.compile(r"[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$")
 
-# Mirrors the old client-side markdown-it config exactly: the "js-default"
-# preset is markdown-it's own "default", so tables/strikethrough/linkify and
-# typographer quotes render the same as they did in the browser.
+# Markdown is content, not a source of executable page markup. HTML syntax in
+# a post is rendered literally; Markdown tables, links, code, and typography
+# still use the same renderer as before.
 md = MarkdownIt(
     "js-default",
-    {"html": True, "linkify": True, "typographer": True, "breaks": True},
+    {"html": False, "linkify": True, "typographer": True, "breaks": True},
 )
+
+
+def _clean_url(value) -> str:
+    raw = str(value or "").strip()
+    if not raw or "\\" in raw or any(ord(char) < 32 for char in raw):
+        return ""
+    return raw
+
+
+def safe_http_url(value) -> str | None:
+    """Accept only normal absolute web URLs for externally controlled links."""
+    raw = _clean_url(value)
+    if not raw:
+        return None
+    parsed = urlparse(raw)
+    if (
+        parsed.scheme in {"http", "https"}
+        and parsed.netloc
+        and not parsed.username
+        and not parsed.password
+    ):
+        return raw
+    return None
+
+
+def safe_relative_url(value) -> str | None:
+    """Accept a local path, fragment, or query string but never a scheme."""
+    raw = _clean_url(value)
+    if not raw or raw.startswith("//"):
+        return None
+    parsed = urlparse(raw)
+    return raw if not parsed.scheme and not parsed.netloc else None
+
+
+def safe_asset_url(value) -> str | None:
+    return safe_http_url(value) or safe_relative_url(value)
+
+
+def safe_link_url(value) -> str | None:
+    raw = _clean_url(value)
+    if not raw:
+        return None
+    parsed = urlparse(raw)
+    if parsed.scheme == "mailto" and parsed.path:
+        return raw
+    return safe_http_url(raw) or safe_relative_url(raw)
 
 
 def _external_link_open(self, tokens, idx, options, env):
     token = tokens[idx]
-    href = token.attrGet("href") or ""
+    href = safe_link_url(token.attrGet("href") or "")
+    if not href:
+        token.attrSet("href", "#")
+        return self.renderToken(tokens, idx, options, env)
+    token.attrSet("href", href)
     if href.startswith(("http://", "https://")):
         token.attrSet("target", "_blank")
         token.attrSet("rel", "noopener noreferrer")
@@ -70,14 +121,17 @@ def parse_post(path: Path) -> dict | None:
         print(f"skip {path.name}: unparseable date {fm.get('date')!r}")
         return None
 
-    body = m.group(2)
     slug = path.stem
+    if not SLUG_RE.fullmatch(slug):
+        print(f"skip {path.name}: unsafe slug")
+        return None
+    body = m.group(2)
     return {
         "slug": slug,
         "title": str(fm.get("title") or "Untitled"),
         "date": date,
         "date_raw": str(fm.get("date", "")),
-        "cover": fm.get("cover") or "",
+        "cover": safe_asset_url(fm.get("cover")) or "",
         "excerpt": first_paragraph(body),  # meta description only
         "body": body,
         "url": f"/writing/{date.year}/{slug}",
@@ -145,11 +199,32 @@ def render_post_page(post: dict) -> str:
 def render_home_list(posts: list[dict]) -> str:
     items = [
         f'<li class="writing-post-item reveal-item">'
-        f'<a href="{p["url"]}" class="writing-post-link">{e(p["title"])}</a></li>'
+        f'<a href="{e(p["url"])}" class="writing-post-link">{e(p["title"])}</a></li>'
         for p in posts[:MAX_HOME_POSTS]
     ]
     return "\n".join(items)
 
+
+
+def projects_with_safe_urls() -> list[dict]:
+    """Read CMS project data while refusing script/data/protocol-relative URLs."""
+    raw_projects = json.loads((DATA_DIR / "projects.json").read_text(encoding="utf-8"))
+    projects = []
+    for index, project in enumerate(raw_projects):
+        if not isinstance(project, dict):
+            print(f"skip project #{index}: not an object")
+            continue
+        external = bool(project.get("external"))
+        url = safe_http_url(project.get("url")) if external else safe_relative_url(project.get("url"))
+        if not url:
+            print(f"skip project #{index}: invalid URL")
+            continue
+        image = safe_asset_url(project.get("image")) if project.get("image") else ""
+        if project.get("image") and not image:
+            print(f"skip project #{index}: invalid image URL")
+            continue
+        projects.append(dict(project, url=url, image=image, external=external))
+    return projects
 
 
 def render_projects() -> str:
@@ -159,7 +234,7 @@ def render_projects() -> str:
     hides it, because there the ring and the rail carry the same projects. All
     three come out of data/projects.json so they cannot drift apart.
     """
-    projects = json.loads((DATA_DIR / "projects.json").read_text(encoding="utf-8"))
+    projects = projects_with_safe_urls()
     items = []
     for p in projects:
         external = p.get("external")
@@ -180,11 +255,7 @@ def render_project_cards() -> str:
     Each card carries its own angle on the ring so the stylesheet can lay the
     ring out on its own; the script then drives that same angle frame by frame.
     """
-    projects = [
-        p
-        for p in json.loads((DATA_DIR / "projects.json").read_text(encoding="utf-8"))
-        if p.get("image")
-    ]
+    projects = [p for p in projects_with_safe_urls() if p.get("image")]
     step = 360 / len(projects) if projects else 0
 
     def card(p: dict, index: int) -> str:
@@ -211,11 +282,7 @@ def render_project_rail() -> str:
     images are the ring's images, so a browser that has already fetched one
     block serves the other from cache.
     """
-    projects = [
-        p
-        for p in json.loads((DATA_DIR / "projects.json").read_text(encoding="utf-8"))
-        if p.get("image")
-    ]
+    projects = [p for p in projects_with_safe_urls() if p.get("image")]
 
     def slide(p: dict) -> str:
         alt = p["name"]
@@ -290,12 +357,16 @@ def bookmark_entries() -> list[dict]:
         if not date:
             print(f"skip bookmark {b.get('title')!r}: bad date {b.get('date')!r}")
             continue
-        host = re.sub(r"^www\.", "", urlparse(b.get("url", "")).hostname or "")
+        url = safe_http_url(b.get("url"))
+        if not url:
+            print(f"skip bookmark {b.get('title')!r}: invalid URL")
+            continue
+        host = re.sub(r"^www\.", "", urlparse(url).hostname or "")
         entries.append(
             {
                 "date": date,
                 "title": b.get("title") or "(untitled)",
-                "url": b.get("url") or "#",
+                "url": url,
                 "tag": b.get("tag") or "",
                 "desc": "",  # lists stay titles-only, no preview lines
                 "src": host,

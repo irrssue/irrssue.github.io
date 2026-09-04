@@ -1,2 +1,4 @@
 User-agent: *
 Disallow: /admin.html
+Disallow: /html/admin.html
+Disallow: /html/upload.html

@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'none'; img-src 'self' data: https:; media-src 'self' https:; connect-src 'self'; font-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'; upgrade-insecure-requests">
     <title>4 hour of CI rabbit hole - Saw Thura Zaw</title>
     <meta name="description" content="It started small. I was scrolling my repo&#x27;s git log and saw this:">
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
@@ -80,7 +81,7 @@ auto: update NavBar.tsx
 <p>I had set this up weeks ago. Forgot about it. It had been quietly working the entire time. The reason the log went silent was that I’d been committing from the server itself — so by the time cron’s <code>git fetch</code> ran, HEAD already matched origin, and there was nothing to pull.</p>
 <p>The whole CI saga was solving a problem that didn’t exist.</p>
 <p><strong>The actual lesson:</strong> before reaching for a new system, run <code>crontab -l</code>. Or <code>systemctl list-timers</code>. Or <code>ls ~/scripts/</code>. Half the time the thing you’re about to build is already running on your own machine, doing exactly what you need, and the only reason it feels broken is that the trigger condition isn’t being hit.</p>
-<p>The commit message thing? Fixed in one <a href="http://CLAUDE.md" target="_blank" rel="noopener noreferrer">CLAUDE.md</a> edit. Took five minutes. Exactly like I thought at the start.</p>
+<p>The commit message thing? Fixed in one <code>CLAUDE.md</code> edit. Took five minutes. Exactly like I thought at the start.</p>
 </div>
 </article></div>
             </div>
