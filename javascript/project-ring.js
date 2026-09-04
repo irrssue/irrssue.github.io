@@ -178,10 +178,25 @@
         return event.deltaY;
     }
 
+    // A mouse notch and a trackpad's natural-scroll swipe report opposite
+    // deltaY signs for what reads as the same gesture direction: macOS
+    // flips the trackpad's sign at the driver level so two fingers moving
+    // up "drags" content up, while a wheel keeps the older up-means-back
+    // convention. Chrome/Safari still expose the legacy wheelDelta beside
+    // deltaY; its fixed -3x relationship to deltaY only holds for a wheel's
+    // fixed-size notches; a trackpad's finer, variable deltas break it.
+    // Firefox drops wheelDelta entirely and instead reports pixel-mode
+    // (deltaMode 0) only for trackpads, line-mode for wheels.
+    function isTrackpad(event) {
+        if ('wheelDeltaY' in event) return event.wheelDeltaY !== -3 * event.deltaY;
+        return event.deltaMode === 0;
+    }
+
     ring.addEventListener('wheel', function (event) {
         if (!wide.matches || still.matches) return;
         var delta = wheelDelta(event);
         if (!delta) return;
+        if (isTrackpad(event)) delta = -delta;
 
         // Keep the response proportional to a trackpad or wheel gesture,
         // while limiting the peak so the cards retain their reassuring weight.
