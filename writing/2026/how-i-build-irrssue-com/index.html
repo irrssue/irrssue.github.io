@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'none'; img-src 'self' data: https:; media-src 'self' https:; connect-src 'self'; font-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'; upgrade-insecure-requests">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'none'; img-src 'self' data: https:; media-src 'self' https:; connect-src 'self'; font-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' https://www.youtube.com; frame-src https://www.youtube.com; upgrade-insecure-requests">
     <title>how I build irrssue.com - Saw Thura Zaw</title>
     <meta name="description" content="Most personal sites I admire are embarrassingly simple. You load the page and what you get is text, a couple of links, and nothing else. No skeleton loaders.…">
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <!-- Decides, before a single rule is applied, whether this browser can run
          the animated design, and fetches the scripts that drive it only if it
          can. Browsers that cannot are drawn by css/legacy.css instead. -->
-    <script id="capability" src="/javascript/capability.js" data-enhance="/javascript/script.js,/javascript/post.js"></script>
+    <script id="capability" src="/javascript/capability.js" data-enhance="/javascript/script.js,/javascript/post.js,/javascript/now-playing.js"></script>
     <link rel="stylesheet" href="/css/styles.css">
     <link rel="stylesheet" href="/css/post.css">
     <link rel="stylesheet" href="/css/legacy.css">
@@ -141,9 +141,16 @@ The site itself will keep being what it is — a place where I write things down
         </div>
     </nav>
 
-    <!-- script.js and post.js are fetched by javascript/capability.js in the
-         head, and only when the browser passes its test. The date they
-         rewrite is already rendered in full by the build, so a browser that
-         never runs them still reads it. -->
+    <!-- Invisible YouTube embed for now-playing.js -- keeps a track already
+         started on another page going (or resumable) here too. See the note
+         above requestApi() in that file for why it's a plain div, not an
+         iframe, and why it loads immediately rather than on first tap. -->
+    <div id="yt-player" style="position:fixed;bottom:0;right:0;width:2px;height:2px;opacity:0.01;pointer-events:none;z-index:-1;" aria-hidden="true"></div>
+
+    <!-- script.js, post.js and now-playing.js are fetched by
+         javascript/capability.js in the head, and only when the browser
+         passes its test. The date script.js/post.js rewrite is already
+         rendered in full by the build, so a browser that never runs them
+         still reads it. -->
 </body>
 </html>

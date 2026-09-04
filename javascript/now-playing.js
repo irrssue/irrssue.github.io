@@ -35,6 +35,48 @@
     var myPlaylist = [];
     var myIndex = 0;
     var playAttemptTimer = null;
+    var resumeAt = 0;
+    var pendingResume = false;
+
+    // Every page on this static site is a full navigation, so nothing here
+    // survives it on its own. This is the seam that lets a play started on
+    // one page pick back up on the next: whichever track/position/paused
+    // state the visitor left, saved to sessionStorage so it's scoped to this
+    // browsing session and not shared across tabs. It cannot make playback
+    // itself survive the navigation -- audio always stops when the page
+    // unloads -- so what actually resumes on load is a *request* to keep
+    // going, subject to the same autoplay-gesture rules as a fresh tap (see
+    // requestApi below): the browser may honour it immediately, or may
+    // silently block it, in which case armPlayWatchdog() leaves the button on
+    // "Play" at the right track and position rather than stuck pretending.
+    var STORAGE_KEY = 'irrssue-now-playing';
+
+    function saveState() {
+        if (!myPlaylist.length) return;
+        try {
+            sessionStorage.setItem(STORAGE_KEY, JSON.stringify({
+                ids: myPlaylist.map(function (song) { return song.id; }),
+                index: myIndex,
+                playing: userWantsPlay,
+                time: (player && player.getCurrentTime) ? player.getCurrentTime() : 0
+            }));
+        } catch (error) {
+            // Storage unavailable (private mode, disabled, quota) -- resuming
+            // on the next page just falls back to a fresh shuffled start.
+        }
+    }
+
+    function loadState() {
+        try {
+            var raw = sessionStorage.getItem(STORAGE_KEY);
+            if (!raw) return null;
+            var state = JSON.parse(raw);
+            if (!state || !state.ids || !state.ids.length) return null;
+            return state;
+        } catch (error) {
+            return null;
+        }
+    }
 
     function shuffle(arr) {
         var a = arr.slice();
@@ -93,6 +135,7 @@
         }
         updateDisplay();
         player.loadVideoById(myPlaylist[myIndex].id);
+        saveState();
     }
 
     function playPrev() {
@@ -101,6 +144,7 @@
         if (myIndex < 0) myIndex = myPlaylist.length - 1;
         updateDisplay();
         player.loadVideoById(myPlaylist[myIndex].id);
+        saveState();
     }
 
     // The YouTube embed pulls in ~20 requests, including doubleclick and
@@ -147,17 +191,23 @@
             events: {
                 onReady: function () {
                     playerReady = true;
+                    if (pendingResume) {
+                        pendingResume = false;
+                        if (resumeAt > 2) player.seekTo(resumeAt, true);
+                    }
                     // This fires asynchronously, well outside the click that
                     // triggered it, so mobile browsers can silently ignore
                     // this playVideo() call. armPlayWatchdog() (set when the
-                    // tap happened) catches that and resets the button so the
-                    // next tap is a fresh, honored gesture.
+                    // tap happened, or when a resume was attempted on load)
+                    // catches that and resets the button so the next tap is a
+                    // fresh, honored gesture.
                     if (userWantsPlay) player.playVideo();
                 },
                 onStateChange: function (e) {
                     if (e.data === YT.PlayerState.PLAYING) {
                         clearTimeout(playAttemptTimer);
                         setPlaying(true);
+                        saveState();
                     } else if (e.data === YT.PlayerState.PAUSED) {
                         if (userWantsPlay) {
                             setTimeout(function () {
@@ -167,6 +217,7 @@
                             }, 150);
                         } else {
                             setPlaying(false);
+                            saveState();
                         }
                     } else if (e.data === YT.PlayerState.ENDED) {
                         playNext();
@@ -180,10 +231,39 @@
     };
 
     function start() {
-        myPlaylist = shuffle(SONGS);
-        myIndex = 0;
+        var saved = loadState();
+        var byId = {};
+        for (var i = 0; i < SONGS.length; i++) byId[SONGS[i].id] = SONGS[i];
+
+        if (saved) {
+            myPlaylist = saved.ids.map(function (id) { return byId[id]; }).filter(Boolean);
+        }
+
+        if (myPlaylist.length) {
+            myIndex = Math.max(0, Math.min(saved.index || 0, myPlaylist.length - 1));
+            resumeAt = saved.time || 0;
+            pendingResume = resumeAt > 2;
+        } else {
+            myPlaylist = shuffle(SONGS);
+            myIndex = 0;
+        }
         updateDisplay();
         requestApi();
+
+        if (saved && saved.playing) {
+            userWantsPlay = true;
+            setPlaying(true);
+            armPlayWatchdog();
+            if (playerReady) player.playVideo();
+        }
+
+        setInterval(function () {
+            if (playing) saveState();
+        }, 3000);
+        window.addEventListener('pagehide', saveState);
+        document.addEventListener('visibilitychange', function () {
+            if (document.hidden) saveState();
+        });
 
         var btn = document.getElementById('npPlayBtn');
         if (btn) {
