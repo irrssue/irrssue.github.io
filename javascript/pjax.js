@@ -197,6 +197,12 @@
         imported.focus({ preventScroll: true });
 
         if (window.updateNavCurrent) window.updateNavCurrent();
+        // The now-playing widget's title/artist/buttons live inside
+        // #pjax-root (only the player itself lives outside it), so every
+        // swap just replaced them with fresh, un-synced markup -- repaint
+        // and rebind them from now-playing.js's in-memory playback state.
+        // A no-op on pages without the widget (writing, bookmarks).
+        if (window.npSyncControls) window.npSyncControls();
         loadPageScripts(doc, url);
     }
 

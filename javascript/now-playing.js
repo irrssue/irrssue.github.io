@@ -230,40 +230,20 @@
         });
     };
 
-    function start() {
-        var saved = loadState();
-        var byId = {};
-        for (var i = 0; i < SONGS.length; i++) byId[SONGS[i].id] = SONGS[i];
-
-        if (saved) {
-            myPlaylist = saved.ids.map(function (id) { return byId[id]; }).filter(Boolean);
-        }
-
-        if (myPlaylist.length) {
-            myIndex = Math.max(0, Math.min(saved.index || 0, myPlaylist.length - 1));
-            resumeAt = saved.time || 0;
-            pendingResume = resumeAt > 2;
-        } else {
-            myPlaylist = shuffle(SONGS);
-            myIndex = 0;
-        }
+    // The now-playing widget's markup (#npTitle/#npArtist/#npPlayBtn/etc.)
+    // only exists on the homepage, and lives *inside* #pjax-root -- unlike
+    // the player itself, which pjax.js deliberately keeps outside it. So a
+    // soft navigation away from and back to home throws away the very DOM
+    // nodes start() bound to and queried on the one real page load, and
+    // replaces them with fresh, inert ones straight from the static HTML
+    // (hence the "-"/blank placeholder and dead buttons). This re-binds
+    // control listeners to whatever nodes currently exist and repaints them
+    // from the in-memory playback state -- safe to call repeatedly, since
+    // nodes from a previous swap are already detached and garbage-collected
+    // along with their listeners. pjax.js calls this after every swap.
+    function syncControls() {
         updateDisplay();
-        requestApi();
-
-        if (saved && saved.playing) {
-            userWantsPlay = true;
-            setPlaying(true);
-            armPlayWatchdog();
-            if (playerReady) player.playVideo();
-        }
-
-        setInterval(function () {
-            if (playing) saveState();
-        }, 3000);
-        window.addEventListener('pagehide', saveState);
-        document.addEventListener('visibilitychange', function () {
-            if (document.hidden) saveState();
-        });
+        setPlaying(playing);
 
         var btn = document.getElementById('npPlayBtn');
         if (btn) {
@@ -276,15 +256,12 @@
                     return;
                 }
                 userWantsPlay = true;
-                // Switch the control immediately; the embed can take a moment
-                // to initialise on mobile networks. armPlayWatchdog() reverts
-                // this if playback doesn't actually start in time.
                 setPlaying(true);
                 armPlayWatchdog();
                 if (playerReady) {
                     player.playVideo();
                 } else {
-                    requestApi(); // onReady picks it up from userWantsPlay
+                    requestApi();
                 }
             });
         }
@@ -304,6 +281,44 @@
                 playPrev();
             });
         }
+    }
+    window.npSyncControls = syncControls;
+
+    function start() {
+        var saved = loadState();
+        var byId = {};
+        for (var i = 0; i < SONGS.length; i++) byId[SONGS[i].id] = SONGS[i];
+
+        if (saved) {
+            myPlaylist = saved.ids.map(function (id) { return byId[id]; }).filter(Boolean);
+        }
+
+        if (myPlaylist.length) {
+            myIndex = Math.max(0, Math.min(saved.index || 0, myPlaylist.length - 1));
+            resumeAt = saved.time || 0;
+            pendingResume = resumeAt > 2;
+        } else {
+            myPlaylist = shuffle(SONGS);
+            myIndex = 0;
+        }
+        requestApi();
+
+        if (saved && saved.playing) {
+            userWantsPlay = true;
+            setPlaying(true);
+            armPlayWatchdog();
+            if (playerReady) player.playVideo();
+        }
+
+        setInterval(function () {
+            if (playing) saveState();
+        }, 3000);
+        window.addEventListener('pagehide', saveState);
+        document.addEventListener('visibilitychange', function () {
+            if (document.hidden) saveState();
+        });
+
+        syncControls();
     }
 
     /* javascript/capability.js loads this file once the document is parsed, so
