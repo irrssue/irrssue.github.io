@@ -12,7 +12,7 @@
         page's markup: it does nothing without scripting, so with JS off
         there is simply no dead control sitting in the nav.
 
-   Dark is the site's own look, so that is what a first-time visitor
+   Light is the site's own look, so that is what a first-time visitor
    gets; only an explicit choice is remembered.
    ------------------------------------------------------------------ */
 (function () {
@@ -30,7 +30,7 @@
         }
     }
 
-    var theme = remembered() || 'dark';
+    var theme = remembered() || 'light';
     root.setAttribute('data-theme', theme);
 
     var fadeTimer;
