@@ -54,35 +54,15 @@ console.log('\n--- content rendered ---');
   await ctx.close();
 }
 
-console.log('\n--- Gems data stays inert and defers unseen originals ---');
+console.log('\n--- archived Gems routes are unavailable ---');
 {
-  const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+  const ctx = await browser.newContext();
   const page = await ctx.newPage();
-  await page.route('**/data/gems.json', route => route.fulfill({
-    contentType: 'application/json',
-    body: JSON.stringify([
-      {
-        id: 'first', type: 'photo', orient: 'landscape',
-        src: 'https://upload.irrssue.com/first.jpg',
-        title: '<img data-xss-probe src=x>', desc: '<script data-xss-probe>window.xss=true</script>',
-        place: '<b data-xss-probe>place</b>', coords: '0, 0',
-        camera: '<img data-xss-probe>', lens: '50mm', iso: '100', aperture: 'f/2', shutter: '1/100'
-      },
-      {
-        id: 'second', type: 'photo', orient: 'landscape',
-        src: 'https://upload.irrssue.com/second.jpg',
-        title: 'Second', desc: '', place: '', coords: '', camera: '', lens: '', iso: '', aperture: '', shutter: ''
-      }
-    ])
-  }));
-  await page.goto(BASE + '/gems', { waitUntil: 'load' });
-  await page.waitForTimeout(250);
-  const injectedNodes = await page.locator('[data-xss-probe]').count();
-  const deferred = await page.locator('.stack-card img[data-src]').count();
-  const literalTitle = await page.locator('.title').textContent();
-  const ok = injectedNodes === 0 && deferred === 1 && literalTitle === '<img data-xss-probe src=x>';
-  if (!ok) fail(`Gems CMS data was not safely rendered (nodes=${injectedNodes}, deferred=${deferred})`);
-  else console.log('ok  CMS text is inert; only the first stack image is requested initially');
+  for (const path of ['/gems', '/gems/', '/gems/index.html']) {
+    const response = await page.goto(BASE + path);
+    if (response.status() !== 404) fail(`${path} should return 404`);
+    else console.log(`ok  ${path} returns 404`);
+  }
   await ctx.close();
 }
 {

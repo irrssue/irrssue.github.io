@@ -10,7 +10,6 @@ The whole thing is intentionally minimal: fast to load, easy to read, and simple
 - **Homepage** — intro, projects, and a short writing section, in a minimal single-column layout.
 - **Writing** — blog posts written in Markdown and rendered to HTML through GitHub Actions. Includes search and tag filtering.
 - **Bookmarks** — a curated, tag-filterable list of links.
-- **Gems** — small collected finds and moments.
 - **Resume** — hosted PDF with an inline viewer and download link.
 
 ## Tech
@@ -30,7 +29,6 @@ css/              Page-specific stylesheets
 javascript/       Vanilla JS
 posts/            Writing content in Markdown
 bookmarks/        Bookmarks data
-gems/             Gems page
 resume/           Resume PDF + viewer
 .github/workflows/ Content pipeline (Markdown → HTML)
 ```
@@ -54,3 +52,8 @@ Then open <http://localhost:8000>.
 
 Add a Markdown file under `posts/`.
 GitHub Actions renders it to HTML and wires up the route automatically on push to `main`.
+
+## Archived pages
+
+Gems is temporarily unpublished while its purpose and design are reconsidered.
+The gallery and its design remain recoverable from Git history; its data and admin editor are retained for a future return. The public `/gems` routes return 404, and navigation omits the page.

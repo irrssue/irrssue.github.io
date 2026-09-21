@@ -17,7 +17,6 @@ ROOT = Path(__file__).resolve().parents[1]
 
 PUBLIC_HTML = (
     "index.html",
-    "gems/index.html",
     "echoes/index.html",
     "solarsystem/index.html",
     "resume/index.html",
@@ -29,7 +28,6 @@ PUBLIC_HTML = (
 
 HASHED_INLINE_SCRIPTS = {
     "index.html",
-    "gems/index.html",
     "echoes/index.html",
     "solarsystem/index.html",
 }
