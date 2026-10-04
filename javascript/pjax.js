@@ -61,38 +61,107 @@
         }
     }
 
+    // "/writing", "/writing/" and "/writing/index.html" are one page --
+    // GitHub Pages answers the first with a redirect to the second -- so
+    // pages are compared by this key rather than by raw pathname.
+    function pageKey(url) {
+        var path = url.pathname.replace(/index\.html$/, '');
+        if (path.length > 1) path = path.replace(/\/+$/, '');
+        return path + url.search;
+    }
+
+    // The page whose content is on screen. A step through history that only
+    // changes the #fragment leaves it exactly where it is.
+    var renderedKey = pageKey(location);
+
     function sameLocation(url) {
-        return url.pathname === location.pathname && url.search === location.search;
+        return pageKey(url) === renderedKey;
+    }
+
+    // What each stylesheet <link> actually loaded. The homepage writes its
+    // hrefs relative ("css/styles.css"), and a relative href resolves against
+    // the *current* address, which pushState keeps moving -- two levels deep
+    // the site's own stylesheet stopped being recognised and was torn out and
+    // re-added mid-navigation. So the path is worked out once, against the
+    // address the link was loaded under, and kept on the element.
+    function sheetPath(link) {
+        if (!link.hasAttribute('data-pjax-path')) {
+            link.setAttribute('data-pjax-path', resolvePath(link.getAttribute('href'), location.href));
+        }
+        return link.getAttribute('data-pjax-path');
+    }
+
+    function wantedSheets(doc, baseUrl) {
+        var want = [];
+        doc.querySelectorAll('link[rel="stylesheet"]').forEach(function (link) {
+            want.push({ path: resolvePath(link.getAttribute('href'), baseUrl), link: link });
+        });
+        return want;
+    }
+
+    function liveSheets() {
+        return Array.prototype.slice.call(document.querySelectorAll('link[rel="stylesheet"]'));
+    }
+
+    function hasSheet(path) {
+        return liveSheets().some(function (link) {
+            return sheetPath(link) === path;
+        });
+    }
+
+    function addSheet(path, baseUrl, href, media) {
+        var fresh = document.createElement('link');
+        fresh.rel = 'stylesheet';
+        if (media) fresh.media = media;
+        fresh.setAttribute('data-pjax-path', path);
+        // Resolved against the fetched page's URL, not the live document's
+        // -- index.html's asset paths are written relative (no leading "/"),
+        // unlike every other page's, and by the time this runs the live
+        // location can be anywhere.
+        fresh.href = new URL(href, baseUrl).href;
+        document.head.appendChild(fresh);
+        return fresh;
+    }
+
+    // Stylesheets the incoming page needs and this document doesn't have yet
+    // are downloaded *before* the swap, held inert under media="print", and
+    // switched on in the same frame as the new content -- a page reached
+    // for the first time otherwise painted unstyled until its stylesheet
+    // arrived. Waiting gives up after a few seconds, so one slow file can't
+    // hold the navigation hostage.
+    function stageStylesheets(doc, baseUrl) {
+        var pending = [];
+        wantedSheets(doc, baseUrl).forEach(function (sheet) {
+            if (hasSheet(sheet.path)) return;
+            var staged = addSheet(sheet.path, baseUrl, sheet.link.getAttribute('href'), 'print');
+            staged.setAttribute('data-pjax-media', sheet.link.getAttribute('media') || 'all');
+            pending.push(new Promise(function (resolve) {
+                staged.onload = staged.onerror = resolve;
+                window.setTimeout(resolve, 4000);
+            }));
+        });
+        return Promise.all(pending);
     }
 
     function reconcileStylesheets(doc, baseUrl) {
-        var want = [];
-        doc.querySelectorAll('link[rel="stylesheet"]').forEach(function (link) {
-            want.push(resolvePath(link.getAttribute('href'), baseUrl));
-        });
+        var want = wantedSheets(doc, baseUrl).map(function (sheet) { return sheet.path; });
 
-        Array.prototype.slice.call(document.querySelectorAll('link[rel="stylesheet"]')).forEach(function (link) {
-            var path = resolvePath(link.getAttribute('href'), location.href);
+        liveSheets().forEach(function (link) {
+            var path = sheetPath(link);
             if (ALWAYS_ON_STYLES.indexOf(path) !== -1) return;
-            if (want.indexOf(path) === -1) link.parentNode.removeChild(link);
+            if (want.indexOf(path) === -1) {
+                // Not this page's -- including one staged for a navigation
+                // that a later click superseded.
+                link.parentNode.removeChild(link);
+            } else if (link.hasAttribute('data-pjax-media')) {
+                link.media = link.getAttribute('data-pjax-media');
+                link.removeAttribute('data-pjax-media');
+            }
         });
 
-        var have = [];
-        document.querySelectorAll('link[rel="stylesheet"]').forEach(function (link) {
-            have.push(resolvePath(link.getAttribute('href'), location.href));
-        });
-        doc.querySelectorAll('link[rel="stylesheet"]').forEach(function (link) {
-            var path = resolvePath(link.getAttribute('href'), baseUrl);
-            if (have.indexOf(path) === -1) {
-                var fresh = document.createElement('link');
-                fresh.rel = 'stylesheet';
-                // Resolved against the fetched page's URL, not the live
-                // document's -- index.html's asset paths are written
-                // relative (no leading "/"), unlike every other page's, and
-                // by the time this runs the live location can be anywhere.
-                fresh.href = new URL(link.getAttribute('href'), baseUrl).href;
-                document.head.appendChild(fresh);
-            }
+        // Anything staging gave up on goes in now, unstaged.
+        wantedSheets(doc, baseUrl).forEach(function (sheet) {
+            if (!hasSheet(sheet.path)) addSheet(sheet.path, baseUrl, sheet.link.getAttribute('href'), sheet.link.getAttribute('media'));
         });
     }
 
@@ -132,7 +201,7 @@
                 var name = src.attributes[a].name;
                 var value = src.attributes[a].value;
                 // Resolved against the fetched page's URL -- see the
-                // matching note in reconcileStylesheets().
+                // matching note in addSheet().
                 if (name === 'src') value = new URL(value, baseUrl).href;
                 fresh.setAttribute(name, value);
             }
@@ -156,15 +225,50 @@
             if (PERSISTENT_SCRIPTS.indexOf(path) !== -1) return;
             var fresh = document.createElement('script');
             // Resolved against the fetched page's URL -- see the matching
-            // note in reconcileStylesheets().
+            // note in addSheet().
             fresh.src = new URL(src, baseUrl).href;
             fresh.async = false;
+            // Once it has run the tag is spent; without this every visit
+            // home would leave three more of them in <head>.
+            fresh.onload = fresh.onerror = function () {
+                fresh.parentNode.removeChild(fresh);
+            };
             document.head.appendChild(fresh);
         });
     }
 
-    function applySwap(html, url, push, restoreY) {
-        var doc = new DOMParser().parseFromString(html, 'text/html');
+    // Where the visitor is reading, kept on the current history entry as
+    // they scroll. It used to be stamped only when a new page was pushed on
+    // top, so leaving a page with Forward never saved it, and coming Back to
+    // it again restored wherever it had been the time before.
+    var scrollTimer = 0;
+
+    function rememberScroll() {
+        window.clearTimeout(scrollTimer);
+        var state = history.state;
+        if (state && state.scrollY === window.scrollY) return;
+        history.replaceState({ url: location.href, scrollY: window.scrollY }, '', location.href);
+    }
+
+    window.addEventListener('scroll', function () {
+        window.clearTimeout(scrollTimer);
+        scrollTimer = window.setTimeout(rememberScroll, 150);
+    }, { passive: true });
+
+    function scrollToFragment(hash) {
+        var id = '';
+        try {
+            id = decodeURIComponent(hash.slice(1));
+        } catch (error) {
+            id = hash.slice(1);
+        }
+        var target = id && document.getElementById(id);
+        if (!target) return false;
+        target.scrollIntoView();
+        return true;
+    }
+
+    function applySwap(doc, url, push, restoreY) {
         var incomingRoot = doc.getElementById('pjax-root');
         if (!incomingRoot) {
             location.href = url;
@@ -183,12 +287,19 @@
         root.replaceWith(imported);
         root = imported;
 
+        // A scroll still pending from the outgoing page must not be saved
+        // onto the entry for this one.
+        window.clearTimeout(scrollTimer);
         if (push) {
             history.pushState({ url: url, scrollY: 0 }, '', url);
-            window.scrollTo(0, 0);
+            if (!(location.hash && scrollToFragment(location.hash))) window.scrollTo(0, 0);
         } else {
+            // Entries made before a redirect was followed carry the old
+            // address; it is swapped for the real one, the place kept.
+            if (url !== location.href) history.replaceState({ url: url, scrollY: restoreY || 0 }, '', url);
             window.scrollTo(0, restoreY || 0);
         }
+        renderedKey = pageKey(location);
 
         // A real navigation lands keyboard/screen-reader focus at the top of
         // the document on its own; a soft one has to do that itself, or a
@@ -213,31 +324,41 @@
         // Stamp the entry we're leaving with where the visitor was reading,
         // so landing back on it later (via Back) restores that spot instead
         // of dropping them at the top of the page again.
-        if (push) {
-            history.replaceState({ url: location.href, scrollY: window.scrollY }, '', location.href);
-        }
+        if (push) rememberScroll();
         var restoreY = push ? 0 : (history.state && history.state.scrollY) || 0;
+        var hash = new URL(url).hash;
 
         var token = ++requestToken;
         fetch(url, { credentials: 'same-origin' }).then(function (response) {
             if (!response.ok) throw new Error('bad status');
-            return response.text();
-        }).then(function (html) {
+            // The address of the page actually served -- after GitHub Pages'
+            // 301 from /writing to /writing/ -- so the address bar and every
+            // relative URL in the new content agree with a real load. The
+            // #fragment never reaches the server and is carried over.
+            var served = response.url ? response.url.replace(/#.*$/, '') + hash : url;
+            return response.text().then(function (html) {
+                return { html: html, url: served };
+            });
+        }).then(function (page) {
             if (token !== requestToken) return; // superseded by a later click
-            var perform = function () { applySwap(html, url, push, restoreY); };
-            if (document.startViewTransition && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-                var transition = document.startViewTransition(perform);
-                // The browser is free to skip a transition it can't run
-                // cleanly (e.g. another one is still finishing); perform()
-                // has already applied the swap either way, so there's
-                // nothing to do here besides not letting that show up as an
-                // unhandled rejection.
-                var noop = function () {};
-                transition.ready.catch(noop);
-                transition.finished.catch(noop);
-            } else {
-                perform();
-            }
+            var doc = new DOMParser().parseFromString(page.html, 'text/html');
+            return stageStylesheets(doc, page.url).then(function () {
+                if (token !== requestToken) return;
+                var perform = function () { applySwap(doc, page.url, push, restoreY); };
+                if (document.startViewTransition && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                    var transition = document.startViewTransition(perform);
+                    // The browser is free to skip a transition it can't run
+                    // cleanly (e.g. another one is still finishing); perform()
+                    // has already applied the swap either way, so there's
+                    // nothing to do here besides not letting that show up as
+                    // an unhandled rejection.
+                    var noop = function () {};
+                    transition.ready.catch(noop);
+                    transition.finished.catch(noop);
+                } else {
+                    perform();
+                }
+            });
         }).catch(function () {
             if (token === requestToken) location.href = url;
         });
@@ -268,8 +389,41 @@
     });
 
     window.addEventListener('popstate', function () {
+        window.clearTimeout(scrollTimer);
+        if (pageKey(location) === renderedKey) {
+            // Only the #fragment moved -- an in-page link, or Back/Forward
+            // over one. The right page is already on screen; just put the
+            // reader where that entry was (fetching it again would have
+            // thrown the page away and dropped them at the top).
+            var state = history.state;
+            if (state && typeof state.scrollY === 'number') window.scrollTo(0, state.scrollY);
+            else if (location.hash) scrollToFragment(location.hash);
+            return;
+        }
         navigate(location.href, false);
     });
 
-    history.replaceState({ url: location.href }, '', location.href);
+    // Scroll positions are put back by this file once the incoming page is
+    // in place. Left to itself the browser restores them as soon as Back is
+    // pressed, jumping the *outgoing* page around while the next one is
+    // still downloading.
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+
+    // ...which also covers a reload, or coming back from another site to a
+    // page this session had scrolled: the browser no longer restores those
+    // either, so the position saved on the entry is applied here.
+    var arrival = history.state;
+    var arrivalType = '';
+    try {
+        arrivalType = performance.getEntriesByType('navigation')[0].type;
+    } catch (error) {
+        // Navigation Timing missing: treat it as a fresh visit.
+    }
+    if (arrival && typeof arrival.scrollY === 'number' && window.scrollY === 0 &&
+        (arrivalType === 'reload' || arrivalType === 'back_forward')) {
+        window.scrollTo(0, arrival.scrollY);
+    }
+
+    liveSheets().forEach(function (link) { sheetPath(link); });
+    history.replaceState({ url: location.href, scrollY: window.scrollY }, '', location.href);
 })();
