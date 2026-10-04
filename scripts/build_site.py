@@ -137,7 +137,9 @@ def parse_post(path: Path) -> dict | None:
         "cover": safe_asset_url(fm.get("cover")) or "",
         "excerpt": first_paragraph(body),  # meta description only
         "body": body,
-        "url": f"/writing/{date.year}/{slug}",
+        # The canonical address: GitHub Pages answers the slash-less form with
+        # a 301 to this one, a round trip on every click.
+        "url": f"/writing/{date.year}/{slug}/",
     }
 
 

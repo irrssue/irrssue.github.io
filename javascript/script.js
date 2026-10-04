@@ -16,9 +16,11 @@ function updateNavCurrent() {
     const path = location.pathname.replace(/index\.html$/, '');
     nav.querySelectorAll('.site-nav__link').forEach(function (link) {
         const href = link.getAttribute('href');
+        // "/writing/" and "/writing" name the same section either way.
+        const section = href.replace(/\/$/, '');
         const isCurrent = href === '/'
             ? path === '/'
-            : path === href || path.indexOf(href + '/') === 0;
+            : path === section || path.indexOf(section + '/') === 0;
         link.classList.toggle('is-current', isCurrent);
         if (isCurrent) {
             link.setAttribute('aria-current', 'page');
