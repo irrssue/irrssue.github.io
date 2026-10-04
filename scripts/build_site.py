@@ -32,6 +32,9 @@ TEMPLATE = (ROOT / "scripts" / "post_template.html").read_text(encoding="utf-8")
 MAX_HOME_POSTS = 3
 EXCERPT_LIMIT = 160
 SLUG_RE = re.compile(r"[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$")
+TEMPLATE_SLOT_RE = re.compile(r"\{\{(TITLE|DESCRIPTION|ARTICLE)\}\}")
+FENCE_RE = re.compile(r"^ {0,3}(`{3,}|~{3,})")
+LIST_MARKER_RE = re.compile(r"^(?:[-*+]|\d{1,9}[.)])\s+")
 
 # Markdown is content, not a source of executable page markup. HTML syntax in
 # a post is rendered literally; Markdown tables, links, code, and typography
@@ -153,14 +156,86 @@ def parse_date(value) -> datetime | None:
     return None
 
 
+def closes_fence(line: str, fence: str) -> bool:
+    """True when `line` ends a code block opened with `fence` (CommonMark rules)."""
+    opener = FENCE_RE.match(line)
+    return bool(
+        opener
+        and opener.group(1)[0] == fence[0]
+        and len(opener.group(1)) >= len(fence)
+        and not line.strip().strip(fence[0])
+    )
+
+
+def comment_end(lines: list[str], start: int, rest: str) -> tuple[int, str] | None:
+    """Line index of the `-->` closing a comment opened on `start`, and what follows it."""
+    index = start
+    while "-->" not in rest:
+        index += 1
+        if index >= len(lines):
+            return None
+        rest = lines[index]
+    return index, rest.split("-->", 1)[1]
+
+
+def strip_comments(body: str) -> str:
+    """Drop <!-- authoring notes --> that start a line outside fenced code.
+
+    Raw HTML in a post renders as literal text (see `md` above), so a comment
+    left in the Markdown -- like the tag rules every post inherits from
+    posts/_template.md -- would otherwise be published word for word. Each
+    removed comment leaves a blank line behind, so it still separates the
+    blocks around it the way the comment did. Comments inside fenced code are
+    content, not notes, and an unclosed comment is kept rather than allowed to
+    swallow the rest of the post.
+    """
+    lines = body.split("\n")
+    out: list[str] = []
+    fence = ""
+    index = 0
+    while index < len(lines):
+        line = lines[index]
+        opener = FENCE_RE.match(line)
+        if fence:
+            if closes_fence(line, fence):
+                fence = ""
+        elif opener:
+            fence = opener.group(1)
+        else:
+            stripped = line.lstrip(" ")
+            if len(line) - len(stripped) <= 3 and stripped.startswith("<!--"):
+                end = comment_end(lines, index, stripped[4:])
+                if end is not None:
+                    index, tail = end
+                    out.append("")
+                    if tail.strip():
+                        out.append(tail)
+                    index += 1
+                    continue
+        out.append(line)
+        index += 1
+    return "\n".join(out)
+
+
 def first_paragraph(body: str) -> str:
     """First prose line, stripped of markdown."""
-    body = re.sub(r"<!--.*?-->", "", body, flags=re.S)  # authoring notes aren't prose
-    for line in body.split("\n"):
+    fence = ""
+    for line in strip_comments(body).split("\n"):  # authoring notes aren't prose
+        if fence:
+            if closes_fence(line, fence):
+                fence = ""
+            continue
+        opener = FENCE_RE.match(line)
+        if opener:  # code isn't prose either
+            fence = opener.group(1)
+            continue
         t = line.strip()
-        if t and not t.startswith(("#", "!", "```", "---", ">")):
+        if t and not t.startswith(("#", "!", "---", ">", "<", "|")):
+            t = LIST_MARKER_RE.sub("", t)
             t = re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", t)
-            t = re.sub(r"[*_`]", "", t)
+            t = re.sub(r"[*_`]", "", t).strip()
+            if not t:  # a *** or ___ rule, or emphasis around nothing
+                continue
             return t[: EXCERPT_LIMIT - 3] + "…" if len(t) > EXCERPT_LIMIT else t
     return ""
 
@@ -186,14 +261,13 @@ def render_post_page(post: dict) -> str:
         f' data-iso="{post["date"].strftime("%Y-%m-%d")}">{e(full_date)}</span>\n'
         "    </div>\n"
         "  </header>\n"
-        f'  <div class="post-content">{md.render(post["body"])}</div>\n'
+        f'  <div class="post-content">{md.render(strip_comments(post["body"]))}</div>\n'
         "</article>"
     )
-    return (
-        TEMPLATE.replace("{{TITLE}}", e(post["title"]))
-        .replace("{{DESCRIPTION}}", e(post["excerpt"]))
-        .replace("{{ARTICLE}}", article)
-    )
+    # One pass over the template, so a title or excerpt that happens to contain
+    # "{{ARTICLE}}" is printed as written instead of being filled in itself.
+    slots = {"TITLE": e(post["title"]), "DESCRIPTION": e(post["excerpt"]), "ARTICLE": article}
+    return TEMPLATE_SLOT_RE.sub(lambda m: slots[m.group(1)], TEMPLATE)
 
 
 def render_home_list(posts: list[dict]) -> str:
