@@ -91,9 +91,20 @@
 
 .post-date:hover::after,
 .post-date:hover::before,
+.post-date:focus-visible::after,
+.post-date:focus-visible::before,
 .post-date.is-shown::after,
 .post-date.is-shown::before {
     opacity: 1;
+}
+
+/* javascript/post.js makes the date focusable once it has swapped it for
+   the relative form, so the full date in the tooltip is reachable by
+   keyboard as well. */
+.post-date:focus-visible {
+    outline: 2px solid var(--nav-focus);
+    outline-offset: 3px;
+    border-radius: 2px;
 }
 
 .post-content {

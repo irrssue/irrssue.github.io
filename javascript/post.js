@@ -2,27 +2,29 @@
 // things that can't be baked live here: the date is relative to *now*, and the
 // ?search= highlight depends on the URL.
 
+// A post's date has no time of day, so it is compared with today in whole
+// calendar days -- measuring from its midnight read "15 hours ago" for a post
+// published today, and "just now" for one dated tomorrow in the reader's
+// timezone. Returns null for a date still ahead of the reader.
 function getRelativeTime(date) {
-    const diffInSeconds = Math.floor((new Date() - date) / 1000);
-    const intervals = {
-        year: 31536000,
-        month: 2592000,
-        week: 604800,
-        day: 86400,
-        hour: 3600,
-        minute: 60
-    };
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    // Rounded, not floored: a day across a DST change is 23 or 25 hours.
+    const days = Math.round((today - date) / 86400000);
+    const plural = (count, unit) => `${count} ${unit}${count > 1 ? 's' : ''} ago`;
 
-    if (diffInSeconds < 60) return 'just now';
+    if (days < 0) return null;
+    if (days === 0) return 'today';
+    if (days === 1) return 'yesterday';
+    if (days < 7) return plural(days, 'day');
+    if (days < 30) return plural(Math.floor(days / 7), 'week');
 
-    for (const [unit, secondsInUnit] of Object.entries(intervals)) {
-        const interval = Math.floor(diffInSeconds / secondsInUnit);
-        if (interval >= 1) {
-            return `${interval} ${unit}${interval > 1 ? 's' : ''} ago`;
-        }
-    }
-
-    return 'just now';
+    // Calendar months, so a post from the 5th of last October is "11 months
+    // ago" on the 4th, not "12 months ago" because 360 days have passed.
+    let months = (today.getFullYear() - date.getFullYear()) * 12 + (today.getMonth() - date.getMonth());
+    if (today.getDate() < date.getDate()) months--;
+    if (months < 12) return plural(Math.max(1, months), 'month');
+    return plural(Math.floor(months / 12), 'year');
 }
 
 function showRelativeDate() {
@@ -30,23 +32,33 @@ function showRelativeDate() {
     if (!el) return;
     const date = new Date(el.dataset.iso + 'T00:00:00');
     if (isNaN(date)) return;
+    const relative = getRelativeTime(date);
+    // A date still ahead of the reader keeps the full date the build wrote.
+    if (!relative) return;
     // Built HTML ships the full date so no-JS readers still get one; swap it
     // for the relative form now that we can compute it.
-    el.textContent = getRelativeTime(date);
+    el.textContent = relative;
+    // The full date now only shows in the tooltip, so let keyboard users
+    // reach it too (css/post.css shows it on focus).
+    el.tabIndex = 0;
 }
 
 function setupDateTooltip() {
     // The full date only ever showed on :hover, which touch devices have no
     // real equivalent for. Add a tap toggle so it's reachable there too;
     // desktop keeps working via the existing :hover CSS.
-    const el = document.querySelector('.post-date[data-full-date]');
-    if (!el) return;
-    el.addEventListener('click', (event) => {
-        event.stopPropagation();
-        el.classList.toggle('is-shown');
-    });
-    document.addEventListener('click', () => {
-        el.classList.remove('is-shown');
+    //
+    // One listener on document for the whole visit: javascript/pjax.js runs
+    // this file again for every post opened by soft navigation, and a
+    // listener per run would pile up, each holding a date that is long gone.
+    if (window.postDateTooltipBound) return;
+    window.postDateTooltipBound = true;
+    document.addEventListener('click', (event) => {
+        const date = event.target.closest && event.target.closest('.post-date[data-full-date]');
+        document.querySelectorAll('.post-date.is-shown').forEach((el) => {
+            if (el !== date) el.classList.remove('is-shown');
+        });
+        if (date) date.classList.toggle('is-shown');
     });
 }
 
