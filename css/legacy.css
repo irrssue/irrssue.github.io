@@ -313,10 +313,28 @@ html.legacy .site-nav__rule {
     border-top: 1px solid #333333;
 }
 
+/* The social links are icons. An inline SVG carrying only a viewBox has no
+   size of its own to these engines (it collapses to nothing in some and
+   balloons to 300x150 in others), and nothing fills it but black, which is
+   the page colour here — so both are spelled out. */
 html.legacy .site-nav__socials a {
     display: inline-block;
+    width: 22px;
+    height: 22px;
     margin: 0 18px 6px 0;
-    font-size: 15px;
+    color: rgb(163, 163, 163);
+}
+
+html.legacy .site-nav__socials a:hover,
+html.legacy .site-nav__socials a:focus {
+    color: #ffffff;
+}
+
+html.legacy .site-nav__socials svg {
+    display: block;
+    width: 22px;
+    height: 22px;
+    fill: currentColor;
 }
 
 /* ── Writing and Bookmarks index pages ───────────── */
@@ -625,6 +643,12 @@ html.legacy .legacy-only {
     .writing-list,
     .projects-list,
     .site-nav__list { list-style: none; padding: 0; }
+
+    .social-icon,
+    .site-nav__socials a { display: inline-block; margin-right: 18px; }
+
+    .social-icon svg,
+    .site-nav__socials svg { width: 24px; height: 24px; fill: currentColor; }
 
     .intro-overlay,
     .project-ring,
