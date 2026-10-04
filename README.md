@@ -8,8 +8,8 @@ The whole thing is intentionally minimal: fast to load, easy to read, and simple
 ## What's here
 
 - **Homepage** — intro, projects, and a short writing section, in a minimal single-column layout.
-- **Writing** — blog posts written in Markdown and rendered to HTML through GitHub Actions. Includes search and tag filtering.
-- **Bookmarks** — a curated, tag-filterable list of links.
+- **Writing** — blog posts written in Markdown and rendered to HTML through GitHub Actions, listed by year.
+- **Bookmarks** — a curated list of links, grouped by year.
 - **Resume** — hosted PDF with an inline viewer and download link.
 
 ## Tech
@@ -17,18 +17,19 @@ The whole thing is intentionally minimal: fast to load, easy to read, and simple
 - Plain HTML5, CSS3, and vanilla JavaScript — no React, no Tailwind, no npm.
 - GitHub Pages serves the static files directly from `main`.
 - GitHub Actions handles the Markdown-to-HTML pipeline for posts.
-- System font stack, zero external requests on load, and no analytics — the site works fully without JavaScript.
+- Self-hosted fonts, zero external requests on load, and no analytics — the site works fully without JavaScript.
 
 ## Structure
 
 ```
 index.html        Homepage
-main.css          Shared base styles
+css/styles.css    Shared styles (css/legacy.css for old browsers, plus page-specific sheets)
 html/             Subpages (admin, upload)
-css/              Page-specific stylesheets
 javascript/       Vanilla JS
 posts/            Writing content in Markdown
-bookmarks/        Bookmarks data
+writing/          Rendered posts and the writing index (generated)
+bookmarks/        Bookmarks page
+data/             Projects and bookmarks JSON the build renders from
 resume/           Resume PDF + viewer
 .github/workflows/ Content pipeline (Markdown → HTML)
 ```
