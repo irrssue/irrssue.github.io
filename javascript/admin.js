@@ -1,3 +1,12 @@
+    // html/admin.html starts hidden: framed inside another site, the page
+    // stays blank and tries to break out instead of rendering a token form
+    // under someone else's chrome.
+    if (window.top !== window.self) {
+        try { window.top.location = window.self.location.href; } catch (_) {}
+        throw new Error('Refusing to run inside a frame.');
+    }
+    document.getElementById('anti-framing').remove();
+
     const REPO  = 'irrssue/irrssue.github.io';
     const API   = 'https://api.github.com/repos/' + REPO + '/contents';
     const BRANCH = 'main';
@@ -41,8 +50,12 @@
         }
     }
 
+    // Today in the editor's own timezone. toISOString() is UTC, which in the
+    // evening in New York is already tomorrow.
     function setToday(id) {
-        document.getElementById(id).value = new Date().toISOString().split('T')[0];
+        const d = new Date();
+        document.getElementById(id).value = d.getFullYear() + '-' +
+            String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
     }
 
     function setFormattedDate(id) {
@@ -281,7 +294,7 @@
                     <button type="button" title="Move down" aria-label="Move down" data-action="move-item" data-type="project" data-index="${i}" data-delta="1" ${i === projectsData.length - 1 ? 'disabled' : ''}>▼</button>
                 </div>
                 <div class="item-info">
-                    <div class="item-name">${esc(p.name)}${p.external ? ' <span class="tag-badge">↗ external</span>' : ''}</div>
+                    <div class="item-name">${esc(p.name)}${p.external ? ' <span class="tag-badge">↗ external</span>' : ''}${p.image ? '' : ' <span class="tag-badge">no screenshot</span>'}</div>
                     <div class="item-meta">${esc(p.url)} — ${esc(p.description)}</div>
                 </div>
                 <div class="item-actions">
@@ -298,6 +311,7 @@
         document.getElementById('proj-name').value     = p.name;
         document.getElementById('proj-url').value      = p.url;
         document.getElementById('proj-desc').value     = p.description;
+        document.getElementById('proj-image').value    = p.image || '';
         document.getElementById('proj-external').checked = !!p.external;
         document.getElementById('proj-form-title').textContent = 'Edit Project';
         document.getElementById('proj-cancel').style.display = '';
@@ -310,6 +324,7 @@
         document.getElementById('proj-name').value     = '';
         document.getElementById('proj-url').value      = '';
         document.getElementById('proj-desc').value     = '';
+        document.getElementById('proj-image').value    = '';
         document.getElementById('proj-external').checked = false;
         document.getElementById('proj-form-title').textContent = 'New Project';
         document.getElementById('proj-cancel').style.display = 'none';
@@ -319,14 +334,25 @@
         const name        = document.getElementById('proj-name').value.trim();
         const url         = document.getElementById('proj-url').value.trim();
         const description = document.getElementById('proj-desc').value.trim();
+        const image       = document.getElementById('proj-image').value.trim();
         const external    = document.getElementById('proj-external').checked;
 
         if (!name || !url) return toast('Name and URL are required.', 'error');
         if (external ? !isHttpUrl(url) : !isRelativeUrl(url)) {
             return toast(external ? 'External project URLs must use http(s).' : 'Internal project URLs must be relative.', 'error');
         }
+        if (image && !isHttpUrl(image) && !isRelativeUrl(image)) {
+            return toast('Screenshot must be a relative path or an http(s) URL.', 'error');
+        }
 
-        const project = { name, url, description, external };
+        // Start from the stored entry, so fields this form doesn't show
+        // survive an edit. Rebuilding it from the form alone used to drop the
+        // screenshot, which took the project out of the ring and the rail.
+        const project = Object.assign({}, editingProjectIdx >= 0 ? projectsData[editingProjectIdx] : {},
+            { name, url, description, external });
+        // Without a screenshot a project only appears in the old-browser list.
+        if (image) project.image = image;
+        else delete project.image;
 
         if (editingProjectIdx >= 0) {
             projectsData[editingProjectIdx] = project;
@@ -724,19 +750,23 @@
         `).join('');
     }
 
+    // The same front-matter shape scripts/build_site.py reads.
+    const FRONT_MATTER_RE = /^---\s*\n([\s\S]*?)\n---\s*(?:\n|$)/;
+
     async function editPost(filename, sha) {
         try {
             const data    = await ghGet('posts/' + filename);
             const content = b64decode(data.content);
             const fm      = parseFrontMatter(content);
-            const body    = content.replace(/^---[\s\S]*?---\n*/, '');
+            const head    = content.match(FRONT_MATTER_RE);
+            const body    = head ? content.slice(head[0].length).replace(/^\n+/, '') : content;
 
             document.getElementById('post-title').value = fm.title || '';
             document.getElementById('post-date').value  = fm.date  || '';
             document.getElementById('post-draft').checked = fm.draft !== false;
             document.getElementById('post-body').value  = body;
 
-            editingPost = { filename, sha: data.sha };
+            editingPost = { filename, sha: data.sha, frontMatter: head ? head[1] : '' };
             document.getElementById('post-form-title').textContent = 'Edit Post';
             document.getElementById('post-submit-btn').textContent = 'Update Post';
             document.getElementById('post-cancel').style.display = '';
@@ -766,8 +796,15 @@
         const body  = document.getElementById('post-body').value;
 
         if (!title) return toast('Title is required.', 'error');
+        if (!isPostDate(date)) {
+            return toast('Date must look like "Mar 10, 2026", "March 10, 2026" or "2026-03-10".', 'error');
+        }
 
-        const content = `---\ntitle: ${JSON.stringify(title)}\ndate: ${JSON.stringify(date)}\ncover: ""\ndraft: ${draft}\n---\n\n${body}`;
+        const fields = { title: JSON.stringify(title), date: JSON.stringify(date), draft: String(draft) };
+        const frontMatter = editingPost
+            ? setFrontMatter(editingPost.frontMatter, fields)
+            : `title: ${fields.title}\ndate: ${fields.date}\ncover: ""\ndraft: ${fields.draft}`;
+        const content = `---\n${frontMatter}\n---\n\n${body}`;
 
         try {
             if (editingPost) {
@@ -804,6 +841,28 @@
         } catch (e) {
             toast('Error: ' + e.message, 'error');
         }
+    }
+
+    // Rewrites only the keys this form edits, so the rest of a post's front
+    // matter (tag, summary, cover, ...) survives an edit. Rebuilding it from
+    // the form alone used to drop the tag and summary and blank the cover.
+    function setFrontMatter(frontMatter, fields) {
+        const lines = frontMatter ? frontMatter.split('\n') : [];
+        Object.keys(fields).forEach(key => {
+            const line = key + ': ' + fields[key];
+            const at = lines.findIndex(l => new RegExp('^' + key + '\\s*:').test(l));
+            if (at >= 0) lines[at] = line;
+            else lines.push(line);
+        });
+        return lines.join('\n');
+    }
+
+    // The formats parse_date() in scripts/build_site.py understands. A post
+    // whose date matches none of them is skipped by the build without a
+    // word, and simply never appears on the site.
+    function isPostDate(value) {
+        const months = 'Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|June?|July?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?';
+        return new RegExp('^(?:(?:' + months + ') \\d{1,2}, \\d{4}|\\d{4}-\\d{1,2}-\\d{1,2})$', 'i').test(value);
     }
 
     // ── Front matter parser ───────────────────────────

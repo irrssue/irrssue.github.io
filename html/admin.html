@@ -4,7 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow, noarchive">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' https: data:; media-src 'self' https:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self' https://api.github.com https://upload.irrssue.com; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' https: data:; media-src 'self' https:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self' https://api.github.com https://upload.irrssue.com; base-uri 'none'; form-action 'none'">
+    <!-- Hidden until javascript/admin.js confirms the page isn't framed by
+         another site: a <meta> CSP can't carry frame-ancestors, and GitHub
+         Pages can't send it as a header. -->
+    <style id="anti-framing">body { display: none !important; }</style>
     <title>Admin — irrssue.github.io</title>
     <style>
         :root {
@@ -608,6 +612,10 @@
                     <div class="form-group full">
                         <label for="proj-desc">Description</label>
                         <input type="text" id="proj-desc" placeholder="Short one-line description">
+                    </div>
+                    <div class="form-group full">
+                        <label for="proj-image">Screenshot (shown in the homepage ring and swipe rail)</label>
+                        <input type="text" id="proj-image" placeholder="previews/projects/name.webp">
                     </div>
                     <div class="form-group full">
                         <div class="checkbox-row">
