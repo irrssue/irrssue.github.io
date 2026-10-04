@@ -41,8 +41,12 @@ to `upload.irrssue.com/upload`, kept as a memorable entry point.
   now redundant with the Cloudflare path; either is fine, Cloudflare gives the clean domain.
   To drop Funnel: `sudo tailscale funnel --https=443 off`.
 - It does three things:
-  - **Serve** `/var/www/media/*` with CORS (`Access-Control-Allow-Origin: https://irrssue.github.io`),
-    immutable caching, and **HTTP Range / 206** (required for `<video>` seeking + Safari playback).
+  - **Serve** `/var/www/media/*` with CORS, immutable caching, and **HTTP Range / 206**
+    (required for `<video>` seeking + Safari playback). The allowed origin must be
+    `https://irrssue.com`: irrssue.github.io only redirects to the custom domain, so the admin
+    page always runs there, and a server that only allows `https://irrssue.github.io` (as the
+    live one did) fails every upload from the admin page at the CORS preflight.
+    `server/media-upload/server.js` allows both.
   - **GET `/upload`** → the drag-drop upload page.
   - **POST `/upload`** → token-gated upload: checks `X-Upload-Token`, sanitizes the filename,
     allowlists media extensions, caps size at 500 MB, never clobbers existing files.

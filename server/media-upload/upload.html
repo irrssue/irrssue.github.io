@@ -131,10 +131,15 @@
       headers: { 'X-Upload-Token': tokenInput.value.trim() },
       body: file
     }).then(function (r) {
-      return r.json().then(function (data) { return { ok: r.ok, data: data }; });
+      // A proxy in front of this service (Cloudflare's own 413 or 502 page,
+      // say) answers in HTML, not JSON; that is still an HTTP failure to
+      // report, not a network error.
+      return r.json().catch(function () { return {}; }).then(function (data) {
+        return { ok: r.ok, status: r.status, data: data };
+      });
     }).then(function (res) {
       if (!res.ok) {
-        status.textContent = res.data.error || 'upload failed';
+        status.textContent = res.data.error || ('upload failed (HTTP ' + res.status + ')');
         status.className = 'status err';
         return;
       }
