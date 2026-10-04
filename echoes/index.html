@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'none'; img-src 'self' data:; media-src 'self'; connect-src 'self'; font-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'sha256-+6ebIkBtgLCmCbV9mLQAeMuyMy2N4BZsbcb9vtuN4HE='; upgrade-insecure-requests">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'none'; img-src 'self' data:; media-src 'self'; connect-src 'self'; font-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'sha256-AtylA2jHi7SST6GhXzyItxPwGnXfAd3e+KjuoeL1c5w='; upgrade-insecure-requests">
   <title>Echoes</title>
   <meta name="description" content="A living pool of light. Hundreds of glowing creatures drift, school, and chase your cursor. Everyone who visits today shares the same world - move, and it moves back.">
   <meta name="theme-color" content="#04060c">
@@ -372,7 +372,13 @@
     ripple(e.clientX, e.clientY);   // a tap sends out a shove
   }, { passive: true });
   window.addEventListener("pointerup", function () { ptr.down = false; }, { passive: true });
-  window.addEventListener("pointerleave", function () { ptr.active = false; }, { passive: true });
+  // pointerleave never reaches window: it is dispatched to the elements the
+  // pointer left, so a window listener never fired and the cursor light and
+  // its swarm stayed stuck at the edge after the mouse left the page. A
+  // finger "leaves" every time it lifts; touch keeps its last point.
+  document.documentElement.addEventListener("pointerleave", function (e) {
+    if (e.pointerType !== "touch") ptr.active = false;
+  }, { passive: true });
   // keyboard: space also triggers a ripple at pointer for accessibility
   window.addEventListener("keydown", function (e) {
     if (!started) { begin(); return; }
