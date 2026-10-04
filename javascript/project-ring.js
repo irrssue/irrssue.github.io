@@ -45,6 +45,50 @@
     var frame = null;
     var hovered = null;
 
+    /* Everything this file hooks outside the ring itself (window, document,
+       media queries, the visibility observer). javascript/pjax.js replaces
+       the ring's whole subtree on a soft navigation without telling it, and
+       runs this file again for the new one on the next visit home, so these
+       are unhooked the moment the ring is found detached — otherwise every
+       visit would leave another set behind, measuring a ring that is gone. */
+    var cleanups = [];
+
+    function listen(target, type, handler, options) {
+        target.addEventListener(type, handler, options);
+        cleanups.push(function () {
+            target.removeEventListener(type, handler, options);
+        });
+    }
+
+    // Safari below 14 only has the deprecated listener form.
+    function onMediaChange(query, handler) {
+        if (query.addEventListener) {
+            listen(query, 'change', handler);
+            return;
+        }
+        query.addListener(handler);
+        cleanups.push(function () {
+            query.removeListener(handler);
+        });
+    }
+
+    function teardown() {
+        stop();
+        while (cleanups.length) cleanups.pop()();
+    }
+
+    // Wraps a handler for an outside event so a detached ring cleans up
+    // after itself instead of answering it.
+    function whileMounted(handler) {
+        return function () {
+            if (!ring.isConnected) {
+                teardown();
+                return;
+            }
+            return handler.apply(this, arguments);
+        };
+    }
+
     /* Ring size follows the box it sits in: tall enough windows get a wider
        ring, narrow ones stay inside the column. Cards are sized off the
        radius so the ring keeps its proportions at every window size. */
@@ -79,11 +123,10 @@
     function tick(now) {
         // javascript/pjax.js replaces this ring's whole subtree wholesale on
         // every soft navigation rather than tearing it down explicitly, so
-        // this is the loop's only chance to notice it's been detached and
-        // stop -- otherwise it would keep animating an invisible, orphaned
-        // ring forever, one extra instance per visit back to the homepage.
+        // the loop checks for itself -- otherwise it would keep animating an
+        // invisible, orphaned ring forever, one extra per visit home.
         if (!ring.isConnected) {
-            stop();
+            teardown();
             return;
         }
         var isInteractive = hovered || Math.abs(boost) > 0.01;
@@ -148,6 +191,10 @@
         tip.querySelector('span').textContent = card.dataset.desc || '';
         moveTip(x, y);
         tip.classList.add('is-visible');
+        // The running loop lifts the held card to the top of the stack on its
+        // next frame. A ring standing still (reduced motion) has no next
+        // frame, so the card would stay half buried under its neighbour.
+        if (frame === null) place();
     }
 
     function release(card) {
@@ -156,6 +203,7 @@
         ring.classList.remove('is-holding');
         card.classList.remove('is-active');
         tip.classList.remove('is-visible');
+        if (frame === null) place();
     }
 
     cards.forEach(function (card) {
@@ -226,26 +274,39 @@
 
     // Nothing to animate while the ring is scrolled past or the tab is hidden.
     if ('IntersectionObserver' in window) {
-        new IntersectionObserver(function (entries) {
+        var visibility = new IntersectionObserver(whileMounted(function (entries) {
             if (entries[0].isIntersecting) start();
             else stop();
-        }).observe(stage);
+        }));
+        visibility.observe(stage);
+        cleanups.push(function () {
+            visibility.disconnect();
+        });
     }
 
-    document.addEventListener('visibilitychange', function () {
+    listen(document, 'visibilitychange', whileMounted(function () {
         if (document.hidden) stop();
         else start();
-    });
+    }));
 
-    window.addEventListener('resize', function () {
+    listen(window, 'resize', whileMounted(function () {
         if (!wide.matches) return;
         measure();
         place();
-    });
+    }));
 
-    // Safari below 14 only has the deprecated listener form.
-    if (wide.addEventListener) wide.addEventListener('change', sync);
-    else wide.addListener(sync);
+    onMediaChange(wide, whileMounted(sync));
+
+    // Asking for less motion part-way through a visit stops the turn there
+    // and then, rather than on the next page load.
+    onMediaChange(still, whileMounted(function () {
+        if (still.matches) stop();
+        else start();
+    }));
+
+    // pjax.js announces every swap, so a ring that has just been replaced
+    // unhooks itself straight away rather than at the next resize.
+    listen(document, 'pjax:swap', whileMounted(function () {}));
 
     sync();
 }());

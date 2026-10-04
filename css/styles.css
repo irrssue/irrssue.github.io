@@ -290,10 +290,14 @@
     transition: top 1.02s var(--intro-ease);
 }
 
-/* The portfolio starts beneath the canvas and emerges as its curved lower edge rises. */
+/* The portfolio starts beneath the canvas and emerges as its curved lower edge rises.
+   At rest the transform is `none`, not an identity translate: any other value
+   makes the grid the containing block for its position:fixed descendants, and
+   the project ring's cursor pill would then be placed against the scrolled
+   page instead of the window. */
 body .grid-container {
     opacity: 1;
-    transform: translateY(0);
+    transform: none;
     transition: opacity 0.82s ease, transform 1.02s var(--intro-ease);
 }
 
@@ -304,7 +308,7 @@ body.intro-active .grid-container {
 
 body.intro-revealing .grid-container {
     opacity: 1;
-    transform: translateY(0);
+    transform: none;
 }
 
 body.intro-active {
@@ -2256,9 +2260,17 @@ body::-webkit-scrollbar,
 
 @media (min-width: 1080px) {
     /* Two columns: the existing content column on the left, the ring on the
-       right. `1fr 0.9fr` keeps the reading column the wider of the two. */
+       right. `1fr 0.9fr` keeps the reading column the wider of the two.
+
+       The far side of the ring runs off the right edge of the window. The
+       body's overflow-x: hidden only stops the visitor scrolling there, not
+       the browser: tabbing to a card past the edge scrolled the whole page
+       sideways with no way back. `clip` cuts the overhang off here without
+       making this a scroll container, so there is nothing to scroll to and
+       the sticky stage still sticks to the window. */
     body.home .grid-container {
         grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr);
+        overflow-x: clip;
     }
 
     body.home .project-ring {

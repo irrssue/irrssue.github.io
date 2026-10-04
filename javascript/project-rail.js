@@ -23,6 +23,29 @@
     var pips = [];
     var ticking = false;
 
+    /* The window and media-query hooks below outlive the track: pjax.js
+       swaps the whole homepage out on a soft navigation and runs this file
+       again for the new one on the next visit. Each run unhooks its own as
+       soon as it finds its track gone, so they never pile up. */
+    var cleanups = [];
+
+    function listen(target, type, handler) {
+        target.addEventListener(type, handler);
+        cleanups.push(function () {
+            target.removeEventListener(type, handler);
+        });
+    }
+
+    function whileMounted(handler) {
+        return function () {
+            if (!track.isConnected) {
+                while (cleanups.length) cleanups.pop()();
+                return;
+            }
+            return handler.apply(this, arguments);
+        };
+    }
+
     function build() {
         if (dots) return;
         dots = document.createElement('div');
@@ -71,9 +94,9 @@
         });
     }, { passive: true });
 
-    window.addEventListener('resize', function () {
+    listen(window, 'resize', whileMounted(function () {
         if (narrow.matches) mark();
-    });
+    }));
 
     function sync() {
         if (!narrow.matches) return;
@@ -82,8 +105,18 @@
     }
 
     // Safari below 14 only has the deprecated listener form.
-    if (narrow.addEventListener) narrow.addEventListener('change', sync);
-    else narrow.addListener(sync);
+    var onNarrow = whileMounted(sync);
+    if (narrow.addEventListener) {
+        listen(narrow, 'change', onNarrow);
+    } else {
+        narrow.addListener(onNarrow);
+        cleanups.push(function () {
+            narrow.removeListener(onNarrow);
+        });
+    }
+
+    // pjax.js announces every swap; a replaced track unhooks right away.
+    listen(document, 'pjax:swap', whileMounted(function () {}));
 
     sync();
 }());

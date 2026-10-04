@@ -44,9 +44,9 @@
     // listed in every page's data-enhance so a real load fetches it, but
     // re-injecting it on its own swap would bind a second click/popstate
     // listener right here. Every other enhancement script (project-ring.js,
-    // project-rail.js, post.js) is cheap to run fresh each time it's needed,
-    // and self-cleans (see the isConnected checks in project-ring.js) once
-    // its markup is swapped out.
+    // project-rail.js, home.js, post.js) is cheap to run fresh each time
+    // it's needed, and unhooks itself once its markup is swapped out --
+    // `pjax:swap`, dispatched on document after every swap, is their cue.
     var PERSISTENT_SCRIPTS = ['/javascript/script.js', '/javascript/now-playing.js', '/javascript/pjax.js'];
 
     var ALWAYS_ON_STYLES = ['/css/styles.css', '/css/legacy.css'];
@@ -203,6 +203,9 @@
         // and rebind them from now-playing.js's in-memory playback state.
         // A no-op on pages without the widget (writing, bookmarks).
         if (window.npSyncControls) window.npSyncControls();
+        // Lets scripts bound to the page just replaced notice they are
+        // detached and unhook from window/document (see the header note).
+        document.dispatchEvent(new CustomEvent('pjax:swap'));
         loadPageScripts(doc, url);
     }
 
