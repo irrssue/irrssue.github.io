@@ -198,7 +198,7 @@ html.legacy .writing-heading-link {
 
 html.legacy .writing-arrow {
     font-weight: 400;
-    color: rgb(115, 115, 115);
+    color: rgb(117, 117, 117);
 }
 
 html.legacy .writing-list,
@@ -281,7 +281,7 @@ html.legacy .site-nav__label {
     font-weight: 500;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: rgb(115, 115, 115);
+    color: rgb(117, 117, 117);
 }
 
 html.legacy .site-nav__panel-inner .site-nav__label {
@@ -358,7 +358,7 @@ html.legacy .bk-heading {
 html.legacy .bk-sub {
     margin-top: 8px;
     font-size: 14px;
-    color: rgb(115, 115, 115);
+    color: rgb(117, 117, 117);
 }
 
 html.legacy .bk-month {
@@ -376,7 +376,7 @@ html.legacy .bk-month-header {
 html.legacy .bk-month-count {
     margin-left: 8px;
     font-size: 12px;
-    color: rgb(115, 115, 115);
+    color: rgb(117, 117, 117);
 }
 
 /* The date column is a float here rather than a grid track. */
@@ -398,7 +398,7 @@ html.legacy .bk-item-date {
     width: 52px;
     font-size: 12px;
     line-height: 1.9;
-    color: rgb(115, 115, 115);
+    color: rgb(117, 117, 117);
 }
 
 html.legacy .bk-item-body {
@@ -419,13 +419,13 @@ html.legacy .bk-item-title a {
 html.legacy .bk-item-desc {
     margin-top: 4px;
     font-size: 15px;
-    color: rgb(115, 115, 115);
+    color: rgb(117, 117, 117);
 }
 
 html.legacy .bk-item-src {
     margin-top: 4px;
     font-size: 12px;
-    color: rgb(115, 115, 115);
+    color: rgb(117, 117, 117);
 }
 
 /* ── Reading a post ──────────────────────────────── */
@@ -441,7 +441,7 @@ html.legacy .back-link {
     display: block;
     margin-bottom: 28px;
     font-size: 14px;
-    color: rgb(115, 115, 115);
+    color: rgb(117, 117, 117);
 }
 
 html.legacy .back-link svg {
@@ -472,12 +472,12 @@ html.legacy .post-meta {
     display: block;
     margin-bottom: 28px;
     font-size: 12px;
-    color: rgb(115, 115, 115);
+    color: rgb(117, 117, 117);
 }
 
 html.legacy .post-date {
     border-bottom: 1px dotted #555555;
-    color: rgb(115, 115, 115);
+    color: rgb(117, 117, 117);
 }
 
 html.legacy .post-content {

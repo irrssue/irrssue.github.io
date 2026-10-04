@@ -47,7 +47,8 @@
 
     /* Type */
     --text: rgb(163, 163, 163);
-    --text-muted: rgb(115, 115, 115);
+    /* The quietest text still has to clear WCAG AA (4.5:1) on --bg. */
+    --text-muted: rgb(117, 117, 117);
     --text-bright: rgb(200, 200, 200);
     --text-strong: #ffffff;
     --text-title: rgb(250, 250, 250);
@@ -79,7 +80,7 @@
     --nav-focus: rgba(255, 255, 255, 0.5);
     --nav-ink: rgba(255, 255, 255, 0.92);
     --nav-ink-dim: rgba(255, 255, 255, 0.62);
-    --nav-ink-faint: rgba(255, 255, 255, 0.38);
+    --nav-ink-faint: rgba(255, 255, 255, 0.46);
     --nav-ink-strong: #ffffff;
     --nav-shadow: 0 6px 24px rgba(0, 0, 0, 0.35), 0 2px 6px rgba(0, 0, 0, 0.25);
 
@@ -145,7 +146,7 @@
     --hairline: rgba(24, 23, 21, 0.1);
 
     --text: rgb(92, 90, 86);
-    --text-muted: rgb(134, 131, 126);
+    --text-muted: rgb(117, 114, 109);
     --text-bright: rgb(58, 56, 53);
     --text-strong: #171614;
     --text-title: #100f0e;
@@ -172,7 +173,7 @@
     --nav-focus: rgba(24, 23, 21, 0.45);
     --nav-ink: rgba(23, 22, 20, 0.92);
     --nav-ink-dim: rgba(23, 22, 20, 0.6);
-    --nav-ink-faint: rgba(23, 22, 20, 0.42);
+    --nav-ink-faint: rgba(23, 22, 20, 0.6);
     --nav-ink-strong: #100f0e;
     --nav-shadow: 0 6px 24px rgba(28, 27, 25, 0.12), 0 2px 6px rgba(28, 27, 25, 0.08);
 
