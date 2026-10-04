@@ -35,8 +35,20 @@
     var myPlaylist = [];
     var myIndex = 0;
     var playAttemptTimer = null;
+    // Where the current track should start from: a position carried over
+    // from the previous page, or 0. The player reports 0 for a cued track
+    // until it has actually played, so until then this is the real position.
     var resumeAt = 0;
-    var pendingResume = false;
+    var trackStarted = false;
+    var playingSince = 0;
+    var earlyPauseRetried = false;
+    // Consecutive tracks the player has refused; see skipBroken().
+    var errorStreak = 0;
+    // A track change that arrived before the player could take it.
+    var trackPending = false;
+    // A track change under way. YouTube reports the outgoing video as PAUSED
+    // on its way to loading the next one, which is not the visitor pausing.
+    var switchingTrack = false;
 
     // Every page on this static site is a full navigation, so nothing here
     // survives it on its own. This is the seam that lets a play started on
@@ -51,6 +63,11 @@
     // "Play" at the right track and position rather than stuck pretending.
     var STORAGE_KEY = 'irrssue-now-playing';
 
+    function currentTime() {
+        if (playerReady && trackStarted && player.getCurrentTime) return player.getCurrentTime();
+        return resumeAt;
+    }
+
     function saveState() {
         if (!myPlaylist.length) return;
         try {
@@ -58,7 +75,7 @@
                 ids: myPlaylist.map(function (song) { return song.id; }),
                 index: myIndex,
                 playing: userWantsPlay,
-                time: (player && player.getCurrentTime) ? player.getCurrentTime() : 0
+                time: currentTime()
             }));
         } catch (error) {
             // Storage unavailable (private mode, disabled, quota) -- resuming
@@ -133,18 +150,64 @@
             }
             myIndex = 0;
         }
-        updateDisplay();
-        player.loadVideoById(myPlaylist[myIndex].id);
-        saveState();
+        loadCurrent();
     }
 
     function playPrev() {
         if (!myPlaylist.length) return;
         myIndex--;
         if (myIndex < 0) myIndex = myPlaylist.length - 1;
+        loadCurrent();
+    }
+
+    // Puts the track at myIndex into the player from its beginning: playing
+    // if the visitor has asked for music, otherwise only cued -- so stepping
+    // past a broken track can never start playback by itself.
+    function loadCurrent() {
+        resumeAt = 0;
+        trackStarted = false;
+        earlyPauseRetried = false;
         updateDisplay();
-        player.loadVideoById(myPlaylist[myIndex].id);
+        if (playerReady) putTrack();
+        else trackPending = true;
         saveState();
+    }
+
+    function putTrack() {
+        var id = myPlaylist[myIndex].id;
+        if (userWantsPlay) {
+            switchingTrack = true;
+            player.loadVideoById(id);
+        } else {
+            player.cueVideoById(id);
+        }
+    }
+
+    // YouTube's codes for a video that can never play here: removed or
+    // private (100), or its owner doesn't allow embedded playback (101, 150).
+    var DEAD_VIDEO_ERRORS = [100, 101, 150];
+
+    // A track the player refused. It is skipped -- and, if it can never
+    // play here, dropped for the rest of the visit so Back/Next and the next
+    // reshuffle don't land on it again. If every track in a row has failed
+    // (offline, say, or YouTube refusing the embed outright) it stops there
+    // instead of cycling through the list forever.
+    function skipBroken(code) {
+        errorStreak++;
+        if (errorStreak > myPlaylist.length) {
+            errorStreak = 0;
+            userWantsPlay = false;
+            clearTimeout(playAttemptTimer);
+            setPlaying(false);
+            return;
+        }
+        if (DEAD_VIDEO_ERRORS.indexOf(code) !== -1 && myPlaylist.length > 1) {
+            myPlaylist.splice(myIndex, 1);
+            if (myIndex >= myPlaylist.length) myIndex = 0;
+            loadCurrent();
+            return;
+        }
+        playNext();
     }
 
     // The YouTube embed pulls in ~20 requests, including doubleclick and
@@ -179,6 +242,11 @@
             width:  '1',
             videoId: myPlaylist[myIndex].id,
             playerVars: {
+                // The position carried over from the previous page. It used
+                // to be applied with seekTo() once the player was ready, but
+                // seeking a cued video starts it playing, so a track the
+                // visitor had paused came back on by itself on the next page.
+                start:           Math.floor(resumeAt),
                 autoplay:        0,
                 controls:        0,
                 disablekb:       1,
@@ -191,9 +259,10 @@
             events: {
                 onReady: function () {
                     playerReady = true;
-                    if (pendingResume) {
-                        pendingResume = false;
-                        if (resumeAt > 2) player.seekTo(resumeAt, true);
+                    if (trackPending) {
+                        trackPending = false;
+                        putTrack();
+                        return;
                     }
                     // This fires asynchronously, well outside the click that
                     // triggered it, so mobile browsers can silently ignore
@@ -206,16 +275,34 @@
                 onStateChange: function (e) {
                     if (e.data === YT.PlayerState.PLAYING) {
                         clearTimeout(playAttemptTimer);
+                        switchingTrack = false;
+                        // Playback only ever starts because the visitor asked
+                        // for it -- here, or from their media keys.
+                        userWantsPlay = true;
+                        if (!trackStarted) playingSince = Date.now();
+                        trackStarted = true;
+                        errorStreak = 0;
                         setPlaying(true);
                         saveState();
                     } else if (e.data === YT.PlayerState.PAUSED) {
-                        if (userWantsPlay) {
+                        if (switchingTrack) return;
+                        // The hidden embed used to halt itself a moment after
+                        // starting, so a pause right at the start still gets
+                        // one retry. Any other pause that didn't come from
+                        // this widget -- media keys, headphones, the lock
+                        // screen -- is the visitor's call: it used to be
+                        // undone 150ms later, so the music couldn't be
+                        // stopped from anywhere but this page.
+                        if (userWantsPlay && !earlyPauseRetried && Date.now() - playingSince < 2500) {
+                            earlyPauseRetried = true;
                             setTimeout(function () {
                                 if (userWantsPlay && player && player.playVideo) {
                                     player.playVideo();
                                 }
                             }, 150);
                         } else {
+                            userWantsPlay = false;
+                            clearTimeout(playAttemptTimer);
                             setPlaying(false);
                             saveState();
                         }
@@ -223,8 +310,9 @@
                         playNext();
                     }
                 },
-                onError: function () {
-                    playNext();
+                onError: function (e) {
+                    switchingTrack = false;
+                    skipBroken(e && e.data);
                 }
             }
         });
@@ -256,6 +344,7 @@
                     return;
                 }
                 userWantsPlay = true;
+                earlyPauseRetried = false;
                 setPlaying(true);
                 armPlayWatchdog();
                 if (playerReady) {
@@ -269,7 +358,10 @@
         var nextBtn = document.getElementById('npNextBtn');
         if (nextBtn) {
             nextBtn.addEventListener('click', function () {
-                if (!player || !playing) return;
+                // Inert until a track is really playing -- including the
+                // moment after Play is tapped while the player is still
+                // being built, when its methods don't exist yet.
+                if (!playerReady || !playing) return;
                 playNext();
             });
         }
@@ -277,7 +369,7 @@
         var backBtn = document.getElementById('npBackBtn');
         if (backBtn) {
             backBtn.addEventListener('click', function () {
-                if (!player || !playing) return;
+                if (!playerReady || !playing) return;
                 playPrev();
             });
         }
@@ -295,8 +387,8 @@
 
         if (myPlaylist.length) {
             myIndex = Math.max(0, Math.min(saved.index || 0, myPlaylist.length - 1));
-            resumeAt = saved.time || 0;
-            pendingResume = resumeAt > 2;
+            // Under a couple of seconds isn't worth resuming into.
+            resumeAt = saved.time > 2 ? saved.time : 0;
         } else {
             myPlaylist = shuffle(SONGS);
             myIndex = 0;
