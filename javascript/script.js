@@ -69,6 +69,14 @@ function buildNav() {
     panel.addEventListener('click', function (event) {
         if (event.target.closest('a')) setOpen(false);
     });
+
+    // So does tabbing out of it, rather than leaving the card open over the
+    // page while keyboard focus moves on somewhere underneath.
+    document.addEventListener('focusin', function (event) {
+        if (nav.classList.contains('is-open') && !nav.contains(event.target)) {
+            setOpen(false);
+        }
+    });
 }
 
 /* javascript/capability.js loads this file once the document is parsed, so
