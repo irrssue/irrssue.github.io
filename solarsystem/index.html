@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'none'; img-src 'self' data:; media-src 'self'; connect-src 'self'; font-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'sha256-CeX54nJxX2vBOMYQTFfI5+zOsDpgqGNQUMdA8/mSpPc='; upgrade-insecure-requests">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'none'; img-src 'self' data:; media-src 'self'; connect-src 'self'; font-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'sha256-SAQjHvJgEFuDQDfniejMvtlbUWN+1RJZYEVywh2IXtk='; upgrade-insecure-requests">
   <title>Solar System, Right Now</title>
   <meta name="description" content="A live orrery: the eight planets drawn at their true positions, computed from JPL orbital elements. Scrub time from 1800 to 2050.">
   <meta name="theme-color" content="#05070d">
@@ -219,12 +219,28 @@
     transform: translateX(16px);
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.22s ease, transform 0.22s ease;
+    /* Hidden once faded, so the closed card's Close button is no longer a
+       tab stop nobody can see. */
+    visibility: hidden;
+    transition: opacity 0.22s ease, transform 0.22s ease, visibility 0s linear 0.22s;
   }
   .card.open {
     transform: translateX(0);
     opacity: 1;
     pointer-events: auto;
+    visibility: visible;
+    transition-delay: 0s;
+  }
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
   }
   .card .card-head {
     display: flex;
@@ -319,7 +335,7 @@
     </p>
   </noscript>
 
-  <aside class="card" id="card" aria-live="polite">
+  <aside class="card" id="card" aria-labelledby="cardName">
     <div class="card-head">
       <span class="symbol" id="cardSymbol"></span>
       <h2 id="cardName"></h2>
@@ -334,6 +350,8 @@
       <dt>Year length</dt><dd id="cardPeriod"></dd>
     </dl>
   </aside>
+
+  <p class="sr-only" id="cardAnnounce" aria-live="polite"></p>
 
   <div class="dock" role="group" aria-label="Time controls">
     <div class="scrub-row">
@@ -743,13 +761,15 @@
     return (days / 365.256).toFixed(1) + " years";
   }
 
+  // The figures are refreshed several times a second while time is playing;
+  // only an actual change is written.
+  function setText(id, text) {
+    var el = document.getElementById(id);
+    if (el.textContent !== text) el.textContent = text;
+  }
+
   function updateCard() {
     var sel = state.selected;
-    document.getElementById("cardSymbol").textContent = sel.symbol;
-    document.getElementById("cardSymbol").style.color = sel.color;
-    document.getElementById("cardName").textContent = sel.name;
-    document.getElementById("cardFact").textContent = sel.fact;
-
     var dl = card.querySelector("dl");
     if (sel === SUN) { dl.style.display = "none"; return; }
     dl.style.display = "grid";
@@ -763,22 +783,37 @@
     var lon = Math.atan2(pos.y, pos.x) / DEG;
     if (lon < 0) lon += 360;
 
-    document.getElementById("cardSunDist").textContent = fmtAU(rSun);
+    setText("cardSunDist", fmtAU(rSun));
     if (sel === PLANETS[2]) {
-      document.getElementById("cardEarthDist").textContent = "0 (home)";
-      document.getElementById("cardLight").textContent = fmtLight(rSun) + " from sun";
+      setText("cardEarthDist", "0 (home)");
+      setText("cardLight", fmtLight(rSun) + " from sun");
     } else {
-      document.getElementById("cardEarthDist").textContent = fmtAU(rEarth);
-      document.getElementById("cardLight").textContent = fmtLight(rEarth);
+      setText("cardEarthDist", fmtAU(rEarth));
+      setText("cardLight", fmtLight(rEarth));
     }
-    document.getElementById("cardLon").textContent = lon.toFixed(1) + "°";
-    document.getElementById("cardPeriod").textContent = fmtPeriod(sel.period);
+    setText("cardLon", lon.toFixed(1) + "°");
+    setText("cardPeriod", fmtPeriod(sel.period));
   }
+
+  var announcer = document.getElementById("cardAnnounce");
 
   function select(obj) {
     state.selected = obj;
-    if (obj) { updateCard(); card.classList.add("open"); }
-    else card.classList.remove("open");
+    if (obj) {
+      document.getElementById("cardSymbol").textContent = obj.symbol;
+      document.getElementById("cardSymbol").style.color = obj.color;
+      document.getElementById("cardName").textContent = obj.name;
+      document.getElementById("cardFact").textContent = obj.fact;
+      updateCard();
+      card.classList.add("open");
+      // Said once per selection. The card itself used to be the live
+      // region, so a screen reader was handed every figure it redrew --
+      // dozens of updates a second while time was playing.
+      announcer.textContent = obj.name + ". " + obj.fact;
+    } else {
+      card.classList.remove("open");
+      announcer.textContent = "";
+    }
   }
 
   document.getElementById("cardClose").addEventListener("click", function () { select(null); });
