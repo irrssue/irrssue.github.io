@@ -74,7 +74,7 @@ console.log('\n--- archived Gems routes are unavailable ---');
   const full = await page.locator('.post-date').getAttribute('data-full-date');
   console.log(`post: "${title}" | ${paras} paras, ${pre} code blocks | date "${date}" (tooltip "${full}")`);
   if (paras < 3) fail('post body did not render');
-  if (!/ago|just now/.test(date)) fail('relative date not applied');
+  if (!/ ago$|^today$|^yesterday$/.test(date)) fail('relative date not applied');
   await ctx.close();
 }
 
@@ -99,20 +99,40 @@ console.log('\n--- no-JS: content still there ---');
     if (!ok) failures++;
     console.log(`${ok ? 'ok  ' : 'FAIL'} ${p.padEnd(40)} ${n} x ${sel} without JS`);
   }
+  // The menu pill needs script.js to open, so without JS its links have to
+  // be laid out as a footer instead -- otherwise /bookmarks is unreachable.
+  for (const p of ['/', '/writing', '/bookmarks']) {
+    await page.goto(BASE + p, { waitUntil: 'load' });
+    const visible = await page.locator('.site-nav__link').evaluateAll(links =>
+      links.filter(a => a.getBoundingClientRect().height > 0 && getComputedStyle(a).visibility !== 'hidden').length);
+    const ok = visible === 3;
+    if (!ok) failures++;
+    console.log(`${ok ? 'ok  ' : 'FAIL'} ${p.padEnd(40)} ${visible}/3 menu links reachable without JS`);
+  }
   await ctx.close();
 }
 
-console.log('\n--- YouTube loads only after pressing play ---');
+console.log('\n--- YouTube loads only once the visitor uses the player\'s page ---');
 {
+  // A page without the player never needs it, however much it is used.
+  const writing = await open('/writing');
+  await writing.page.mouse.click(5, 5);
+  await writing.page.keyboard.press('ArrowDown');
+  await writing.page.waitForTimeout(1500);
+  const ytWriting = writing.external.filter(r => r.url.includes('youtube.com')).length;
+  console.log(`/writing after interaction: ${ytWriting} youtube requests`);
+  if (ytWriting) fail('YouTube loaded on a page without the player');
+  await writing.ctx.close();
+
   const { page, ctx, external } = await open('/');
   const ytBefore = external.filter(r => r.url.includes('youtube.com')).length;
-  console.log(`before click: ${ytBefore} youtube requests`);
-  if (ytBefore) fail('YouTube loaded before the play button was pressed');
+  console.log(`homepage before any interaction: ${ytBefore} youtube requests`);
+  if (ytBefore) fail('YouTube loaded before the visitor did anything');
   await page.locator('#npPlayBtn').click();
   await page.waitForTimeout(3000);
   const yt = external.filter(r => r.url.includes('youtube.com')).length;
-  console.log(`after click : ${yt} youtube requests`);
-  if (!yt) fail('play click did not load the YouTube API');
+  console.log(`after pressing play       : ${yt} youtube requests`);
+  if (!yt) fail('pressing play did not load the YouTube API');
   await ctx.close();
 }
 

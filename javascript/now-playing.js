@@ -50,9 +50,11 @@
     // on its way to loading the next one, which is not the visitor pausing.
     var switchingTrack = false;
 
-    // Every page on this static site is a full navigation, so nothing here
-    // survives it on its own. This is the seam that lets a play started on
-    // one page pick back up on the next: whichever track/position/paused
+    // Soft navigation (javascript/pjax.js) keeps the player alive between
+    // home, writing, posts and bookmarks, but a full page load -- a reload,
+    // or arriving from anywhere else -- starts this file from scratch. This
+    // is the seam that lets a play started before it pick back up after
+    // it: whichever track/position/paused
     // state the visitor left, saved to sessionStorage so it's scoped to this
     // browsing session and not shared across tabs. It cannot make playback
     // itself survive the navigation -- audio always stops when the page
@@ -211,23 +213,19 @@
     }
 
     // The YouTube embed pulls in ~20 requests, including doubleclick and
-    // googleads, so this is a background load rather than part of the
-    // initial render -- it's kicked off right after DOMContentLoaded, not
-    // blocking anything on the page. The track name comes from SONGS, not
-    // the API, so nothing waits on it.
+    // googleads, so it is never part of loading a page: the site makes no
+    // third-party requests on load. The track name comes from SONGS, not the
+    // API, so nothing waits on it.
     //
-    // It's requested on load rather than lazily on the first tap: mobile
-    // Safari/Chrome only allow player.playVideo() to autoplay with sound
-    // when it runs synchronously inside the tap that requested it.
-    // Requesting the API on click means the player isn't built until onReady
-    // fires later (after a network round trip), so the resulting playVideo()
-    // call happens outside the gesture and gets silently blocked on mobile
-    // (desktop is lenient about this gap). This is also why this can't just
-    // warm once and be done -- every page on the site is a full navigation,
-    // so this whole file re-runs from scratch and the player has to be
-    // rebuilt again on each page. Warming it immediately on load (not on
-    // idle/click) gives it the most possible time to finish before someone
-    // actually taps play.
+    // It can't simply wait for the Play tap either: mobile Safari/Chrome only
+    // let player.playVideo() start sound when it runs synchronously inside
+    // the tap that asked for it, and a player requested by that tap isn't
+    // built until a network round trip later, outside the gesture, where the
+    // call is silently blocked (desktop is lenient about the gap). So it is
+    // requested at the visitor's first touch, click, key or wheel on a page
+    // that shows the player (see warmOnInteraction), which almost always
+    // leaves it built before Play is reached -- or straight away when they
+    // were already listening before this page load.
     function requestApi() {
         if (apiRequested) return;
         apiRequested = true;
@@ -376,6 +374,27 @@
     }
     window.npSyncControls = syncControls;
 
+    // The first sign of a visitor actually using a page that shows the
+    // player. Scrolling on a phone begins with a touchstart, on a desktop
+    // with a wheel, a key or a press on the scrollbar, so those are covered
+    // too -- the scroll event itself isn't used, because restoring a reader's
+    // place fires it with nobody touching anything. On pages without the
+    // player the listeners stay put until the visitor gets to one.
+    var WARM_EVENTS = ['pointerdown', 'touchstart', 'keydown', 'wheel'];
+
+    function warmOnInteraction() {
+        function warm() {
+            if (!document.getElementById('npPlayBtn')) return;
+            WARM_EVENTS.forEach(function (type) {
+                window.removeEventListener(type, warm, true);
+            });
+            requestApi();
+        }
+        WARM_EVENTS.forEach(function (type) {
+            window.addEventListener(type, warm, { capture: true, passive: true });
+        });
+    }
+
     function start() {
         var saved = loadState();
         var byId = {};
@@ -393,14 +412,16 @@
             myPlaylist = shuffle(SONGS);
             myIndex = 0;
         }
-        requestApi();
-
         if (saved && saved.playing) {
+            // They were listening when the last page went away: keep going.
+            requestApi();
             userWantsPlay = true;
             setPlaying(true);
             armPlayWatchdog();
             if (playerReady) player.playVideo();
         }
+
+        if (!apiRequested) warmOnInteraction();
 
         setInterval(function () {
             if (playing) saveState();
