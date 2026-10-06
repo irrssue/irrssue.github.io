@@ -36,7 +36,7 @@ resume/           Resume PDF + viewer
 
 ## Design
 
-Minimal, single-column, and calm — see [docs/Design_goal.md](docs/Design_goal.md) for the full direction.
+Minimal and calm — the current design lives in `css/styles.css`, with `css/legacy.css` as a plain fallback for older browsers.
 All design tokens (colors, fonts, spacing) live as CSS custom properties in `:root`, and the site supports light and dark themes.
 
 ## Local development
