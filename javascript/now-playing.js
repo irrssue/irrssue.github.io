@@ -35,6 +35,10 @@
     var myPlaylist = [];
     var myIndex = 0;
     var playAttemptTimer = null;
+    // Whether the player has actually started since the last play attempt.
+    // `playing` can't answer that: it drives the button, and is set the
+    // moment Play is tapped.
+    var playbackStarted = false;
     // Where the current track should start from: a position carried over
     // from the previous page, or 0. The player reports 0 for a cued track
     // until it has actually played, so until then this is the real position.
@@ -131,14 +135,26 @@
     // button back to "Play" means the *next* tap is a fresh, real gesture,
     // which mobile browsers always honor -- instead of needing a confusing
     // pause-then-play to get sound.
+    //
+    // It used to test `!playing`, which the tap had just set to true, so it
+    // never fired and a blocked tap left the button on Pause in silence. It
+    // is also only armed when playVideo() really runs: armed at the tap while
+    // the player was still being built, it would give up on a start that is
+    // merely waiting for YouTube to load.
     function armPlayWatchdog() {
+        playbackStarted = false;
         clearTimeout(playAttemptTimer);
         playAttemptTimer = setTimeout(function () {
-            if (userWantsPlay && !playing) {
+            if (userWantsPlay && !playbackStarted) {
                 userWantsPlay = false;
                 setPlaying(false);
             }
         }, 1500);
+    }
+
+    function attemptPlay() {
+        armPlayWatchdog();
+        player.playVideo();
     }
 
     function playNext() {
@@ -262,17 +278,18 @@
                         putTrack();
                         return;
                     }
-                    // This fires asynchronously, well outside the click that
-                    // triggered it, so mobile browsers can silently ignore
-                    // this playVideo() call. armPlayWatchdog() (set when the
-                    // tap happened, or when a resume was attempted on load)
-                    // catches that and resets the button so the next tap is a
-                    // fresh, honored gesture.
-                    if (userWantsPlay) player.playVideo();
+                    // This fires asynchronously, well outside the tap that
+                    // asked for music (or the page load resuming it), so
+                    // mobile browsers can silently ignore this playVideo()
+                    // call. The watchdog attemptPlay() arms catches that and
+                    // resets the button so the next tap is a fresh, honored
+                    // gesture.
+                    if (userWantsPlay) attemptPlay();
                 },
                 onStateChange: function (e) {
                     if (e.data === YT.PlayerState.PLAYING) {
                         clearTimeout(playAttemptTimer);
+                        playbackStarted = true;
                         switchingTrack = false;
                         // Playback only ever starts because the visitor asked
                         // for it -- here, or from their media keys.
@@ -344,9 +361,8 @@
                 userWantsPlay = true;
                 earlyPauseRetried = false;
                 setPlaying(true);
-                armPlayWatchdog();
                 if (playerReady) {
-                    player.playVideo();
+                    attemptPlay();
                 } else {
                     requestApi();
                 }
@@ -417,8 +433,6 @@
             requestApi();
             userWantsPlay = true;
             setPlaying(true);
-            armPlayWatchdog();
-            if (playerReady) player.playVideo();
         }
 
         if (!apiRequested) warmOnInteraction();
