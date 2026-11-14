@@ -38,10 +38,6 @@
     var boost = 0;                      // spin picked up from scrolling
     var lastScroll = null;
     var lastFrame = 0;
-    // The idle turn is intentionally slow. Rendering it at 30fps is visually
-    // indistinguishable, while halving the style writes for all ten cards.
-    // Interaction and wheel momentum still render at the display refresh rate.
-    var IDLE_FRAME_MS = 1000 / 30;
     var frame = null;
     var hovered = null;
 
@@ -114,9 +110,15 @@
                 ' rotateY(' + (10 * Math.cos(a)).toFixed(2) + 'deg)' +
                 ' rotateZ(' + (roll * (180 / Math.PI) * 0.14).toFixed(2) + 'deg)';
             // Near side (cos -1) on top, far side underneath.
-            card.style.zIndex = card === hovered
+            // Only written when it changes: a z-index write forces the browser
+            // to re-sort the compositor layers, which is costly every frame.
+            var z = card === hovered
                 ? '100'
                 : String(Math.round(40 * (1 - Math.cos(a))));
+            if (card.__z !== z) {
+                card.__z = z;
+                card.style.zIndex = z;
+            }
         }
     }
 
@@ -127,11 +129,6 @@
         // invisible, orphaned ring forever, one extra per visit home.
         if (!ring.isConnected) {
             teardown();
-            return;
-        }
-        var isInteractive = hovered || Math.abs(boost) > 0.01;
-        if (!isInteractive && lastFrame && now - lastFrame < IDLE_FRAME_MS) {
-            frame = window.requestAnimationFrame(tick);
             return;
         }
         var dt = Math.min(now - lastFrame, 64) / 1000;
