@@ -276,6 +276,12 @@
         }
 
         var imported = document.importNode(incomingRoot, true);
+        // The homepage writes image paths relative ("images/profile.webp").
+        // Once imported they would resolve against the live address (e.g.
+        // /writing/) and 404, so pin them to the fetched page's URL first.
+        imported.querySelectorAll('img[src]').forEach(function (img) {
+            img.setAttribute('src', new URL(img.getAttribute('src'), url).href);
+        });
         activateScripts(imported, url);
 
         document.title = doc.title;
